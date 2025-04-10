@@ -41,31 +41,6 @@ export type IconType =
 export type ProjectionType = 'mercator' | 'globe';
 
 /**
- * Defines the type of marker to display.
- */
-export type MarkerType = 'icon' | 'text' | 'combined' | 'none';
-
-/**
- * Defines how the marker is positioned.
- */
-export type MarkerPositioningType = 'viewport' | 'map';
-
-/**
- * Defines alignment options for marker pitch.
- */
-export type MarkerPitchAlignment = 'map' | 'viewport' | 'auto';
-
-/**
- * Defines alignment options for marker rotation.
- */
-export type MarkerRotationAlignment = 'map' | 'viewport' | 'horizon' | 'auto';
-
-/**
- * Defines anchor points for markers.
- */
-export type MarkerAnchor = 'center' | 'top' | 'bottom' | 'left' | 'right' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
-
-/**
  * Country data structure
  */
 export interface CountryData {

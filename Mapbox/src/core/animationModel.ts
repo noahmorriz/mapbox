@@ -1,4 +1,4 @@
-import { Coordinates, ThemeType, MotionType, ProjectionType, IconType, MarkerType, MarkerPositioningType } from './mapboxTypes';
+import { Coordinates, ThemeType, MotionType, ProjectionType, IconType } from './mapboxTypes';
 
 /**
  * Camera animation settings
@@ -79,13 +79,6 @@ export interface UISettings {
   infoTextColor: string;
   infoBorderRadius: string;
   infoPadding: string;
-  
-  // Marker shadow effect settings
-  markerShadowEffect?: boolean;
-  markerShadowColor?: string;
-  markerShadowBlur?: number;
-  markerShadowOffsetX?: number;
-  markerShadowOffsetY?: number;
 }
 
 /**
@@ -135,7 +128,4 @@ export interface AnimationProps {
   iconType?: IconType;
   iconSize?: number;
   projection?: ProjectionType;
-  markerType?: MarkerType;
-  markerText?: string;
-  markerPositioning?: MarkerPositioningType;
 } 

@@ -2,7 +2,6 @@ import React from 'react';
 import { AbsoluteFill } from 'remotion';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { MapboxAnimation } from './components/MapboxAnimation';
-import { MarkerType, MarkerPositioningType } from './core/mapboxTypes';
 import { AnimationProps, AnimationSettings } from './core/animationModel';
 
 // ======================================================================
@@ -21,7 +20,6 @@ import { AnimationProps, AnimationSettings } from './core/animationModel';
  *
  * 2. Compound component usage for more control:
  *    <MapboxAnimation countryCode="USA" theme="dark">
- *      <MapboxAnimation.Marker iconType="flag" markerPositioning="map" />
  *      <MapboxAnimation.InfoBox>Population: 331 million</MapboxAnimation.InfoBox>
  *    </MapboxAnimation>
  */
@@ -43,11 +41,6 @@ export const Composition: React.FC<AnimationProps> = (props) => {
     // Map controls
     motion: "slowRotate",
     projection: "globe",
-    
-    // Marker controls
-    markerType: "icon" as MarkerType, 
-    markerText: "", 
-    markerPositioning: "map" as MarkerPositioningType, // Map alignment vs viewport alignment
     
     // Default country
     countryCode: "FRA", 

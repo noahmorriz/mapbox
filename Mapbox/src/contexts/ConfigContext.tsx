@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useMemo } from 'react';
 import { AnimationSettings } from '../core/animationModel';
-import { ThemeType, MotionType, IconType, CountryData, ProjectionType, MarkerType, MarkerPositioningType } from '../core/mapboxTypes';
+import { ThemeType, MotionType, IconType, CountryData, ProjectionType } from '../core/mapboxTypes';
 import { getCountry, defaultCountry, countries } from '../countryData';
 
 // Define theme settings directly in this file
@@ -40,12 +40,7 @@ const LightTheme = {
     infoBackgroundColor: 'rgba(255, 255, 255, 0.9)',
     infoTextColor: '#2D3748',
     infoBorderRadius: '4px',
-    infoPadding: '8px',
-    markerShadowEffect: true,
-    markerShadowColor: 'rgba(0, 0, 0, 0.6)',
-    markerShadowBlur: 4,
-    markerShadowOffsetX: 1,
-    markerShadowOffsetY: 1
+    infoPadding: '8px'
   },
   mapLayers: {
     countryBoundaries: {
@@ -109,12 +104,7 @@ const DarkTheme = {
     infoBackgroundColor: 'rgba(26, 32, 44, 0.9)',
     infoTextColor: '#E2E8F0',
     infoBorderRadius: '4px',
-    infoPadding: '8px',
-    markerShadowEffect: true,
-    markerShadowColor: 'rgba(0, 120, 255, 0.7)',
-    markerShadowBlur: 6,
-    markerShadowOffsetX: 0,
-    markerShadowOffsetY: 0
+    infoPadding: '8px'
   },
   mapLayers: {
     countryBoundaries: {
@@ -382,9 +372,6 @@ interface ConfigContextValue {
   motionType: MotionType;
   projectionType: ProjectionType;
   iconType: IconType;
-  markerType: MarkerType;
-  markerText: string;
-  markerPositioning: MarkerPositioningType;
   customText?: string;
   additionalInfo?: string;
   motionSettings: typeof RotateAndPitch | typeof NorthToRotate | typeof SlowRotate;
@@ -404,9 +391,6 @@ const ConfigContext = createContext<ConfigContextValue>({
   motionType: 'northToRotate',
   projectionType: 'mercator',
   iconType: 'marker',
-  markerType: 'icon',
-  markerText: '',
-  markerPositioning: 'viewport',
   customText: '',
   motionSettings: NorthToRotate,
   iconSize: undefined,
@@ -442,9 +426,6 @@ interface ConfigProviderProps {
   highlightColor?: string;
   additionalInfo?: string;
   settings?: Partial<AnimationSettings>;
-  markerType?: MarkerType;
-  markerText?: string;
-  markerPositioning?: MarkerPositioningType;
   iconSize?: number;
 }
 
@@ -465,9 +446,6 @@ export const ConfigProvider: React.FC<ConfigProviderProps> = ({
   highlightColor,
   additionalInfo,
   settings = {},
-  markerType = 'icon',
-  markerText = '',
-  markerPositioning = 'viewport',
   iconSize,
 }) => {
   // Create settings based on country code, theme, and motion
@@ -550,9 +528,6 @@ export const ConfigProvider: React.FC<ConfigProviderProps> = ({
     motionType: motion,
     projectionType: projection,
     iconType,
-    markerType,
-    markerText,
-    markerPositioning,
     customText,
     additionalInfo,
     motionSettings,

@@ -40,7 +40,7 @@ export const Composition: React.FC<AnimationProps> = (props) => {
     
     // Map controls
     motion: "slowRotate",
-    projection: "globe",
+    projection: "mercator",
     
     // Default country
     countryCode: "FRA", 

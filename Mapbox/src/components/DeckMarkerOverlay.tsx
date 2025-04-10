@@ -53,7 +53,7 @@ export const DeckMarkerOverlay: React.FC = () => {
       'marker': [255, 0, 0],     // Red
       'pin': [0, 0, 255],        // Blue
       'flag': [0, 128, 0],       // Green
-      'skull': [120, 120, 120],  // Dark gray for skull
+      'skull': [255, 255, 255],  // White for skull (was dark gray)
       'star': [255, 215, 0],     // Gold
       'info': [0, 191, 255]      // Deep Sky Blue
     };

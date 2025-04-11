@@ -1,5 +1,4 @@
 import React, { useRef } from 'react';
-import { AbsoluteFill } from 'remotion';
 import { MapProvider } from '../contexts/MapContext';
 import { AnimationProvider } from '../contexts/AnimationContext';
 import { ConfigProvider, useConfigContext } from '../contexts/ConfigContext';
@@ -102,9 +101,6 @@ export const MapboxAnimation: React.FC<MapboxAnimationProps> & {
   children,
 }) => {
   const frameRenderHandleRef = useRef<number | null>(null);
-  
-  // Check if we have subcomponents or should use the default setup
-  const hasSubcomponents = React.Children.count(children) > 0;
   
   // Render with context providers
   return (

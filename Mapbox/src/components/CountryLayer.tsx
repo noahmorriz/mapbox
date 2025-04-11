@@ -1,13 +1,11 @@
 import React, { useEffect } from 'react';
 import { useMapContext } from '../contexts/MapContext';
 import { useAnimationContext } from '../contexts/AnimationContext';
-import { useConfigContext } from '../contexts/ConfigContext';
 
 export const CountryLayer: React.FC = () => {
   const { mapService, mapLayersReady } = useMapContext();
   const { animationState } = useAnimationContext();
   const { fillOpacity, lineOpacity } = animationState;
-  const { countryData } = useConfigContext();
   
   // Update layer opacities based on animation state
   useEffect(() => {

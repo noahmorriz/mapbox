@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useMemo, useState, useEffect } from 'react';
 import { useCurrentFrame, useVideoConfig } from 'remotion';
-import { useMapContext } from './MapContext';
+import { useConfigContext } from './ConfigContext';
 import { AnimationSettings, AnimationFrameState } from '../core/animationModel';
 import { CountryData } from '../core/mapboxTypes';
 import { calculateAnimationFrame } from '../services/AnimationService';
@@ -76,7 +76,7 @@ export const AnimationProvider: React.FC<AnimationProviderProps> = ({
 }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const { mapLayersReady } = useMapContext();
+  const { countryCode } = useConfigContext();
   const [error, setError] = useState<string | null>(null);
   
   // Validate inputs before calculating animation state
@@ -117,13 +117,14 @@ export const AnimationProvider: React.FC<AnimationProviderProps> = ({
         countryData.coordinates,
         countryData.zoomLevel,
         motionSettings,
-        additionalInfo
+        additionalInfo,
+        countryCode
       );
     } catch (err) {
       console.error('Error calculating animation state:', err);
       return DEFAULT_ANIMATION_STATE;
     }
-  }, [frame, fps, settings, countryData, motionSettings, additionalInfo, error]);
+  }, [frame, fps, settings, countryData, motionSettings, additionalInfo, error, countryCode]);
   
   const contextValue = useMemo<AnimationContextValue>(() => ({
     frame,

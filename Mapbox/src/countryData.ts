@@ -70,7 +70,7 @@ export const countries: Record<string, CountryData> = {
     alpha2: 'AU',
     alpha3: 'AUS',
     coordinates: [133.775136, -25.274398],
-    zoomLevel: 3,
+    zoomLevel: 5,
   },
   AUT: {
     name: 'Austria',
@@ -1015,7 +1015,7 @@ export const countries: Record<string, CountryData> = {
     alpha2: 'RU',
     alpha3: 'RUS',
     coordinates: [105.318756, 61.52401],
-    zoomLevel: 2.6,
+    zoomLevel: 3.5,
   },
   RWA: {
     name: 'Rwanda',

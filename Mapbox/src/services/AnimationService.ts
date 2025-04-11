@@ -1,6 +1,7 @@
-import { useCurrentFrame, useVideoConfig, spring, interpolate } from 'remotion';
+import { useCurrentFrame, useVideoConfig, spring } from 'remotion';
 import { AnimationSettings, AnimationFrameState } from '../core/animationModel';
 import { Coordinates } from '../core/mapboxTypes';
+import { createAnimationTimeline, getAnimationFrames, getAnimationPhase } from '../core/animationTiming';
 
 // Define MotionSettings type directly here
 interface MotionSettings {
@@ -31,27 +32,28 @@ interface MotionSettings {
   };
 }
 
-// Default animation state for fallback
-const DEFAULT_ANIMATION_STATE: Omit<AnimationFrameState, 'labelOpacity' | 'labelScale' | 'labelY'> = {
+// Default animation state if an error occurs
+const DEFAULT_ANIMATION_STATE = {
   bearing: 0,
   pitch: 0,
-  animatedCenter: [0, 0],
+  animatedCenter: [0, 0] as [number, number],
   animatedZoom: 1,
   fillOpacity: 0,
   lineOpacity: 0,
   infoOpacity: 0,
 };
 
-/**
- * Safely gets a property with a default value if not available
- */
-function getSafe<T, K extends keyof T>(obj: T | undefined | null, key: K, defaultValue: T[K]): T[K] {
+// Helper to safely get value from potentially undefined object
+const getSafe = <T, K extends keyof T>(obj: T | undefined, key: K, defaultValue: T[K]): T[K] => {
   if (!obj) return defaultValue;
-  return obj[key] ?? defaultValue;
-}
+  return obj[key] !== undefined ? obj[key] : defaultValue;
+};
 
 /**
  * Calculates all animation values for a specific frame
+ * 
+ * All timing values are based on 30fps throughout this file
+ * All countries now share identical animation behavior
  * 
  * @param frame Current frame number
  * @param fps Frames per second
@@ -60,6 +62,7 @@ function getSafe<T, K extends keyof T>(obj: T | undefined | null, key: K, defaul
  * @param zoomLevel Target zoom level
  * @param motionSettings Motion settings
  * @param additionalInfo Whether additional info is shown
+ * @param countryCode Country code for animation orchestration
  * @returns Animation state for the current frame
  */
 export const calculateAnimationFrame = (
@@ -69,7 +72,8 @@ export const calculateAnimationFrame = (
   countryCoordinates: Coordinates,
   zoomLevel: number,
   motionSettings: MotionSettings,
-  additionalInfo?: string
+  additionalInfo?: string,
+  countryCode: string = 'default'
 ): Omit<AnimationFrameState, 'labelOpacity' | 'labelScale' | 'labelY'> => {
   // Validate inputs to prevent errors
   if (!settings || !settings.camera || !settings.highlight || !settings.general) {
@@ -86,9 +90,6 @@ export const calculateAnimationFrame = (
     console.error('Invalid country coordinates array:', countryCoordinates);
     return DEFAULT_ANIMATION_STATE;
   } 
-  // No specific check needed for object type if lng/lat access below is sufficient, 
-  // or add checks like: 
-  // if (!Array.isArray(countryCoordinates) && (typeof countryCoordinates.lng !== 'number' || typeof countryCoordinates.lat !== 'number')) { ... }
   
   if (!motionSettings || !motionSettings.zoom) {
     console.error('Invalid motion settings:', motionSettings);
@@ -97,7 +98,36 @@ export const calculateAnimationFrame = (
   
   try {
     const { camera, highlight, general } = settings;
-    const { animationStartFrame, highlightDelayFrames, labelDelayFrames } = general;
+    
+    // Use the orchestrated timing if available, otherwise fall back to legacy settings
+    let animationStartFrame, highlightDelayFrames;
+    
+    if (settings.timing) {
+      // Create a timeline from the timing settings
+      // Country code is now disregarded to ensure consistent behavior
+      const timeline = createAnimationTimeline('FRA', settings.timing);
+      const animationFrames = getAnimationFrames(timeline, 0); // 0 is base frame
+      
+      // Get the animation phases for the current frame
+      const phases = getAnimationPhase(frame, animationFrames);
+      
+      // Use these for timing calculations below
+      animationStartFrame = 0; // Timeline handles this
+      highlightDelayFrames = animationFrames.highlightStart;
+      
+      // Debug logging
+      if (frame % 15 === 0) {
+        console.log(`Standard animation timing (based on France):`, { 
+          frame, 
+          phases,
+          animationFrames
+        });
+      }
+    } else {
+      // Legacy approach (30fps values)
+      animationStartFrame = general.animationStartFrame || 0;
+      highlightDelayFrames = general.highlightDelayFrames || 15;
+    }
 
     // Animate camera parameters with safe defaults
     const bearing = spring({
@@ -138,8 +168,8 @@ export const calculateAnimationFrame = (
     const animatedZoom = spring({
       frame,
       fps,
-      // If zoomStiffness is very low, don't apply any zoom animation (maintain exact target zoom)
-      from: getSafe(motionSettings.zoom, 'zoomStiffness', 50) < 15 ? adjustedZoomLevel : Math.max(adjustedZoomLevel - 1, 0),
+      // Always start at the target zoom level to prevent initial zoom-in effect
+      from: adjustedZoomLevel,
       to: adjustedZoomLevel,
       config: {
         damping: getSafe(motionSettings.zoom, 'zoomDamping', 30), 
@@ -149,10 +179,7 @@ export const calculateAnimationFrame = (
     });
 
     // Calculate total delay for highlight animation with safe defaults
-    const totalHighlightDelay = (animationStartFrame || 0) + (highlightDelayFrames || 30);
-
-    // Calculate total delay for label animation with safe defaults
-    const totalLabelDelay = (animationStartFrame || 0) + (labelDelayFrames || 45);
+    const totalHighlightDelay = animationStartFrame + highlightDelayFrames;
     
     // Animate country highlight opacities with delayed start
     const fillOpacity = spring({
@@ -179,10 +206,10 @@ export const calculateAnimationFrame = (
       },
     });
 
-    // Additional info animation (can remain if used separately)
+    // Additional info animation (30fps values)
     const infoOpacity = additionalInfo ? spring({
       // Adjust timing relative to highlight or other relevant event if needed
-      frame: Math.max(0, frame - totalHighlightDelay - 15), // Example: Delay after highlight
+      frame: Math.max(0, frame - totalHighlightDelay - 8), // Changed from 15 to 8 for 30fps
       fps,
       from: 0,
       to: 1,

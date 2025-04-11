@@ -43,7 +43,21 @@ export const Composition: React.FC<AnimationProps> = (props) => {
     projection: "mercator",
     
     // Default country
-    countryCode: "FRA", 
+    countryCode: "TWN", // Default country set to Russia
+    
+    // Centralized animation timing (30fps values)
+    // All countries now use France's animation timing
+    animationTiming: {
+      // Standard animation timing (based on France)
+      stabilizationBuffer: 22,  // ~0.75s buffer (22 frames at 30fps)
+      highlightDelay: 10,       // ~0.33s delay (10 frames at 30fps)
+      labelDelay: 15,           // 0.5s delay (15 frames at 30fps)
+      highlightFadeDuration: 8, // ~0.25s duration (8 frames at 30fps)
+      labelFadeDuration: 10,    // ~0.33s duration (10 frames at 30fps)
+      
+      // No country-specific overrides to ensure consistent timing
+      countrySpecificOverrides: {}
+    }
   };
 
   // Merge defaults with incoming props
@@ -57,10 +71,10 @@ export const Composition: React.FC<AnimationProps> = (props) => {
     settings: {
       // Override just the timing settings in general section
       general: {
-        // We only want to override these specific timing properties
-        highlightDelayFrames: 20, // When the country highlight fades in
-        labelDelayFrames: 30,     // When the marker/icon fades in - much later
-        labelFadeDuration: 20     // How many frames the label fade-in takes
+        // France-like timing values for all countries (30fps)
+        highlightDelayFrames: 10, // When the country highlight fades in
+        labelDelayFrames: 15,     // When the marker/icon fades in 
+        labelFadeDuration: 10     // How many frames the label fade-in takes
       },
       // Add highlight settings for animation speed
       highlight: {
@@ -71,7 +85,7 @@ export const Composition: React.FC<AnimationProps> = (props) => {
         lineOpacityTarget: 1.0,
         labelOpacityTarget: 1.0,
         
-        // Slower animation settings with gentler spring parameters
+        // Animation settings that apply to all countries equally
         fillAnimationDamping: 40,
         fillAnimationStiffness: 25,
         fillAnimationMass: 1,
@@ -80,11 +94,13 @@ export const Composition: React.FC<AnimationProps> = (props) => {
         lineAnimationStiffness: 25,
         lineAnimationMass: 1,
         
-        // Optimized for slower fade-in of label/icon
-        labelAnimationDamping: 15,    // Lower damping for extended oscillation
-        labelAnimationStiffness: 12,  // Lower stiffness for slower acceleration
-        labelAnimationMass: 2.5       // Higher mass creates more inertia
-      }
+        // Optimized for consistent fade-in of label/icon across all countries
+        labelAnimationDamping: 15,    
+        labelAnimationStiffness: 12,  
+        labelAnimationMass: 2.5       
+      },
+      // Add our centralized timing settings - standard for all countries
+      timing: defaultedProps.animationTiming
     } as Partial<AnimationSettings>
   };
   

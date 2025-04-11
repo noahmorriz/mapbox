@@ -216,24 +216,6 @@ const SlowRotate = {
   }
 };
 
-// Large country settings
-const LARGE_COUNTRIES = ['USA', 'CAN', 'RUS', 'CHN', 'BRA', 'AUS', 'IND'];
-
-const LargeCountryMotion = {
-  camera: {
-    initialRotation: 0,
-    finalRotation: 15,
-    initialPitch: 0,
-    finalPitch: 20,
-    rotationDamping: 40,
-    rotationStiffness: 40,
-    rotationMass: 1.5,
-    pitchDamping: 40,
-    pitchStiffness: 40,
-    pitchMass: 1.5,
-  }
-};
-
 /**
  * Creates UI settings for customization
  */
@@ -297,20 +279,17 @@ const createCountrySettings = (
     ? (countries[countryCode] || getCountry(countryCode) || defaultCountry) 
     : defaultCountry;
     
-  // Check if this is a large country
-  const isLargeCountry = LARGE_COUNTRIES.includes(countryData.alpha3);
-  
   // Get theme styles
   const themeStyles = theme === "light" ? LightTheme : DarkTheme;
   
-  // Get motion settings
+  // Get motion settings - same for all countries
   const motionSettings = motion === "northToRotate" 
     ? NorthToRotate 
     : motion === "slowRotate" 
       ? SlowRotate 
       : RotateAndPitch;
   
-  // Create base settings
+  // Create base settings - now standardized across all countries
   const baseSettings = {
     camera: motionSettings.camera,
     highlight: themeStyles.highlight,
@@ -324,24 +303,17 @@ const createCountrySettings = (
       renderWorldCopies: false,
       fadeDuration: motionSettings.timing.fadeDuration,
     },
-    ui: themeStyles.ui
+    ui: themeStyles.ui,
+    // Pass the timing settings without country-specific logic
+    timing: customSettings.timing || undefined
   };
   
-  // Apply country-specific adjustments
-  const countryAdjustments = {
-    camera: isLargeCountry ? {
-      ...LargeCountryMotion.camera
-    } : undefined,
-    general: isLargeCountry ? {
-      renderWorldCopies: true,
-    } : undefined,
-  };
+  // NO country-specific adjustments anymore
   
   // Merge all settings
   const mergedSettings = {
     camera: { 
-      ...baseSettings.camera, 
-      ...countryAdjustments.camera,
+      ...baseSettings.camera,
       ...customSettings.camera 
     },
     highlight: { 
@@ -349,14 +321,15 @@ const createCountrySettings = (
       ...customSettings.highlight 
     },
     general: { 
-      ...baseSettings.general, 
-      ...countryAdjustments.general,
+      ...baseSettings.general,
       ...customSettings.general 
     },
     ui: {
       ...baseSettings.ui,
       ...customSettings.ui
-    }
+    },
+    // Include the timing orchestration settings
+    timing: baseSettings.timing
   };
   
   return {
@@ -376,6 +349,8 @@ interface ConfigContextValue {
   additionalInfo?: string;
   motionSettings: typeof RotateAndPitch | typeof NorthToRotate | typeof SlowRotate;
   iconSize?: number;
+  // Add a direct reference to the country code for animation timing
+  countryCode: string;
 }
 
 const ConfigContext = createContext<ConfigContextValue>({
@@ -394,6 +369,7 @@ const ConfigContext = createContext<ConfigContextValue>({
   customText: '',
   motionSettings: NorthToRotate,
   iconSize: undefined,
+  countryCode: '',
 });
 
 interface ConfigProviderProps {
@@ -532,6 +508,7 @@ export const ConfigProvider: React.FC<ConfigProviderProps> = ({
     additionalInfo,
     motionSettings,
     iconSize,
+    countryCode,
   };
   
   return (

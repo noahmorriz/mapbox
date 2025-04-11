@@ -1,4 +1,5 @@
 import { Coordinates, ThemeType, MotionType, ProjectionType, IconType } from './mapboxTypes';
+import { AnimationTimeline } from './animationTiming';
 
 /**
  * Camera animation settings
@@ -106,6 +107,8 @@ export interface AnimationSettings {
   highlight: HighlightSettings;
   general: GeneralSettings & TimingSettings;
   ui: UISettings;
+  // New orchestrated timing settings
+  timing?: Partial<AnimationTimeline>;
 }
 
 /**
@@ -128,4 +131,7 @@ export interface AnimationProps {
   iconType?: IconType;
   iconSize?: number;
   projection?: ProjectionType;
+  
+  // Animation timing controls
+  animationTiming?: Partial<AnimationTimeline>;
 } 

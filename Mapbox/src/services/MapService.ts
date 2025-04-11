@@ -1,6 +1,7 @@
 import mapboxgl from 'mapbox-gl';
 import { Coordinates, ProjectionType } from '../core/mapboxTypes';
 import { AnimationSettings } from '../core/animationModel';
+import { countries } from '../countryData';
 
 // Constants
 const DEFAULT_MAP_CONTAINER = 'map';
@@ -8,11 +9,11 @@ const COUNTRY_BOUNDARIES_SOURCE_ID = 'country-boundaries';
 const COUNTRY_HIGHLIGHT_FILL_LAYER_ID = 'country-highlight-fill';
 const COUNTRY_HIGHLIGHT_LINE_LAYER_ID = 'country-highlight-line';
 
-// Country code mapping for special cases - Removed as unused
-// const COUNTRY_CODE_MAPPING: {[key: string]: string} = {
-//   'GBR': 'GB',
-//   'UK': 'GB'
-// };
+// Large countries that benefit from bounds-based positioning
+const LARGE_COUNTRIES = ['RUS', 'CAN', 'USA', 'CHN', 'BRA', 'AUS', 'IND', 'ARG', 'KAZ', 'DZA', 'COD', 'SAU', 'MEX', 'IDN', 'GRL', 'NOR', 'SWE', 'FIN'];
+
+// Northern countries that need special handling to be fully visible on the map
+const NORTHERN_COUNTRIES = ['RUS', 'CAN', 'GRL', 'ISL', 'NOR', 'SWE', 'FIN'];
 
 // Ensure Mapbox token is set
 if (!mapboxgl.accessToken) {
@@ -81,16 +82,38 @@ export class MapService {
             container.style.minHeight = '400px';
           }
 
+          // Find country data before creating map
+          const countryData = countries[initialCountryCode];
+          const initialZoom = countryData ? countryData.zoomLevel : 1;
+          
+          // Use a simple default center if country data is not available
+          let initialCenter: [number, number] = [0, 0];
+          if (countryData) {
+            // Set center based on country coordinates
+            try {
+              const coords = countryData.coordinates;
+              if (Array.isArray(coords)) {
+                initialCenter = coords as [number, number];
+              } else {
+                // @ts-ignore - Handle object format if needed
+                initialCenter = [coords.lng, coords.lat];
+              }
+            } catch (e) {
+              console.warn('Error setting initial center from country data', e);
+            }
+          }
+
           this.map = new mapboxgl.Map({
             container,
             style: general.mapStyle || 'mapbox://styles/noahmorriz/cm97zlzie00gf01qlaitpaodq',
-            center: [0, 0],
-            zoom: 1,
+            center: initialCenter,
+            zoom: initialZoom,
             projection: general.projection || 'mercator',
             interactive: false,
             attributionControl: false,
             preserveDrawingBuffer: true,
-            renderWorldCopies: general.renderWorldCopies || false,
+            // Always enable renderWorldCopies to handle edge countries properly
+            renderWorldCopies: true,
             fadeDuration: general.fadeDuration || 0,
             antialias: true
           });
@@ -113,6 +136,10 @@ export class MapService {
             // Pass initial country code to set the filter immediately
             this.addHighlightLayersOnce(settings, initialCountryCode); 
             console.log('Map initialized and layers added successfully.');
+            
+            // Map is already positioned correctly during initialization, 
+            // no need to reposition it here
+            
             resolve(this.map!); 
           } catch (layerError) {
             console.error('Error adding highlight layers:', layerError);
@@ -125,6 +152,99 @@ export class MapService {
         reject(error);
       }
     });
+  }
+
+  /**
+   * Position the map optimally for a given country
+   * Uses a general approach that works for all countries
+   * @param countryCode The country code (alpha3)
+   * @returns True if successful, false otherwise
+   */
+  public positionMapForCountry(countryCode: string): boolean {
+    if (!this.map || !this.isInitialized) {
+      console.warn('positionMapForCountry called before map is ready.');
+      return false;
+    }
+    
+    try {
+      const countryData = countries[countryCode];
+      if (!countryData) {
+        console.warn(`Country data not found for: ${countryCode}`);
+        return false;
+      }
+      
+      // Always enable renderWorldCopies for better handling of edge countries
+      this.map.setRenderWorldCopies(true);
+      
+      // For large countries, northern countries, or countries with precise bounds, compute a bounding box
+      if (LARGE_COUNTRIES.includes(countryCode) || NORTHERN_COUNTRIES.includes(countryCode)) {
+        // Create a generous bounding box around the center point
+        const [lng, lat] = countryData.coordinates;
+        
+        // Larger offset for northern countries to ensure they're fully visible
+        const isNorthern = NORTHERN_COUNTRIES.includes(countryCode);
+        const baseOffset = countryData.zoomLevel < 5 ? 30 : 15; // Larger offset for larger countries
+        const offset = isNorthern ? Math.max(baseOffset, 40) : baseOffset; // Even larger for northern countries
+        
+        // For extreme northern countries, add extra padding to ensure visibility
+        const northPadding = isNorthern ? 150 : 50;
+        const otherPadding = 50;
+        
+        // Calculate bounds with offset adjusted based on longitude
+        // This helps countries near the date line by shifting the bounding box
+        const westOffset = lng > 160 || lng < -160 ? 40 : offset;
+        const eastOffset = lng > 160 || lng < -160 ? 40 : offset;
+        
+        // For northern countries, extend the bounding box more to the south
+        const northOffset = isNorthern ? offset * 0.5 : offset;
+        const southOffset = isNorthern ? offset * 1.5 : offset;
+        
+        const bounds = new mapboxgl.LngLatBounds(
+          [lng - westOffset, lat - southOffset],
+          [lng + eastOffset, lat + northOffset]
+        );
+        
+        // Fit bounds with appropriate padding
+        this.map.fitBounds(bounds, {
+          padding: {
+            top: northPadding,    // More padding at the top for northern countries
+            bottom: otherPadding,
+            left: otherPadding,
+            right: otherPadding
+          },
+          duration: 0,
+          maxZoom: isNorthern ? 3 : 6 // Lower max zoom for northern countries
+        });
+        
+        // For countries very close to the date line, ensure proper centering
+        if (lng > 160 || lng < -160) {
+          // Allow a brief moment for the fitBounds to take effect
+          setTimeout(() => {
+            // For countries very close to the edge, adjust center to ensure visibility
+            const center = this.map!.getCenter();
+            
+            // Adjust longitude based on where the country is
+            let adjustedLng = center.lng;
+            if (lng > 160) adjustedLng -= 10; // Shift west for far east countries
+            if (lng < -160) adjustedLng += 10; // Shift east for far west countries
+            
+            this.map!.setCenter([adjustedLng, center.lat]);
+          }, 50);
+        }
+        
+        return true;
+      } else {
+        // For normal countries, just center and zoom
+        this.map.jumpTo({
+          center: countryData.coordinates,
+          zoom: countryData.zoomLevel
+        });
+        return true;
+      }
+    } catch (error) {
+      console.error('Error positioning map for country:', error);
+      return false;
+    }
   }
 
   /**
@@ -250,6 +370,10 @@ export class MapService {
       } else {
          console.warn(`Layer ${COUNTRY_HIGHLIGHT_LINE_LAYER_ID} not found for filtering.`);
       }
+      
+      // Position the map for the current country
+      this.positionMapForCountry(countryCode);
+      
       console.log(`Filter updated successfully for ${countryCode}`);
     } catch (error) {
       console.error(`Error setting filter for ${countryCode}:`, error);
@@ -262,12 +386,14 @@ export class MapService {
    * @param zoom The zoom level
    * @param bearing The bearing (rotation)
    * @param pitch The pitch (tilt)
+   * @param countryCode Optional country code to use for auto bounds fitting
    */
   public updateCamera(
     center: Coordinates,
     zoom: number,
     bearing: number,
-    pitch: number
+    pitch: number,
+    countryCode?: string
   ): void {
     if (!this.map || !this.isInitialized) {
       // console.warn('UpdateCamera called before map is ready.'); // Too noisy
@@ -275,6 +401,41 @@ export class MapService {
     }
     
     try {
+      // For large countries, northern countries or countries at the edge, use special positioning
+      if (countryCode) {
+        const countryData = countries[countryCode];
+        if (countryData) {
+          const [lng] = countryData.coordinates;
+          const isEdgeCountry = lng > 160 || lng < -160;
+          const isLargeCountry = LARGE_COUNTRIES.includes(countryCode);
+          const isNorthernCountry = NORTHERN_COUNTRIES.includes(countryCode);
+          
+          if (isEdgeCountry || isLargeCountry || isNorthernCountry) {
+            // Enable renderWorldCopies for all edge countries
+            this.map.setRenderWorldCopies(true);
+            
+            // Check if we've already positioned this country correctly
+            const currentCenter = this.map.getCenter();
+            const currentZoom = this.map.getZoom();
+            
+            // Only reposition if we haven't done so already
+            // This prevents constant resizing during animation
+            const hasCorrectPosition = Math.abs(currentCenter.lng - lng) < 20 && 
+                                       Math.abs(currentZoom - countryData.zoomLevel) < 1;
+            
+            if (!hasCorrectPosition && this.positionMapForCountry(countryCode)) {
+              // Apply just rotation and pitch, not center/zoom
+              this.map.jumpTo({
+                bearing,
+                pitch,
+              });
+              return;
+            }
+          }
+        }
+      }
+      
+      // Standard positioning using direct center/zoom values
       this.map.jumpTo({
         center,
         zoom,
@@ -401,6 +562,10 @@ export class MapService {
           // No longer need a separate updateHighlightFilter call here.
           if (this.areLayersAdded) {
              console.log(`Source, layers re-added with filter for ${currentCountryCode} after style change.`);
+             
+             // Position the map for the current country
+             this.positionMapForCountry(currentCountryCode);
+             
              resolve(); // Resolve the promise successfully
           } else {
              console.error('Failed to re-add layers after style change.');
@@ -523,6 +688,10 @@ export class MapService {
           
           if (this.areLayersAdded) {
             console.log('Simplified style applied (post-load removal) and highlight layers re-added.');
+            
+            // Position the map for the current country
+            this.positionMapForCountry(currentCountryCode);
+            
             resolve();
           } else {
              // Check if layers are present anyway, maybe addHighlightLayersOnce detected them

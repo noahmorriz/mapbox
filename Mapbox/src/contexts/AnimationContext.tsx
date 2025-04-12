@@ -44,7 +44,6 @@ const DEFAULT_ANIMATION_STATE: SimplifiedAnimationFrameState = {
   animatedZoom: 1,
   fillOpacity: 0,
   lineOpacity: 0,
-  infoOpacity: 0,
 };
 
 interface AnimationContextValue {

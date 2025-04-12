@@ -3,114 +3,134 @@ import { AbsoluteFill } from 'remotion';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { MapboxAnimation } from './components/MapboxAnimation';
 import { AnimationProps, AnimationSettings } from './core/animationModel';
+import { THEMES } from './core/themes';
+import { ANIMATION_PHYSICS, UI_DEFAULTS } from './core/animationConstants';
+import { ThemeType, MotionType, ProjectionType, IconType } from './core/mapboxTypes';
+import { DEFAULT_TIMELINE } from './core/animationTiming';
 
-// ======================================================================
-// MAPBOX ANIMATION COMPONENT
-// ======================================================================
+// =====================================================================
+// CONTROL PANEL - MAIN SETTINGS
+// =====================================================================
 
 /**
- * Main component that wraps the MapboxAnimation component
- * 
- * This file now delegates all functionality to our new component architecture.
- * 
- * The MapboxAnimation component can be used in two ways:
- * 
- * 1. Simple usage with props:
- *    <MapboxAnimation countryCode="USA" theme="dark" iconType="flag" />
- *
- * 2. Compound component usage for more control:
- *    <MapboxAnimation countryCode="USA" theme="dark">
- *      <MapboxAnimation.InfoBox>Population: 331 million</MapboxAnimation.InfoBox>
- *    </MapboxAnimation>
+ * VISUAL SETTINGS - Appearance controls
  */
+const VISUAL = {
+  THEME: "dark" as ThemeType,         // "dark" or "light"
+  ICON_TYPE: "skull" as IconType,    // Icon visual style
+  ICON_SIZE: 40,         // Size as percentage (1-100) of country's optimal base size
+  SHOW_HIGHLIGHT: true,  // Whether to display country highlight
+  SHOW_ICON: true,       // Whether to display icon
+};
 
 /**
- * This is the main export component used by Remotion
- * Contains central configuration for the application
+ * MAP SETTINGS - How the map behaves
+ */
+const MAP = {
+  MOTION: "slowRotate" as MotionType,  // Map motion type
+  PROJECTION: "mercator" as ProjectionType, // Map projection
+  COUNTRY: "NLD",        // Default country code
+};
+
+/**
+ * Main Composition component used by Remotion
  */
 export const Composition: React.FC<AnimationProps> = (props) => {
-  console.log('Rendering Composition component with props:', props);
-  
-  // Define central control defaults
+  // Default settings using control panel values
   const defaults: Partial<AnimationProps> = {
-    // Visual style controls
-    theme: "dark",
-    iconType: "skull",
-    iconSize: 100,
+    // Visual settings
+    theme: VISUAL.THEME,
+    iconType: VISUAL.SHOW_ICON ? VISUAL.ICON_TYPE : "none", // Use "none" when showIcon is false
+    iconSize: VISUAL.ICON_SIZE,
+    showHighlight: VISUAL.SHOW_HIGHLIGHT,
+    showIcon: VISUAL.SHOW_ICON,
     
-    // Map controls
-    motion: "slowRotate",
-    projection: "mercator",
+    // Map settings
+    motion: MAP.MOTION,
+    projection: MAP.PROJECTION,
+    countryCode: MAP.COUNTRY,
     
-    // Default country
-    countryCode: "TWN", // Default country set to Russia
-    
-    // Centralized animation timing (30fps values)
-    // All countries now use France's animation timing
+    // Animation timing - use the standardized system
     animationTiming: {
-      // Standard animation timing (based on France)
-      stabilizationBuffer: 22,  // ~0.75s buffer (22 frames at 30fps)
-      highlightDelay: 10,       // ~0.33s delay (10 frames at 30fps)
-      labelDelay: 15,           // 0.5s delay (15 frames at 30fps)
-      highlightFadeDuration: 8, // ~0.25s duration (8 frames at 30fps)
-      labelFadeDuration: 10,    // ~0.33s duration (10 frames at 30fps)
-      
-      // No country-specific overrides to ensure consistent timing
-      countrySpecificOverrides: {}
+      ...DEFAULT_TIMELINE,
+      // No individual frame overrides here, use the standard timing
     }
   };
 
-  // Merge defaults with incoming props
-  const defaultedProps = {
-    ...defaults,
-    ...props, // Incoming props override defaults
-  };
+  // Merge defaults with props (props override defaults)
+  const defaultedProps = { ...defaults, ...props };
   
-  // Optional: Additional settings can be passed to override theme styling
+  // Ensure iconType is set to "none" if showIcon is false
+  if (!defaultedProps.showIcon) {
+    defaultedProps.iconType = "none";
+  }
+  
+  // Get theme settings
+  const theme = THEMES[defaultedProps.theme || VISUAL.THEME];
+  
+  // Build settings
   const additionalSettings = {
     settings: {
-      // Override just the timing settings in general section
       general: {
-        // France-like timing values for all countries (30fps)
-        highlightDelayFrames: 10, // When the country highlight fades in
-        labelDelayFrames: 15,     // When the marker/icon fades in 
-        labelFadeDuration: 10     // How many frames the label fade-in takes
+        backgroundColor: theme.backgroundColor,
+        mapStyle: theme.mapStyle,
       },
-      // Add highlight settings for animation speed
+      
       highlight: {
-        // Control the highlight fill and line animation timing
-        fillColor: '#0C8E8E',
-        lineColor: '#0C8E8E',
-        fillOpacityTarget: 0.6,
-        lineOpacityTarget: 1.0,
-        labelOpacityTarget: 1.0,
+        fillColor: theme.highlight.fillColor,
+        lineColor: theme.highlight.lineColor,
+        fillOpacityTarget: defaultedProps.showHighlight ? theme.highlight.fillOpacity : 0,
+        lineOpacityTarget: defaultedProps.showHighlight ? theme.highlight.lineOpacity : 0,
+        labelOpacityTarget: defaultedProps.showIcon ? 1.0 : 0,
         
-        // Animation settings that apply to all countries equally
-        fillAnimationDamping: 40,
-        fillAnimationStiffness: 25,
-        fillAnimationMass: 1,
-
-        lineAnimationDamping: 40,
-        lineAnimationStiffness: 25,
-        lineAnimationMass: 1,
-        
-        // Optimized for consistent fade-in of label/icon across all countries
-        labelAnimationDamping: 15,    
-        labelAnimationStiffness: 12,  
-        labelAnimationMass: 2.5       
+        fillAnimationDamping: ANIMATION_PHYSICS.HIGHLIGHT.FILL_DAMPING,
+        fillAnimationStiffness: ANIMATION_PHYSICS.HIGHLIGHT.FILL_STIFFNESS,
+        fillAnimationMass: ANIMATION_PHYSICS.HIGHLIGHT.FILL_MASS,
+        lineAnimationDamping: ANIMATION_PHYSICS.HIGHLIGHT.LINE_DAMPING,
+        lineAnimationStiffness: ANIMATION_PHYSICS.HIGHLIGHT.LINE_STIFFNESS,
+        lineAnimationMass: ANIMATION_PHYSICS.HIGHLIGHT.LINE_MASS,
+        labelAnimationDamping: ANIMATION_PHYSICS.HIGHLIGHT.LABEL_DAMPING,
+        labelAnimationStiffness: ANIMATION_PHYSICS.HIGHLIGHT.LABEL_STIFFNESS,
+        labelAnimationMass: ANIMATION_PHYSICS.HIGHLIGHT.LABEL_MASS
       },
-      // Add our centralized timing settings - standard for all countries
-      timing: defaultedProps.animationTiming
+      
+      // Use the standardized timing system
+      timing: defaultedProps.animationTiming,
+      
+      ui: {
+        iconSize: defaultedProps.iconSize, // Unified icon size source
+        iconColor: theme.icon.defaultColor,
+        iconScale: UI_DEFAULTS.ICON_SCALE,
+        iconDropShadow: theme.icon.useDropShadow,
+        textColor: theme.text.color,
+        textFontSize: theme.text.fontSize,
+        textFontWeight: theme.text.fontWeight,
+        infoBackgroundColor: theme.infoBox.backgroundColor,
+        infoTextColor: theme.infoBox.textColor,
+        infoMaxWidth: theme.infoBox.maxWidth,
+        infoFontSize: theme.infoBox.fontSize,
+        infoBorderRadius: theme.infoBox.borderRadius,
+        infoPadding: theme.infoBox.padding
+      }
     } as Partial<AnimationSettings>
   };
   
-  console.log('Using props:', defaultedProps);
+  // Icon settings - use the same value for consistency
+  const iconSettings = {
+    iconSettings: {
+      size: defaultedProps.iconSize, // Use the same source for consistency
+      color: theme.icon.defaultColor,
+      scale: UI_DEFAULTS.ICON_SCALE,
+    },
+    enableIconDropShadow: theme.icon.useDropShadow
+  };
   
   return (
-    <AbsoluteFill style={{ backgroundColor: '#000' }}>
+    <AbsoluteFill style={{ backgroundColor: theme.backgroundColor }}>
       <MapboxAnimation 
         {...defaultedProps} 
         {...additionalSettings}
+        {...iconSettings}
       />
     </AbsoluteFill>
   );

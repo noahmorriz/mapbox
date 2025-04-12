@@ -4,7 +4,6 @@ import { AnimationProvider } from '../contexts/AnimationContext';
 import { ConfigProvider, useConfigContext } from '../contexts/ConfigContext';
 import { Map } from './Map';
 import { CountryLayer } from './CountryLayer';
-import { InfoBox } from './InfoBox';
 import { ThemeType, MotionType, IconType, ProjectionType } from '../core/mapboxTypes';
 import { AnimationSettings } from '../core/animationModel';
 import DeckMarkerOverlay from './DeckMarkerOverlay';
@@ -60,6 +59,7 @@ const AnimationWrapper: React.FC<{
     >
       <Map>
         <CountryLayer />
+        {/* Only render the icon if iconType is not 'none' */}
         {iconType !== 'none' && <DeckMarkerOverlay />}
         {children}
       </Map>
@@ -73,15 +73,8 @@ const AnimationWrapper: React.FC<{
  * @example
  * // Basic usage:
  * <MapboxAnimation countryCode="USA" theme="dark" />
- * 
- * // With compound components:
- * <MapboxAnimation countryCode="USA">
- *   <MapboxAnimation.InfoBox>Additional information</MapboxAnimation.InfoBox>
- * </MapboxAnimation>
  */
-export const MapboxAnimation: React.FC<MapboxAnimationProps> & {
-  InfoBox: typeof InfoBoxSubcomponent;
-} = ({
+export const MapboxAnimation: React.FC<MapboxAnimationProps> = ({
   countryCode = "NLD",
   iconType = "marker",
   theme = "light",
@@ -132,20 +125,4 @@ export const MapboxAnimation: React.FC<MapboxAnimationProps> & {
       </MapProvider>
     </ConfigProvider>
   );
-};
-
-// InfoBox subcomponent
-interface InfoBoxSubcomponentProps {
-  children?: string;
-}
-
-const InfoBoxSubcomponent: React.FC<InfoBoxSubcomponentProps> = ({
-  children,
-}) => {
-  // This component is just a configuration wrapper
-  // It doesn't actually render anything directly
-  return <InfoBox />;
-};
-
-// Attach subcomponents
-MapboxAnimation.InfoBox = InfoBoxSubcomponent; 
+}; 

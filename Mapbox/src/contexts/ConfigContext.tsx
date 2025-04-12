@@ -2,135 +2,15 @@ import React, { createContext, useContext, useMemo } from 'react';
 import { AnimationSettings } from '../core/animationModel';
 import { ThemeType, MotionType, IconType, CountryData, ProjectionType } from '../core/mapboxTypes';
 import { getCountry, defaultCountry, countries } from '../countryData';
+import { THEMES } from '../core/themes';
 
-// Define theme settings directly in this file
-const LightTheme = {
-  general: {
-    backgroundColor: '#ffffff',
-    mapStyle: 'mapbox://styles/mapbox/light-v11',
-    mapSimplificationMode: 'minimal',
-  },
-  highlight: {
-    fillColor: '#3182CE',
-    lineColor: '#2B6CB0',
-    lineWidth: 2,
-    fillOpacityTarget: 0.5,
-    lineOpacityTarget: 0.8,
-    labelOpacityTarget: 1,
-    fillAnimationDamping: 25,
-    fillAnimationStiffness: 80,
-    fillAnimationMass: 1,
-    lineAnimationDamping: 25,
-    lineAnimationStiffness: 80,
-    lineAnimationMass: 1,
-    labelAnimationDamping: 25,
-    labelAnimationStiffness: 80,
-    labelAnimationMass: 1,
-  },
-  ui: {
-    iconSize: 24,
-    iconColor: '#3182CE',
-    iconScale: 1,
-    iconDropShadow: true,
-    textFontSize: '16px',
-    textColor: '#2D3748',
-    textFontWeight: '600',
-    infoMaxWidth: '200px',
-    infoFontSize: '14px',
-    infoBackgroundColor: 'rgba(255, 255, 255, 0.9)',
-    infoTextColor: '#2D3748',
-    infoBorderRadius: '4px',
-    infoPadding: '8px'
-  },
-  mapLayers: {
-    countryBoundaries: {
-      id: 'country-boundaries',
-      source: 'mapbox-countries',
-      sourceLayer: 'country_boundaries',
-      type: 'fill',
-      paint: {
-        fillColor: '#f1f1f1',
-        fillOpacity: 0.5
-      }
-    },
-    countryFill: {
-      id: 'country-fill',
-      source: 'mapbox-countries',
-      sourceLayer: 'country_boundaries',
-      type: 'fill'
-    },
-    countryOutline: {
-      id: 'country-outline',
-      source: 'mapbox-countries',
-      sourceLayer: 'country_boundaries',
-      type: 'line'
-    }
-  }
-};
-
-const DarkTheme = {
-  general: {
-    backgroundColor: '#1A202C',
-    mapStyle: 'mapbox://styles/noahmorriz/cm97zlzie00gf01qlaitpaodq',
-    mapSimplificationMode: 'minimal',
-  },
-  highlight: {
-    fillColor: '#63B3ED',
-    lineColor: '#90CDF4',
-    lineWidth: 2,
-    fillOpacityTarget: 0.5,
-    lineOpacityTarget: 0.8,
-    labelOpacityTarget: 1,
-    fillAnimationDamping: 25,
-    fillAnimationStiffness: 80,
-    fillAnimationMass: 1,
-    lineAnimationDamping: 25,
-    lineAnimationStiffness: 80,
-    lineAnimationMass: 1,
-    labelAnimationDamping: 25,
-    labelAnimationStiffness: 80,
-    labelAnimationMass: 1,
-  },
-  ui: {
-    iconSize: 24,
-    iconColor: '#FFFFFF',
-    iconScale: 1,
-    iconDropShadow: true,
-    textFontSize: '16px',
-    textColor: '#E2E8F0',
-    textFontWeight: '600',
-    infoMaxWidth: '200px',
-    infoFontSize: '14px',
-    infoBackgroundColor: 'rgba(26, 32, 44, 0.9)',
-    infoTextColor: '#E2E8F0',
-    infoBorderRadius: '4px',
-    infoPadding: '8px'
-  },
-  mapLayers: {
-    countryBoundaries: {
-      id: 'country-boundaries',
-      source: 'mapbox-countries',
-      sourceLayer: 'country_boundaries',
-      type: 'fill',
-      paint: {
-        fillColor: '#2D3748',
-        fillOpacity: 0.5
-      }
-    },
-    countryFill: {
-      id: 'country-fill',
-      source: 'mapbox-countries',
-      sourceLayer: 'country_boundaries',
-      type: 'fill'
-    },
-    countryOutline: {
-      id: 'country-outline',
-      source: 'mapbox-countries',
-      sourceLayer: 'country_boundaries',
-      type: 'line'
-    }
-  }
-};
+/**
+ * Configuration Context
+ * 
+ * This context uses the centralized theme system from core/themes.ts as the single
+ * source of truth for all visual styling. All themes are defined in the central
+ * THEMES object and imported here, rather than having duplicate theme definitions.
+ */
 
 // Define motion settings directly in this file
 const RotateAndPitch = {
@@ -279,8 +159,8 @@ const createCountrySettings = (
     ? (countries[countryCode] || getCountry(countryCode) || defaultCountry) 
     : defaultCountry;
     
-  // Get theme styles
-  const themeStyles = theme === "light" ? LightTheme : DarkTheme;
+  // Get theme styles from the centralized theme system
+  const themeObj = THEMES[theme];
   
   // Get motion settings - same for all countries
   const motionSettings = motion === "northToRotate" 
@@ -292,23 +172,51 @@ const createCountrySettings = (
   // Create base settings - now standardized across all countries
   const baseSettings = {
     camera: motionSettings.camera,
-    highlight: themeStyles.highlight,
+    highlight: {
+      fillColor: themeObj.highlight.fillColor,
+      lineColor: themeObj.highlight.lineColor, 
+      lineWidth: themeObj.highlight.lineWidth || 2,
+      fillOpacityTarget: themeObj.highlight.fillOpacity,
+      lineOpacityTarget: themeObj.highlight.lineOpacity,
+      labelOpacityTarget: 1,
+      fillAnimationDamping: 25,
+      fillAnimationStiffness: 80,
+      fillAnimationMass: 1,
+      lineAnimationDamping: 25,
+      lineAnimationStiffness: 80,
+      lineAnimationMass: 1,
+      labelAnimationDamping: 25,
+      labelAnimationStiffness: 80,
+      labelAnimationMass: 1,
+    },
     general: {
       animationStartFrame: motionSettings.timing.animationStartFrame,
       highlightDelayFrames: motionSettings.timing.highlightDelayFrames,
       labelDelayFrames: motionSettings.timing.labelDelayFrames,
       padding: motionSettings.timing.padding,
-      backgroundColor: themeStyles.general.backgroundColor,
-      mapStyle: themeStyles.general.mapStyle,
+      backgroundColor: themeObj.backgroundColor,
+      mapStyle: themeObj.mapStyle,
       renderWorldCopies: false,
       fadeDuration: motionSettings.timing.fadeDuration,
     },
-    ui: themeStyles.ui,
+    ui: {
+      iconSize: 24,
+      iconColor: themeObj.icon.defaultColor,
+      iconScale: 1,
+      iconDropShadow: themeObj.icon.useDropShadow,
+      textFontSize: themeObj.text.fontSize,
+      textColor: themeObj.text.color,
+      textFontWeight: themeObj.text.fontWeight,
+      infoMaxWidth: themeObj.infoBox.maxWidth,
+      infoFontSize: themeObj.infoBox.fontSize,
+      infoBackgroundColor: themeObj.infoBox.backgroundColor,
+      infoTextColor: themeObj.infoBox.textColor,
+      infoBorderRadius: themeObj.infoBox.borderRadius,
+      infoPadding: themeObj.infoBox.padding
+    },
     // Pass the timing settings without country-specific logic
     timing: customSettings.timing || undefined
   };
-  
-  // NO country-specific adjustments anymore
   
   // Merge all settings
   const mergedSettings = {
@@ -496,6 +404,11 @@ export const ConfigProvider: React.FC<ConfigProviderProps> = ({
   const motionSettings = useMemo(() => {
     return motion === 'northToRotate' ? NorthToRotate : motion === 'slowRotate' ? SlowRotate : RotateAndPitch;
   }, [motion]);
+  
+  // Get the theme object from the centralized theme system
+  const themeObject = useMemo(() => {
+    return THEMES[theme];
+  }, [theme]);
   
   const value: ConfigContextValue = {
     countryData,

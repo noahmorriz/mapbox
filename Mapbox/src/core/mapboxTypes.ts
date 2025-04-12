@@ -49,4 +49,5 @@ export interface CountryData {
   alpha3: string;
   coordinates: Coordinates;
   zoomLevel: number;
+  visualCenter?: [number, number]; // [longitude, latitude] - visual center point for optimal map display
 } 

@@ -23,13 +23,6 @@ interface MotionSettings {
     zoomMass: number;
     zoomLevelOffset?: number;
   };
-  timing: {
-    animationStartFrame: number;
-    highlightDelayFrames: number;
-    labelDelayFrames: number;
-    padding: number;
-    fadeDuration: number;
-  };
 }
 
 // Default animation state if an error occurs
@@ -40,7 +33,6 @@ const DEFAULT_ANIMATION_STATE = {
   animatedZoom: 1,
   fillOpacity: 0,
   lineOpacity: 0,
-  infoOpacity: 0,
 };
 
 // Helper to safely get value from potentially undefined object
@@ -99,34 +91,21 @@ export const calculateAnimationFrame = (
   try {
     const { camera, highlight, general } = settings;
     
-    // Use the orchestrated timing if available, otherwise fall back to legacy settings
-    let animationStartFrame, highlightDelayFrames;
+    // Always use the standardized animation timing system
+    // Country code is now disregarded to ensure consistent behavior
+    const timeline = createAnimationTimeline('FRA', settings.timing);
+    const animationFrames = getAnimationFrames(timeline, 0); // 0 is base frame
     
-    if (settings.timing) {
-      // Create a timeline from the timing settings
-      // Country code is now disregarded to ensure consistent behavior
-      const timeline = createAnimationTimeline('FRA', settings.timing);
-      const animationFrames = getAnimationFrames(timeline, 0); // 0 is base frame
-      
-      // Get the animation phases for the current frame
-      const phases = getAnimationPhase(frame, animationFrames);
-      
-      // Use these for timing calculations below
-      animationStartFrame = 0; // Timeline handles this
-      highlightDelayFrames = animationFrames.highlightStart;
-      
-      // Debug logging
-      if (frame % 15 === 0) {
-        console.log(`Standard animation timing (based on France):`, { 
-          frame, 
-          phases,
-          animationFrames
-        });
-      }
-    } else {
-      // Legacy approach (30fps values)
-      animationStartFrame = general.animationStartFrame || 0;
-      highlightDelayFrames = general.highlightDelayFrames || 15;
+    // Get the animation phases for the current frame
+    const phases = getAnimationPhase(frame, animationFrames);
+    
+    // Debug logging
+    if (frame % 15 === 0) {
+      console.log(`Standard animation timing:`, { 
+        frame, 
+        phases,
+        animationFrames
+      });
     }
 
     // Animate camera parameters with safe defaults
@@ -178,12 +157,11 @@ export const calculateAnimationFrame = (
       },
     });
 
-    // Calculate total delay for highlight animation with safe defaults
-    const totalHighlightDelay = animationStartFrame + highlightDelayFrames;
-    
-    // Animate country highlight opacities with delayed start
+    // Animate country highlight opacities with standardized timing
     const fillOpacity = spring({
-      frame: Math.max(0, frame - totalHighlightDelay),
+      // Use phase-based progress from standardized system
+      frame: phases.isHighlightActive ? 
+        Math.max(0, (frame - animationFrames.highlightStart)) : 0,
       fps,
       from: 0,
       to: getSafe(highlight, 'fillOpacityTarget', 0.5),
@@ -195,7 +173,9 @@ export const calculateAnimationFrame = (
     });
     
     const lineOpacity = spring({
-      frame: Math.max(0, frame - totalHighlightDelay),
+      // Use phase-based progress from standardized system
+      frame: phases.isHighlightActive ? 
+        Math.max(0, (frame - animationFrames.highlightStart)) : 0,
       fps,
       from: 0,
       to: getSafe(highlight, 'lineOpacityTarget', 0.8),
@@ -206,20 +186,6 @@ export const calculateAnimationFrame = (
       },
     });
 
-    // Additional info animation (30fps values)
-    const infoOpacity = additionalInfo ? spring({
-      // Adjust timing relative to highlight or other relevant event if needed
-      frame: Math.max(0, frame - totalHighlightDelay - 8), // Changed from 15 to 8 for 30fps
-      fps,
-      from: 0,
-      to: 1,
-      config: {
-        damping: 30,
-        stiffness: 30,
-        mass: 1,
-      }
-    }) : 0;
-
     return {
       bearing,
       pitch,
@@ -227,7 +193,6 @@ export const calculateAnimationFrame = (
       animatedZoom,
       fillOpacity,
       lineOpacity,
-      infoOpacity,
     };
   } catch (error) {
     console.error('Error calculating animation frame:', error);

@@ -48,21 +48,17 @@ export interface HighlightSettings {
 }
 
 /**
- * Timing settings for animations
- */
-export interface TimingSettings {
-  animationStartFrame: number;
-  highlightDelayFrames: number;
-  labelDelayFrames: number;
-  padding: number;
-  fadeDuration: number;
-}
-
-/**
  * UI style settings
  */
 export interface UISettings {
   // Icon settings
+  /**
+   * Icon size as a percentage of the visible map area (1-100)
+   * - 100: Icon fills 100% of the visible map area (adjusted for display)
+   * - 50: Icon fills 50% of the visible map area
+   * 
+   * Size is calculated based on visible map area, not full country boundaries.
+   */
   iconSize: number;
   iconColor: string;
   iconScale: number;
@@ -86,15 +82,9 @@ export interface UISettings {
  * General settings
  */
 export interface GeneralSettings {
-  animationStartFrame: number;
-  highlightDelayFrames: number;
-  labelDelayFrames: number;
-  labelFadeDuration?: number;
-  padding: number;
   backgroundColor: string;
   mapStyle: string;
   renderWorldCopies?: boolean;
-  fadeDuration?: number;
   projection?: ProjectionType;
   mapSimplificationMode?: 'minimal' | 'labelsOnly' | 'none';
 }
@@ -105,9 +95,9 @@ export interface GeneralSettings {
 export interface AnimationSettings {
   camera: CameraSettings;
   highlight: HighlightSettings;
-  general: GeneralSettings & TimingSettings;
+  general: GeneralSettings;
   ui: UISettings;
-  // New orchestrated timing settings
+  // Standard timing system from animationTiming.ts
   timing?: Partial<AnimationTimeline>;
 }
 
@@ -121,17 +111,30 @@ export interface AnimationFrameState {
   animatedZoom: number;
   fillOpacity: number;
   lineOpacity: number;
-  infoOpacity: number;
 }
 
 export interface AnimationProps {
+  // Basic appearance controls
   countryCode?: string;
   theme?: ThemeType;
   motion?: MotionType;
   iconType?: IconType;
+  /**
+   * Icon size as a percentage of the visible map area (1-100)
+   * - 100: Icon fills 100% of the visible map area (adjusted for display)
+   * - 50: Icon fills 50% of the visible map area
+   * - 25: Icon fills 25% of the visible map area
+   * 
+   * Size is calculated based on visible map area, not full country boundaries,
+   * ensuring proper display for countries with distant territories.
+   */
   iconSize?: number;
   projection?: ProjectionType;
   
-  // Animation timing controls
+  // Show/hide controls
+  showHighlight?: boolean;
+  showIcon?: boolean;
+  
+  // Animation timing controls using the standardized system
   animationTiming?: Partial<AnimationTimeline>;
 } 

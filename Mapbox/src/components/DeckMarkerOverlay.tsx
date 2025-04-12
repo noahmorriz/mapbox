@@ -17,15 +17,39 @@ interface MarkerData {
   iconType: string;
 }
 
-// SVG definitions moved to core/iconData.ts
-
 export const DeckMarkerOverlay: React.FC = () => {
   const frame = useCurrentFrame();
   const { mapInstance, isMapLoaded } = useMapContext();
-  const { countryData, settings, iconType } = useConfigContext();
+  const { countryData, settings, iconType, iconSize } = useConfigContext();
   const { animationState } = useAnimationContext();
   const [isStabilized, setIsStabilized] = useState(false);
   const initialViewStateRef = useRef<any>(null);
+  const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
+  const [initialIconSize, setInitialIconSize] = useState<number | null>(null);
+  const [initialZoomLevel, setInitialZoomLevel] = useState<number | null>(null);
+  const [initialCoordinates, setInitialCoordinates] = useState<[number, number] | null>(null);
+  
+  // Get container dimensions on mount and when window resizes
+  useEffect(() => {
+    const updateContainerSize = () => {
+      if (mapInstance && mapInstance.getCanvas()) {
+        const canvas = mapInstance.getCanvas();
+        setContainerSize({
+          width: canvas.clientWidth,
+          height: canvas.clientHeight
+        });
+      }
+    };
+    
+    // Initial size update
+    if (isMapLoaded && mapInstance) {
+      updateContainerSize();
+    }
+    
+    // Update size when window resizes
+    window.addEventListener('resize', updateContainerSize);
+    return () => window.removeEventListener('resize', updateContainerSize);
+  }, [isMapLoaded, mapInstance]);
   
   // Much more aggressive stabilization - wait longer and store the initial state
   useEffect(() => {
@@ -34,28 +58,42 @@ export const DeckMarkerOverlay: React.FC = () => {
       // Use a longer delay for rendering vs preview
       const timer = setTimeout(() => {
         // Store the initial view state when we consider the map stable
+        const currentZoom = mapInstance.getZoom();
         initialViewStateRef.current = {
           longitude: mapInstance.getCenter().lng,
           latitude: mapInstance.getCenter().lat,
-          zoom: mapInstance.getZoom(),
+          zoom: currentZoom,
           pitch: mapInstance.getPitch(),
           bearing: mapInstance.getBearing(),
         };
+        setInitialZoomLevel(currentZoom);
         setIsStabilized(true);
       }, 500); // Much longer delay (500ms instead of 100ms)
       return () => clearTimeout(timer);
     }
   }, [isMapLoaded, mapInstance, isStabilized]);
 
+  // Reset initialIconSize when country changes
+  useEffect(() => {
+    setInitialIconSize(null);
+    setInitialZoomLevel(null);
+    setInitialCoordinates(null);
+  }, [countryData?.alpha3]);
+  
+  // Also reset initialIconSize when iconSize changes
+  useEffect(() => {
+    setInitialIconSize(null);
+  }, [iconSize]);
+
   // Use getIconColor from iconData.ts
   const getMarkerColor = (type: string = 'marker'): [number, number, number] => {
     return getIconColor(type);
   };
 
-  // Animation parameters from settings
-  const labelDelayFrames = settings?.general?.labelDelayFrames || 30;
-  const labelFadeDuration = settings?.general?.labelFadeDuration || 15;
-  const animationStartFrame = settings?.general?.animationStartFrame || 0;
+  // Animation parameters from settings - fixed to use timing instead of referencing non-existent properties on general
+  const labelDelayFrames = settings?.timing?.labelDelay || 30;
+  const labelFadeDuration = settings?.timing?.labelFadeDuration || 15;
+  const animationStartFrame = settings?.timing?.stabilizationBuffer || 0;
   
   // Determine critical startup period where we want to prevent any rendering changes
   const isInCriticalStartupPeriod = frame < (animationStartFrame + 60); // Don't change for first 60 frames
@@ -66,17 +104,29 @@ export const DeckMarkerOverlay: React.FC = () => {
     
     const markerColor = getMarkerColor(iconType || 'marker');
     
+    // Use visualCenter from countryData if available, otherwise fall back to the default coordinates
+    const coordinates: [number, number] = initialCoordinates || 
+      countryData.visualCenter || 
+      (Array.isArray(countryData.coordinates) 
+        ? countryData.coordinates as [number, number]
+        : [countryData.coordinates.lng, countryData.coordinates.lat]);
+    
+    // Store the initial coordinates to prevent movement during animation
+    if (!initialCoordinates && coordinates) {
+      setInitialCoordinates(coordinates);
+    }
+    
+    console.log(`Using coordinates for ${countryData.alpha3}:`, coordinates, countryData.visualCenter ? '(visual center)' : '(default)');
+    
     return [{
       id: 'main-marker',
-      coordinates: Array.isArray(countryData.coordinates) 
-        ? countryData.coordinates as [number, number]
-        : [countryData.coordinates.lng, countryData.coordinates.lat],
+      coordinates,
       opacity: 0,                    // Initial opacity, will be animated
       scale: 0.8,                    // Initial scale, will be animated
       color: [...markerColor, 255],  // RGBA color
       iconType: iconType || 'marker'
     }];
-  }, [countryData, iconType]);
+  }, [countryData, iconType, initialCoordinates]);
 
   // Compute animated opacity and scale using the animation state from context
   const animatedMarkerData = useMemo(() => {
@@ -105,25 +155,36 @@ export const DeckMarkerOverlay: React.FC = () => {
     });
   }, [baseMarkerData, frame, labelDelayFrames, labelFadeDuration, animationStartFrame]);
   
-  // Use the initial stable view state for the first few seconds
-  // This prevents jiggling during early frames when the map might still be settling
-  const viewState = useMemo(() => {
-    // During critical period, always use the initial view state if available
-    if (isInCriticalStartupPeriod && initialViewStateRef.current) {
-      return initialViewStateRef.current;
+  // Calculate icon size based on the country's zoom level
+  const calculateIconSize = useMemo(() => {
+    // If we already have a fixed initial size, use it
+    if (initialIconSize !== null) {
+      return initialIconSize;
     }
     
-    // Otherwise, use the current map state (but only if stabilized)
-    if (!mapInstance || !isStabilized) return null;
+    // Default fallback if country data isn't available
+    if (!countryData) {
+      return 40; // Default fallback
+    }
     
-    return {
-      longitude: mapInstance.getCenter().lng,
-      latitude: mapInstance.getCenter().lat,
-      zoom: mapInstance.getZoom(),
-      pitch: mapInstance.getPitch(),
-      bearing: mapInstance.getBearing(),
-    };
-  }, [mapInstance, animationState, isStabilized, isInCriticalStartupPeriod]);
+    try {
+      // Base size calculation using the country's zoom level
+      // Lower zoom (large countries) = larger base size
+      // Higher zoom (small countries) = smaller base size
+      const baseSize = 300 / Math.pow(1.5, countryData.zoomLevel - 4);
+      
+      // Apply iconSize as a simple percentage scaling factor
+      const calculatedSize = baseSize * (iconSize || 40) / 100;
+      
+      // Store the initial size so it remains fixed regardless of zoom level changes
+      setInitialIconSize(calculatedSize);
+      
+      return calculatedSize;
+    } catch (error) {
+      console.error('Error calculating icon size:', error);
+      return 40; // Simple fallback on error
+    }
+  }, [countryData, iconSize, initialIconSize]);
 
   // Create layers based on marker type
   const layers = useMemo(() => {
@@ -144,18 +205,21 @@ export const DeckMarkerOverlay: React.FC = () => {
             url: ICON_URLS[d.iconType] || ICON_URLS['marker'],
             width: 512,
             height: 512,
-            anchorY: 512, // Bottom anchor for markers like MapMarker
+            anchorX: 256, // Center anchor horizontally
+            anchorY: 256, // Center anchor vertically
             mask: true  // Mask enables transparency
           }),
           getPosition: d => d.coordinates as [number, number],
-          getSize: d => 80 * (d.scale || 1), 
+          getSize: d => (initialIconSize || calculateIconSize) * (d.scale || 1),
           getColor: d => d.color,
           sizeScale: 1,
           billboard: false, // Keep it flat on the map surface for consistency
           // Completely disable updates/triggers during critical periods
           updateTriggers: isInCriticalStartupPeriod ? {} : {
-            getPosition: [Math.floor(frame / 30) * 30], // Only update every 30 frames
+            // Remove getPosition from update triggers to prevent position changes
             getColor: [(opacity: number) => Math.floor(opacity * 5) / 5], // More aggressive discretization
+            // Add getSize to update triggers so it responds to iconSize changes
+            getSize: [iconSize, initialIconSize, containerSize]
           },
           // Disable ALL transitions
           transitions: {
@@ -168,14 +232,25 @@ export const DeckMarkerOverlay: React.FC = () => {
     }
     
     return layers;
-  }, [animatedMarkerData, frame, isStabilized, isInCriticalStartupPeriod]);
+  }, [animatedMarkerData, frame, isStabilized, isInCriticalStartupPeriod, initialIconSize]);
 
   // Now we can have conditional rendering AFTER all hooks are called
-  const shouldRender = isMapLoaded && viewState && layers.length > 0 && frame >= 30;
+  const shouldRender = isMapLoaded && mapInstance && layers.length > 0 && frame >= 30;
   
   if (!shouldRender) {
     return null;
   }
+
+  // Use the initial view state during critical startup period to prevent jitter
+  const viewState = isInCriticalStartupPeriod && initialViewStateRef.current 
+    ? initialViewStateRef.current 
+    : {
+        longitude: mapInstance!.getCenter().lng,
+        latitude: mapInstance!.getCenter().lat,
+        zoom: mapInstance!.getZoom(),
+        pitch: mapInstance!.getPitch(),
+        bearing: mapInstance!.getBearing(),
+      };
 
   return (
     <DeckGL

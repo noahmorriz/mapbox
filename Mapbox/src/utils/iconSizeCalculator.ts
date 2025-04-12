@@ -5,7 +5,9 @@
  * the country's bounding box and the desired icon coverage percentage.
  */
 
-import countryBoundingBoxes from '../boundingbox.json';
+// Change JSON import to use require() since TypeScript is not configured with resolveJsonModule
+// @ts-ignore
+const countryBoundingBoxes = require('../boundingbox.json');
 
 interface CountryBoundingBox {
   country: string;
@@ -54,9 +56,277 @@ const SPECIAL_COUNTRY_OVERRIDES: Record<string, {
       maxy: 77.7,
       width: 119.7,
       height: 36.5
+    },
+    visual_center: {
+      longitude: 94.3,
+      latitude: 61.5
     }
   },
-  // Other examples: France (exclude territories), Indonesia, Philippines could be added here
+  // France - Mainland only (excluding overseas territories)
+  "FRA": {
+    bbox: {
+      minx: -4.8,
+      miny: 42.3,
+      maxx: 8.2,
+      maxy: 51.1,
+      width: 13.0,
+      height: 8.8
+    },
+    visual_center: {
+      longitude: 2.2,
+      latitude: 46.6
+    }
+  },
+  // Indonesia - Main islands only
+  "IDN": {
+    bbox: {
+      minx: 95.0,
+      miny: -11.0,
+      maxx: 141.0,
+      maxy: 6.0,
+      width: 46.0,
+      height: 17.0
+    },
+    visual_center: {
+      longitude: 117.0,
+      latitude: -2.0
+    }
+  },
+  // Philippines - Main archipelago
+  "PHL": {
+    bbox: {
+      minx: 117.0,
+      miny: 5.0,
+      maxx: 126.5,
+      maxy: 19.0,
+      width: 9.5,
+      height: 14.0
+    },
+    visual_center: {
+      longitude: 122.5,
+      latitude: 12.0
+    }
+  },
+  // United Kingdom - Main island only
+  "GBR": {
+    bbox: {
+      minx: -8.0,
+      miny: 49.9,
+      maxx: 1.8,
+      maxy: 58.7,
+      width: 9.8,
+      height: 8.8
+    },
+    visual_center: {
+      longitude: -2.5,
+      latitude: 54.0
+    }
+  },
+  // Canada - Main territory (excluding northern islands)
+  "CAN": {
+    bbox: {
+      minx: -141.0,
+      miny: 42.0,
+      maxx: -52.6,
+      maxy: 70.0,
+      width: 88.4,
+      height: 28.0
+    },
+    visual_center: {
+      longitude: -96.0,
+      latitude: 56.0
+    }
+  },
+  // Japan - Main islands
+  "JPN": {
+    bbox: {
+      minx: 129.5,
+      miny: 31.0,
+      maxx: 145.8,
+      maxy: 45.5,
+      width: 16.3,
+      height: 14.5
+    },
+    visual_center: {
+      longitude: 138.0,
+      latitude: 36.0
+    }
+  },
+  // Australia - Mainland only
+  "AUS": {
+    bbox: {
+      minx: 113.0,
+      miny: -43.6,
+      maxx: 153.6,
+      maxy: -10.5,
+      width: 40.6,
+      height: 33.1
+    },
+    visual_center: {
+      longitude: 134.0,
+      latitude: -25.0
+    }
+  },
+  // New Zealand - Both main islands
+  "NZL": {
+    bbox: {
+      minx: 166.3,
+      miny: -47.3,
+      maxx: 178.6,
+      maxy: -34.0,
+      width: 12.3,
+      height: 13.3
+    },
+    visual_center: {
+      longitude: 172.5,
+      latitude: -41.0
+    }
+  },
+  // Spain - Mainland only (excluding Canary Islands)
+  "ESP": {
+    bbox: {
+      minx: -9.3,
+      miny: 36.0,
+      maxx: 3.3,
+      maxy: 43.8,
+      width: 12.6,
+      height: 7.8
+    },
+    visual_center: {
+      longitude: -3.7,
+      latitude: 40.0
+    }
+  },
+  // Portugal - Mainland only
+  "PRT": {
+    bbox: {
+      minx: -9.5,
+      miny: 37.0,
+      maxx: -6.2,
+      maxy: 42.1,
+      width: 3.3,
+      height: 5.1
+    }
+  },
+  // Greece - Mainland and close islands
+  "GRC": {
+    bbox: {
+      minx: 19.4,
+      miny: 35.0,
+      maxx: 28.3,
+      maxy: 41.8,
+      width: 8.9,
+      height: 6.8
+    }
+  },
+  // Norway - Mainland only
+  "NOR": {
+    bbox: {
+      minx: 4.5,
+      miny: 58.0,
+      maxx: 31.0,
+      maxy: 71.2,
+      width: 26.5,
+      height: 13.2
+    }
+  },
+  // Denmark - Mainland only (excluding Greenland)
+  "DNK": {
+    bbox: {
+      minx: 8.0,
+      miny: 54.5,
+      maxx: 15.2,
+      maxy: 57.8,
+      width: 7.2,
+      height: 3.3
+    }
+  },
+  // Chile - Mainland only (excluding Easter Island)
+  "CHL": {
+    bbox: {
+      minx: -75.0,
+      miny: -55.0,
+      maxx: -66.0,
+      maxy: -17.5,
+      width: 9.0,
+      height: 37.5
+    },
+    visual_center: {
+      longitude: -70.5,
+      latitude: -35.0
+    }
+  },
+  // Italy - Including Sicily and Sardinia
+  "ITA": {
+    bbox: {
+      minx: 6.6,
+      miny: 36.6,
+      maxx: 18.5,
+      maxy: 47.1,
+      width: 11.9,
+      height: 10.5
+    },
+    visual_center: {
+      longitude: 12.5,
+      latitude: 42.5
+    }
+  },
+  // Malaysia - Peninsular and East Malaysia
+  "MYS": {
+    bbox: {
+      minx: 100.0,
+      miny: 0.8,
+      maxx: 119.3,
+      maxy: 7.4,
+      width: 19.3,
+      height: 6.6
+    }
+  },
+  // Brazil - Large country with distinct shape
+  "BRA": {
+    bbox: {
+      minx: -73.9,
+      miny: -33.8,
+      maxx: -34.8,
+      maxy: 5.3,
+      width: 39.1,
+      height: 39.1
+    },
+    visual_center: {
+      longitude: -53.0,
+      latitude: -14.0
+    }
+  },
+  // China - Large country with distinct shape
+  "CHN": {
+    bbox: {
+      minx: 73.5,
+      miny: 18.1,
+      maxx: 134.8,
+      maxy: 53.6,
+      width: 61.3,
+      height: 35.5
+    },
+    visual_center: {
+      longitude: 104.0,
+      latitude: 35.0
+    }
+  },
+  // India - Large country with distinct shape
+  "IND": {
+    bbox: {
+      minx: 68.1,
+      miny: 6.7,
+      maxx: 97.4,
+      maxy: 35.5,
+      width: 29.3,
+      height: 28.8
+    },
+    visual_center: {
+      longitude: 82.0,
+      latitude: 22.0
+    }
+  }
 };
 
 /**
@@ -154,7 +424,7 @@ export const calculateIconSize = (
     // For wide countries or countries with distant territories, we might want to:
     // 1. Use a different calculation method
     // 2. Apply an adjustment factor to the result
-    const isWide = isWideCountry(countryCode, boundsToUse);
+    const isWide = isWideCountry(countryCode, boundsToUse as { width: number; height: number });
     
     // Convert the geographic bounds to pixel coordinates
     const northeast = mapInstance.project([boundsToUse.maxx, boundsToUse.maxy]);
@@ -163,6 +433,14 @@ export const calculateIconSize = (
     // Calculate the rendered width and height in pixels
     const renderedWidth = Math.abs(northeast.x - southwest.x);
     const renderedHeight = Math.abs(northeast.y - southwest.y);
+    
+    // Ensure boundsToUse has width and height properties if they're undefined
+    if (boundsToUse.width === undefined) {
+      boundsToUse.width = boundsToUse.maxx - boundsToUse.minx;
+    }
+    if (boundsToUse.height === undefined) {
+      boundsToUse.height = boundsToUse.maxy - boundsToUse.miny;
+    }
     
     console.log('Rendered dimensions:', {
       renderedWidth,

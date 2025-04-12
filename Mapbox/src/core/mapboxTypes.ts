@@ -6,7 +6,7 @@ export type Coordinates = [number, number] | { lng: number; lat: number };
 /**
  * Base theme types
  */
-export type ThemeType = "dark" | "light";
+export type ThemeType = "dark" | "light" | "vintage";
 
 /**
  * Animation motion types
@@ -34,6 +34,17 @@ export type IconType =
   | "death-skull" 
   | "target" 
   | "none";
+
+/**
+ * Text display mode options
+ */
+export type TextDisplayType = "none" | "country" | "custom";
+
+/**
+ * Text animation types
+ * Re-exported from textAnimations.ts
+ */
+export type { TextAnimationType } from './textAnimations';
 
 /**
  * Defines the available map projections.

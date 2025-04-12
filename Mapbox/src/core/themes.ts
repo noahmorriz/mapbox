@@ -30,6 +30,7 @@ export interface Theme {
     useDropShadow: boolean;
     dropShadowColor?: string;
     dropShadowBlur?: number;
+    opacity: number;
   };
   
   // Text styling
@@ -37,6 +38,8 @@ export interface Theme {
     color: string;
     fontSize: string;
     fontWeight: string;
+    fontFamily?: string;
+    opacity?: number;
   };
   
   // Info box styling
@@ -47,6 +50,13 @@ export interface Theme {
     padding: string;
     maxWidth: string;
     fontSize: string;
+  };
+  
+  // Vignette styling
+  vignette: {
+    color: string;
+    intensity: number;
+    feather: number;
   };
 }
 
@@ -60,9 +70,9 @@ export const THEMES: Record<ThemeType, Theme> = {
     backgroundColor: '#000000',
     
     highlight: {
-      fillColor: '#0C8E8E',
-      lineColor: '#0C8E8E',
-      fillOpacity: 0.6,
+      fillColor: '#8B0000',
+      lineColor: '#8B0000',
+      fillOpacity: 0.4,
       lineOpacity: 1.0,
       lineWidth: 2,
     },
@@ -72,12 +82,15 @@ export const THEMES: Record<ThemeType, Theme> = {
       useDropShadow: true,
       dropShadowColor: 'rgba(0,0,0,0.7)',
       dropShadowBlur: 8,
+      opacity: 1.0,
     },
     
     text: {
       color: '#FFFFFF',
       fontSize: '16px',
       fontWeight: '500',
+      fontFamily: '"Bebas Neue", sans-serif',
+      opacity: 0.95,
     },
     
     infoBox: {
@@ -88,11 +101,17 @@ export const THEMES: Record<ThemeType, Theme> = {
       maxWidth: '240px',
       fontSize: '14px',
     },
+    
+    vignette: {
+      color: 'rgba(0, 0, 0, 0.9)',
+      intensity: 0.85,
+      feather: 0.6,
+    },
   },
   
   // Light theme
   light: {
-    mapStyle: 'mapbox://styles/noahmorriz/cm97zlzie00gf01qlaitpaodq',
+    mapStyle: 'mapbox://styles/mapbox/light-v11',
     backgroundColor: '#FFFFFF',
     
     highlight: {
@@ -108,12 +127,15 @@ export const THEMES: Record<ThemeType, Theme> = {
       useDropShadow: true,
       dropShadowColor: 'rgba(0,0,0,0.3)',
       dropShadowBlur: 6,
+      opacity: 1.0,
     },
     
     text: {
       color: '#333333',
       fontSize: '16px',
       fontWeight: '500',
+      fontFamily: 'Arial, sans-serif',
+      opacity: 1.0,
     },
     
     infoBox: {
@@ -123,6 +145,57 @@ export const THEMES: Record<ThemeType, Theme> = {
       padding: '8px 12px',
       maxWidth: '240px',
       fontSize: '14px',
+    },
+    
+    vignette: {
+      color: 'rgba(0, 0, 0, 0.6)',
+      intensity: 0.6,
+      feather: 0.5,
+    },
+  },
+  
+  // Vintage theme
+  vintage: {
+    mapStyle: 'mapbox://styles/noahmorriz/cm9eeq2p700gx01s80mtc5517',
+    backgroundColor: '#F8F0E3',
+    
+    highlight: {
+      fillColor: '#DBB66A',
+      lineColor: '#6C4C1D',
+      fillOpacity: 0.4,
+      lineOpacity: 0.8,
+      lineWidth: 2,
+    },
+    
+    icon: {
+      defaultColor: '#1a160c',
+      useDropShadow: true,
+      dropShadowColor: 'rgba(139,69,19,0.4)',
+      dropShadowBlur: 5,
+      opacity: 0.5,
+    },
+    
+    text: {
+      color: '#5C4033',
+      fontSize: '16px',
+      fontWeight: '500',
+      fontFamily: '"Playfair Display", serif',
+      opacity: 0.9,
+    },
+    
+    infoBox: {
+      backgroundColor: 'rgba(248, 240, 227, 0.9)',
+      textColor: '#5C4033',
+      borderRadius: '4px',
+      padding: '10px 14px',
+      maxWidth: '240px',
+      fontSize: '14px',
+    },
+    
+    vignette: {
+      color: 'rgba(48, 30, 16, 0.7)',
+      intensity: 0.55,
+      feather: 0.7,
     },
   },
 };

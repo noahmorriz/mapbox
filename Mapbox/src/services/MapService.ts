@@ -60,16 +60,61 @@ export class MapService {
       }
       
       try {
+        // Get the current theme settings
+        // const { THEMES } = require('../core/themes');
+        
         // Default settings for highlight layers
-        const defaultSettings = {
+        const defaultSettings: AnimationSettings = {
           highlight: {
             fillColor: '#3182CE',
             lineColor: '#2B6CB0',
             lineWidth: 2,
-            fillOpacity: 0.4,
-            lineOpacity: 0.8
+            fillOpacityTarget: 0.6,
+            lineOpacityTarget: 1.0,
+            labelOpacityTarget: 1.0,
+            fillAnimationDamping: 30,
+            fillAnimationStiffness: 50,
+            fillAnimationMass: 1,
+            lineAnimationDamping: 30,
+            lineAnimationStiffness: 50,
+            lineAnimationMass: 1,
+            labelAnimationDamping: 30,
+            labelAnimationStiffness: 50,
+            labelAnimationMass: 1
+          },
+          // Add missing required properties to match AnimationSettings interface
+          camera: {
+            initialRotation: 0,
+            finalRotation: 0,
+            initialPitch: 0,
+            finalPitch: 0,
+            rotationDamping: 30,
+            rotationStiffness: 50,
+            rotationMass: 1,
+            pitchDamping: 30,
+            pitchStiffness: 50,
+            pitchMass: 1
+          },
+          general: {
+            backgroundColor: '#ffffff',
+            mapStyle: 'mapbox://styles/mapbox/light-v11'
+          },
+          ui: {
+            iconSize: 50,
+            iconColor: '#000000',
+            iconScale: 1,
+            iconDropShadow: true,
+            textFontSize: '16px',
+            textColor: '#000000',
+            textFontWeight: 'normal',
+            infoMaxWidth: '300px',
+            infoFontSize: '14px',
+            infoBackgroundColor: '#ffffff',
+            infoTextColor: '#000000',
+            infoBorderRadius: '4px',
+            infoPadding: '8px'
           }
-        } as AnimationSettings;
+        };
         
         // Get active country or use a default
         const activeCountry = this.activeCountry || 'USA';
@@ -140,9 +185,10 @@ export class MapService {
           }
         }
 
+        // Add debug option to help diagnose rendering issues
         this.map = new mapboxgl.Map({
           container,
-          style: mapStyle || 'mapbox://styles/noahmorriz/cm97zlzie00gf01qlaitpaodq',
+          style: mapStyle || 'mapbox://styles/mapbox/light-v11',
           center: initialCenter,
           zoom: initialZoom,
           projection: projection || 'mercator',
@@ -152,25 +198,49 @@ export class MapService {
           // Always enable renderWorldCopies to handle edge countries properly
           renderWorldCopies: true,
           fadeDuration: 0,
-          antialias: true
+          antialias: true,
+          localIdeographFontFamily: "'Noto Sans', 'Noto Sans CJK SC', sans-serif"
         });
         
+        // Add more detailed error handling for style loading
         this.map.on('error', (error) => {
           console.error('Mapbox error:', error);
-          // We might want to reject the promise here if the error is critical
-          // For now, just log it. Rejection might stop the app.
-          // reject(new Error(`Map initialization error: ${error.error?.message || 'Unknown map error'}`));
+          if (error.error && typeof error.error === 'object' && 'status' in error.error && error.error.status === 401) {
+            console.error('Authentication error - check your Mapbox access token');
+          } else if (error.error && typeof error.error === 'object' && 'status' in error.error && error.error.status === 404) {
+            console.error('Style not found - check your style URL', mapStyle);
+          } else if (error.error && error.error.toString().includes('Style is not done loading')) {
+            console.error('Style loading error - operations attempted before style was fully loaded');
+          }
+          // Don't reject as this would stop the app
         });
         
+        // Listen for styledata event (partial style data loaded)
         this.map.on('styledata', () => {
           // Style data loaded, but not necessarily all layers and sources
           console.log('Map style data loaded.');
+          
+          // Check if style loaded completely
+          const style = this.map?.getStyle();
+          console.log('Style loaded:', style ? 'Yes' : 'No');
+          console.log('Layers count:', style?.layers?.length || 0);
+        });
+        
+        // Listen for the complete style loaded event
+        this.map.on('styleloaded', () => {
+          console.log('Map style fully loaded!');
         });
         
         // Wait for both style load and map idle state
         this.map.on('load', () => {
           console.log('Map loaded!');
           console.time('map-initialization');
+          
+          // Check if the style is fully loaded
+          if (!this.isStyleLoaded()) {
+            console.warn('Style not fully loaded yet when map load event fired');
+            // We still continue as the map.load event should be reliable
+          }
           
           // Mark as initialized once the initial style and map are loaded
           this.isInitialized = true;
@@ -297,7 +367,7 @@ export class MapService {
            'source-layer': 'country_boundaries',
            paint: {
              'fill-color': highlight.fillColor || '#3182CE',
-             'fill-opacity': 0, // Start with zero opacity
+             'fill-opacity': highlight.fillOpacityTarget || 0.6, // Use target opacity instead of starting at 0
            },
            // Use the provided countryCode for the initial filter
            filter: ['==', 'iso_3166_1_alpha_3', countryCode || ''], 
@@ -320,7 +390,7 @@ export class MapService {
              'line-color': highlight.lineColor || '#2B6CB0',
              // Access lineWidth safely, providing default if undefined
              'line-width': highlight.lineWidth ?? 2, 
-             'line-opacity': 0, // Start with zero opacity
+             'line-opacity': highlight.lineOpacityTarget || 1.0, // Use target opacity instead of starting at 0
            },
            // Use the provided countryCode for the initial filter
            filter: ['==', 'iso_3166_1_alpha_3', countryCode || ''],
@@ -479,6 +549,55 @@ export class MapService {
   }
   
   /**
+   * Update the highlight colors
+   * @param fillColor Fill color value (hex or rgba)
+   * @param lineColor Line color value (hex or rgba)
+   */
+  public updateHighlightColors(fillColor: string, lineColor: string): void {
+    if (!this.map || !this.isInitialized || !this.areLayersAdded) {
+      console.warn('UpdateHighlightColors called before map/layers are ready.');
+      return;
+    }
+    
+    try {
+      if (this.map.getLayer(COUNTRY_HIGHLIGHT_FILL_LAYER_ID)) {
+        this.map.setPaintProperty(
+          COUNTRY_HIGHLIGHT_FILL_LAYER_ID,
+          'fill-color',
+          fillColor
+        );
+        // Get current fill opacity for better logging
+        const currentFillOpacity = this.map.getPaintProperty(
+          COUNTRY_HIGHLIGHT_FILL_LAYER_ID,
+          'fill-opacity'
+        );
+        console.log(`Current fill-opacity: ${currentFillOpacity}`);
+      }
+      
+      if (this.map.getLayer(COUNTRY_HIGHLIGHT_LINE_LAYER_ID)) {
+        this.map.setPaintProperty(
+          COUNTRY_HIGHLIGHT_LINE_LAYER_ID,
+          'line-color',
+          lineColor
+        );
+        // Get current line opacity for better logging
+        const currentLineOpacity = this.map.getPaintProperty(
+          COUNTRY_HIGHLIGHT_LINE_LAYER_ID,
+          'line-opacity'
+        );
+        console.log(`Current line-opacity: ${currentLineOpacity}`);
+      }
+      
+      console.log(`Updated highlight colors: fill=${fillColor}, line=${lineColor}`);
+      
+      // Force a render to ensure changes take effect
+      this.map.triggerRepaint();
+    } catch (error) {
+      console.error('Error updating highlight colors:', error);
+    }
+  }
+  
+  /**
    * Clean up and remove the map instance
    */
   public destroy(): void {
@@ -508,231 +627,133 @@ export class MapService {
   /**
    * Updates the map's base style and re-adds necessary layers/filters.
    * @param newStyleUrl The URL of the new Mapbox style.
-   * @param settings Current animation settings (needed for re-adding layers).
-   * @param currentCountryCode The country currently highlighted (needed for re-applying filter).
+   * @param countryCode Optional country code for re-applying filter (if not provided, uses activeCountry)
+   * @param projection Optional projection to apply (defaults to 'mercator')
    */
   public async updateMapStyle(
     newStyleUrl: string, 
-    countryCode: string,
+    countryCode?: string,
     projection: string = 'mercator'
   ): Promise<void> {
     return new Promise((resolve, reject) => {
       if (!this.map || !this.isInitialized) {
-        console.error('Cannot update style: Map not initialized');
+        console.error('Cannot update map style: Map not initialized');
         reject(new Error('Map not initialized'));
         return;
       }
       
       try {
         console.log(`Updating map style to: ${newStyleUrl}`);
+        console.time('style-update');
         
-        // Store the current view state
+        // Store current view state before changing style
         const currentCenter = this.map.getCenter();
         const currentZoom = this.map.getZoom();
         const currentBearing = this.map.getBearing();
         const currentPitch = this.map.getPitch();
         
-        // Reset areLayersAdded flag since we're changing style
+        // Set timeout for style loading
+        const styleLoadTimeout = setTimeout(() => {
+          console.warn('Style load timeout, resolving anyway');
+          this.setupAfterStyleUpdate(currentCenter, currentZoom, currentBearing, currentPitch, countryCode);
+          resolve();
+        }, 5000); // 5 second timeout
+        
+        // Reset internal layer tracking
         this.areLayersAdded = false;
-          
-        // Set the new projection first
-        this.map.setProjection(projection as any);
+        
+        // Listen for style load
+        this.map.once('styleloaded', () => {
+          clearTimeout(styleLoadTimeout);
+          console.log('Map style fully loaded, applying view state');
+          this.setupAfterStyleUpdate(currentCenter, currentZoom, currentBearing, currentPitch, countryCode);
+          resolve();
+        });
+        
+        // Fallback on styledata if styleloaded doesn't fire
+        this.map.once('styledata', () => {
+          console.log('Style data received, scheduling final check');
+          // Give a little time for style to complete loading
+          setTimeout(() => {
+            if (this.isStyleLoaded()) {
+              console.log('Style confirmed to be loaded via isStyleLoaded');
+              clearTimeout(styleLoadTimeout);
+              this.setupAfterStyleUpdate(currentCenter, currentZoom, currentBearing, currentPitch, countryCode);
+              resolve();
+            } else {
+              console.log('Style not fully loaded after styledata, waiting for styleloaded event or timeout');
+            }
+          }, 500);
+        });
         
         // Set the new style
         this.map.setStyle(newStyleUrl);
-        
-        // Listen for style load
-        this.map.once('styledata', () => {
-          // Restore view state after style is loaded
-          this.map!.jumpTo({
-            center: currentCenter,
-            zoom: currentZoom,
-            bearing: currentBearing,
-            pitch: currentPitch
-          });
-          
-          console.log('Map style updated, recreating layers...');
-          
-          // Re-create the highlight layers for the new style
-          this.addHighlightLayers()
-            .then(() => {
-              // Update the country highlight for the current country
-              this.updateHighlightFilter(countryCode);
-              console.log('Style update complete');
-              resolve();
-            })
-            .catch(error => {
-              console.error('Error creating highlight layers:', error);
-              // Still resolve since we can work without highlight
-              resolve();
-            });
-        });
       } catch (error) {
         console.error('Error updating map style:', error);
         reject(error);
       }
     });
   }
-
+  
   /**
-   * Applies a simplified map style by hiding unnecessary labels and POIs
-   * @param styleUrl The URL of the style to apply and simplify
-   * @param settings Current animation settings
-   * @param currentCountryCode The country currently highlighted
-   * @param simplificationMode The level of simplification to apply ('minimal' or 'labelsOnly')
+   * Setup map after style update completes
+   * @param center Map center
+   * @param zoom Map zoom
+   * @param bearing Map bearing
+   * @param pitch Map pitch
+   * @param countryCode Country code
    */
-  private async applySimplifiedStyle(
-    styleUrl: string, 
-    settings: AnimationSettings, 
-    currentCountryCode: string,
-    simplificationMode: 'minimal' | 'labelsOnly' = 'minimal'
-  ): Promise<void> {
-    if (!this.map) return Promise.reject('Map not initialized');
+  private setupAfterStyleUpdate(
+    center: mapboxgl.LngLat,
+    zoom: number,
+    bearing: number,
+    pitch: number,
+    countryCode?: string
+  ): void {
+    if (!this.map) return;
     
-    console.log(`Applying simplified style using post-load removal for ${styleUrl}...`);
-    this.areLayersAdded = false; // Reset flag
-    
-    const map = this.map; // Store reference
-    
-    return new Promise((resolve, reject) => {
-      const onError = (error: any) => {
-        console.error('Error loading style before simplification:', error);
-        map.off('error', onError);
-        reject(error);
-      };
-      
-      map.once('error', onError);
-      
-      map.once('style.load', () => {
-        map.off('error', onError); // Remove error listener on successful load
-        console.log(`Base style loaded (${styleUrl}), now simplifying by hiding layers...`);
-        
-        try {
-          // Get the current style *after* it has loaded
-          const style = map.getStyle();
-          
-          // Debug: Log available layers to help identify persistent labels
-          this.debugLogAvailableLayers(style);
-          
-          if (style && style.layers) {
-            // Identify layers to remove: Symbol layers with text-field OR layers with common label IDs
-            const layersToRemove = style.layers.filter((layer: any) => {
-              const layerId = layer.id || '';
-              // Check 1: Is it a symbol layer rendering text?
-              const isSymbolWithText = layer.type === 'symbol' && 
-                                     layer.layout && 
-                                     layer.layout['text-field'];
-              
-              // Check 2: Does the ID match common label patterns?
-              const idIncludesLabel = 
-                layerId.includes('-label') || // General suffix
-                layerId.includes('country') || // Country names
-                layerId.includes('state') ||   // State names
-                layerId.includes('settlement') || // Cities, towns
-                layerId.includes('place') || // Place names
-                layerId.includes('poi') || // Points of interest
-                layerId.includes('natural') || // Natural features (mountains, etc.)
-                layerId.includes('water') || // Water bodies (lakes, rivers)
-                layerId.includes('marine') || // Marine features (seas, oceans)
-                layerId.includes('ocean') || // Explicitly ocean
-                layerId.includes('road'); // Road names/numbers
-                
-              // Remove if either check is true, but *preserve* our highlight layers
-              const shouldRemove = (isSymbolWithText || idIncludesLabel) && 
-                                 layerId !== COUNTRY_HIGHLIGHT_FILL_LAYER_ID && 
-                                 layerId !== COUNTRY_HIGHLIGHT_LINE_LAYER_ID;
-
-              if (shouldRemove) {
-                 // console.log(`Flagging layer for removal: ${layerId}`); // Optional detailed log
-              } else if (layerId === COUNTRY_HIGHLIGHT_FILL_LAYER_ID || layerId === COUNTRY_HIGHLIGHT_LINE_LAYER_ID) {
-                 console.log(`Explicitly preserving highlight layer: ${layerId}`);
-              }
-              
-              return shouldRemove;
-            });
-
-            console.log(`Identified ${layersToRemove.length} layers to remove based on type/text-field or ID patterns.`);
-
-            layersToRemove.forEach((layer: any) => {
-              const layerId = layer.id;
-              try {
-                 // Check if the layer still exists before attempting removal
-                 if (map.getLayer(layerId)) { 
-                    console.log(`Removing layer: ${layerId} (Type: ${layer.type})`);
-                    map.removeLayer(layerId);
-                 } else {
-                     // console.log(`Layer ${layerId} already removed or not found.`);
-                 }
-              } catch (e) {
-                // Ignore removal errors (might happen if removing one layer implicitly removes another)
-                console.warn(`Failed to remove layer ${layerId}. This might be expected if it was already removed implicitly.`, e);
-              }
-            });
-            
-            console.log('Finished attempting to remove text label layers.');
-          } else {
-             console.warn('Style or style.layers not found after load.');
-          }
-          
-          // Re-add our highlight layers AFTER removing others
-          this.addHighlightLayersOnce(settings, currentCountryCode);
-          
-          if (this.areLayersAdded) {
-            console.log('Simplified style applied (post-load removal) and highlight layers re-added.');
-            
-            // Position the map for the current country
-            this.positionMapForCountry(currentCountryCode);
-            
-            resolve();
-          } else {
-             // Check if layers are present anyway, maybe addHighlightLayersOnce detected them
-             if (map.getLayer(COUNTRY_HIGHLIGHT_FILL_LAYER_ID) && map.getLayer(COUNTRY_HIGHLIGHT_LINE_LAYER_ID)) {
-                console.log('Highlight layers confirmed present after simplification.');
-                this.areLayersAdded = true; // Correct the flag
-                resolve();
-             } else {
-                console.error('Failed to re-add layers after simplifying style (post-load removal).');
-                reject('Failed to re-add layers after simplifying style (post-load removal).');
-             }
-          }
-        } catch (error) {
-          console.error('Error simplifying style (post-load removal):', error);
-          reject(error);
-        }
-      });
-      
-      // Set the base style URL - simplification happens in 'style.load'
-      console.log(`Setting style URL: ${styleUrl}`);
-      map.setStyle(styleUrl);
+    // Restore view state
+    this.map.jumpTo({
+      center,
+      zoom,
+      bearing,
+      pitch
     });
+    
+    console.log('Map style updated, recreating layers...');
+    
+    // Use provided countryCode or fall back to activeCountry
+    const effectiveCountryCode = countryCode || this.activeCountry || 'USA';
+    
+    // Re-create the highlight layers for the new style
+    this.addHighlightLayers()
+      .then(() => {
+        // Update the country highlight for the current country
+        this.updateHighlightFilter(effectiveCountryCode);
+        console.log('Style update complete');
+        console.timeEnd('style-update');
+      })
+      .catch(error => {
+        console.error('Error creating highlight layers:', error);
+        // Still continue since we can work without highlight
+        console.timeEnd('style-update');
+      });
   }
 
   /**
-   * Helper method to log all available layers in a style
-   * Useful for debugging and understanding which layers to remove/hide
+   * Check if the map style is fully loaded
+   * @returns true if the style is loaded, false otherwise
    */
-  private debugLogAvailableLayers(style: any): void {
-    if (style && style.layers) {
-      console.log('Available layers in map style:');
-      
-      // Group layers by type for better analysis
-      const layersByType: Record<string, string[]> = {};
-      
-      style.layers.forEach((layer: any) => {
-        const type = layer.type || 'unknown';
-        if (!layersByType[type]) {
-          layersByType[type] = [];
-        }
-        layersByType[type].push(layer.id);
-        
-        console.log(`- ${layer.id} (${layer.type})`);
-      });
-      
-      // Log summary of layer types
-      console.log('\nLayer type summary:');
-      for (const [type, layers] of Object.entries(layersByType)) {
-        console.log(`${type}: ${layers.length} layers`);
-      }
+  public isStyleLoaded(): boolean {
+    if (!this.map) {
+      return false;
+    }
+    
+    try {
+      return this.map.isStyleLoaded();
+    } catch (error) {
+      console.error('Error checking if style is loaded:', error);
+      return false;
     }
   }
 

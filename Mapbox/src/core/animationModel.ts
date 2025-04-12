@@ -1,4 +1,4 @@
-import { Coordinates, ThemeType, MotionType, ProjectionType, IconType } from './mapboxTypes';
+import { Coordinates, ThemeType, MotionType, ProjectionType, IconType, TextDisplayType, TextAnimationType } from './mapboxTypes';
 import { AnimationTimeline } from './animationTiming';
 
 /**
@@ -68,6 +68,8 @@ export interface UISettings {
   textFontSize: string;
   textColor: string;
   textFontWeight: string;
+  textFontFamily?: string;
+  textOpacity?: number;
   
   // Info box settings
   infoMaxWidth: string;
@@ -148,9 +150,40 @@ export interface AnimationProps {
   iconScaleFactor?: number;
   projection?: ProjectionType;
   
+  // Text display options
+  textDisplay?: TextDisplayType;
+  customText?: string;
+  textSize?: number;
+  textColor?: string;
+  /**
+   * Text animation type
+   * - none: No animation (text appears immediately)
+   * - fadeIn: Text fades in
+   * - typewriter: Text appears character by character
+   */
+  textAnimationType?: TextAnimationType;
+  
   // Show/hide controls
   showHighlight?: boolean;
   showIcon?: boolean;
+  showText?: boolean;
+  
+  // Vignette controls
+  /**
+   * Whether to display the vignette effect
+   */
+  showVignette?: boolean;
+  /**
+   * Vignette appearance settings
+   * - color: The color of the vignette (typically dark)
+   * - intensity: The opacity/intensity of the vignette effect (0-1)
+   * - feather: How much the vignette effect should be feathered (0-1)
+   */
+  vignetteSettings?: {
+    color?: string;
+    intensity?: number;
+    feather?: number;
+  };
   
   // Animation timing controls using the standardized system
   animationTiming?: Partial<AnimationTimeline>;

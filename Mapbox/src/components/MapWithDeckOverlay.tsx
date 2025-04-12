@@ -45,7 +45,7 @@ const createImageWithOpacity = (svgString: string, opacity: number): Promise<HTM
 
 export const MapWithDeckOverlay: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
   const { mapContainerRef, mapInstance, isMapLoaded } = useMapContext();
-  const { countryData, settings } = useConfigContext();
+  const { countryData, motionSettings } = useConfigContext();
   const frame = useCurrentFrame();
   
   // Keep track of initialization state
@@ -172,10 +172,10 @@ export const MapWithDeckOverlay: React.FC<{ children?: React.ReactNode }> = ({ c
     // Only start animation once layer is added
     if (!initialized || !mapInstance || !layerAddedRef.current) return;
     
-    // Animation parameters from settings
-    const labelDelay = settings?.timing?.labelDelay || 30;
-    const labelFadeDuration = settings?.timing?.labelFadeDuration || 15;
-    const stabilizationBuffer = settings?.timing?.stabilizationBuffer || 0;
+    // Animation parameters from motionSettings
+    const labelDelay = motionSettings?.timing?.labelDelayFrames || 30;
+    const labelFadeDuration = motionSettings?.timing?.fadeDuration || 15;
+    const stabilizationBuffer = 0; // Default value if not available
     
     // Wait until we're past the delay to start animation
     if (frame < stabilizationBuffer + labelDelay) {
@@ -209,7 +209,7 @@ export const MapWithDeckOverlay: React.FC<{ children?: React.ReactNode }> = ({ c
         console.error('Error updating icon image:', error);
       }
     }
-  }, [frame, mapInstance, initialized, settings]);
+  }, [frame, mapInstance, initialized, motionSettings]);
   
   // Final cleanup when component unmounts
   useEffect(() => {

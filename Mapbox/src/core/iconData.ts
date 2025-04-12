@@ -40,6 +40,8 @@ export const svgToDataUrl = (svg: string): string => {
  * @returns RGB color tuple
  */
 export const getIconColor = (type: string = 'marker'): [number, number, number] => {
+  // Use the theme color instead of hardcoded colors
+  // This will be replaced in DeckMarkerOverlay with the current theme's color
   return ICON_COLORS[type] || ICON_COLORS['marker'];
 };
 

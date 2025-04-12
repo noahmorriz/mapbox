@@ -3,8 +3,10 @@ import { MapProvider } from '../contexts/MapContext';
 import { AnimationProvider } from '../contexts/AnimationContext';
 import { ConfigProvider, useConfigContext } from '../contexts/ConfigContext';
 import { Map } from './Map';
-import { ThemeType, MotionType, IconType, ProjectionType } from '../core/mapboxTypes';
+import { ThemeType, MotionType, IconType, ProjectionType, TextDisplayType, TextAnimationType } from '../core/mapboxTypes';
 import DeckMarkerOverlay from './DeckMarkerOverlay';
+import { TextOverlay } from './TextOverlay';
+import { Vignette } from './Vignette';
 import { HighlightSettings } from '../core/animationModel';
 import { ANIMATION_PHYSICS, DEFAULT_OPACITIES } from '../core/animationConstants';
 
@@ -35,6 +37,9 @@ interface MapboxAnimationProps {
   disableFallbackIcon?: boolean;
   enableIconDropShadow?: boolean;
   customText?: string;
+  textDisplay?: TextDisplayType;
+  showText?: boolean;
+  textAnimationType?: TextAnimationType;
   infoSettings?: {
     maxWidth?: string;
     fontSize?: string;
@@ -56,6 +61,8 @@ interface MapboxAnimationProps {
     fontSize?: string;
     color?: string;
     fontWeight?: string;
+    fontFamily?: string;
+    opacity?: number;
   };
   iconSize?: number;
   iconCoverage?: number;
@@ -70,6 +77,12 @@ interface MapboxAnimationProps {
     animationStartFrame?: number;
     highlightDelayFrames?: number;
   };
+  showVignette?: boolean;
+  vignetteSettings?: {
+    color?: string;
+    intensity?: number;
+    feather?: number;
+  };
 }
 
 // Inner component that has access to ConfigContext
@@ -79,8 +92,20 @@ const AnimationWrapper: React.FC<{
   frameRenderHandleRef: React.MutableRefObject<number | null>;
   animationTiming?: MapboxAnimationProps['animationTiming'];
   highlightSettings?: HighlightSettings;
-}> = ({ children, additionalInfo, frameRenderHandleRef, animationTiming, highlightSettings = DEFAULT_HIGHLIGHT_SETTINGS }) => {
-  const { countryData, motionSettings, iconType, countryCode, mapStyle } = useConfigContext();
+  customText?: string;
+  showVignette?: boolean;
+  vignetteSettings?: MapboxAnimationProps['vignetteSettings'];
+}> = ({ 
+  children, 
+  additionalInfo, 
+  frameRenderHandleRef, 
+  animationTiming, 
+  highlightSettings = DEFAULT_HIGHLIGHT_SETTINGS, 
+  customText,
+  showVignette = false,
+  vignetteSettings = {}
+}) => {
+  const { countryData, motionSettings, iconType, countryCode, mapStyle, textDisplay, showText, themeType, iconCoverage, iconScaleFactor } = useConfigContext();
   
   // Get coordinates in a compatible format
   const coordinates = countryData.coordinates;
@@ -99,9 +124,23 @@ const AnimationWrapper: React.FC<{
       >
         <Map mapStyle={mapStyle} countryCode={countryCode}>
           {/* Only render the icon if iconType is not 'none' */}
-          {iconType !== 'none' && <DeckMarkerOverlay />}
+          {iconType !== 'none' && <DeckMarkerOverlay 
+            key={`marker-${countryCode}-${iconCoverage}-${iconScaleFactor}`}
+          />}
+          {/* Always render TextOverlay but pass showText and textDisplay as props */}
+          <TextOverlay 
+            customText={customText} 
+            isVisible={showText && textDisplay !== 'none'} 
+          />
           {children}
         </Map>
+        {/* Render Vignette component on top of everything if enabled */}
+        <Vignette 
+          enabled={showVignette}
+          color={vignetteSettings.color}
+          intensity={vignetteSettings.intensity}
+          feather={vignetteSettings.feather}
+        />
       </AnimationProvider>
     </MapProvider>
   );
@@ -123,6 +162,9 @@ export const MapboxAnimation: React.FC<MapboxAnimationProps> = ({
   disableFallbackIcon = false,
   enableIconDropShadow = true,
   customText,
+  textDisplay = "none",
+  showText = false,
+  textAnimationType = "none",
   infoSettings,
   backgroundColor,
   highlightColor,
@@ -135,6 +177,8 @@ export const MapboxAnimation: React.FC<MapboxAnimationProps> = ({
   children,
   animationTiming,
   highlightSettings,
+  showVignette = false,
+  vignetteSettings,
 }) => {
   const frameRenderHandleRef = useRef<number | null>(null);
   
@@ -149,6 +193,9 @@ export const MapboxAnimation: React.FC<MapboxAnimationProps> = ({
       disableFallbackIcon={disableFallbackIcon}
       enableIconDropShadow={enableIconDropShadow}
       customText={customText}
+      textDisplay={textDisplay}
+      showText={showText}
+      textAnimationType={textAnimationType}
       infoSettings={infoSettings}
       backgroundColor={backgroundColor}
       highlightColor={highlightColor}
@@ -164,6 +211,9 @@ export const MapboxAnimation: React.FC<MapboxAnimationProps> = ({
         frameRenderHandleRef={frameRenderHandleRef}
         animationTiming={animationTiming}
         highlightSettings={highlightSettings}
+        customText={customText}
+        showVignette={showVignette}
+        vignetteSettings={vignetteSettings}
       >
         {children}
       </AnimationWrapper>

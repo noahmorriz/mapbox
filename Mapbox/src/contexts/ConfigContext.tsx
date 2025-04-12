@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useMemo } from 'react';
-import { ThemeType, MotionType, IconType, CountryData, ProjectionType } from '../core/mapboxTypes';
+import { ThemeType, MotionType, IconType, CountryData, ProjectionType, TextDisplayType } from '../core/mapboxTypes';
 import { getCountry, defaultCountry, countries } from '../countryData';
 import { THEMES } from '../core/themes';
+import { TextAnimationType } from '../core/textAnimations';
 
 /**
  * Configuration Context
@@ -162,6 +163,26 @@ interface ConfigContextValue {
   backgroundColor?: string;
   highlightColor?: string;
   
+  // Icon settings
+  iconSettings?: {
+    size?: number;
+    color?: string;
+    scale?: number;
+    scaleFactor?: number;
+  };
+  
+  // Text settings
+  textDisplay?: TextDisplayType;
+  textSettings?: {
+    fontSize?: string;
+    color?: string;
+    fontWeight?: string;
+    fontFamily?: string;
+    opacity?: number;
+  };
+  showText?: boolean;
+  textAnimationType?: TextAnimationType;
+  
   // Map settings
   motionType: MotionType;
   projectionType: ProjectionType;
@@ -188,6 +209,8 @@ const ConfigContext = createContext<ConfigContextValue>({
   motionType: 'northToRotate',
   projectionType: 'mercator',
   iconType: 'marker',
+  textDisplay: 'none',
+  showText: false,
   motionSettings: MotionPresets.NorthToRotate,
   mapStyle: 'mapbox://styles/mapbox/light-v11',
 });
@@ -212,7 +235,12 @@ interface ConfigProviderProps {
     fontSize?: string;
     color?: string;
     fontWeight?: string;
+    fontFamily?: string;
+    opacity?: number;
   };
+  textDisplay?: TextDisplayType;
+  showText?: boolean;
+  textAnimationType?: TextAnimationType;
   infoSettings?: {
     maxWidth?: string;
     fontSize?: string;
@@ -241,6 +269,9 @@ export const ConfigProvider: React.FC<ConfigProviderProps> = ({
   enableIconDropShadow = true,
   iconSettings,
   textSettings,
+  textDisplay = 'none',
+  showText = false,
+  textAnimationType = 'none',
   infoSettings,
   backgroundColor,
   highlightColor,
@@ -300,6 +331,11 @@ export const ConfigProvider: React.FC<ConfigProviderProps> = ({
     backgroundColor: backgroundColor || themeObject.backgroundColor,
     highlightColor: highlightColor,
     mapStyle,
+    iconSettings,
+    textSettings,
+    textDisplay,
+    showText,
+    textAnimationType,
   };
   
   return (

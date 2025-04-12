@@ -5,7 +5,7 @@ import { MapboxAnimation } from './components/MapboxAnimation';
 import { AnimationProps, HighlightSettings } from './core/animationModel';
 import { THEMES } from './core/themes';
 import { ANIMATION_PHYSICS, UI_DEFAULTS } from './core/animationConstants';
-import { ThemeType, MotionType, ProjectionType, IconType } from './core/mapboxTypes';
+import { ThemeType, MotionType, ProjectionType, IconType, TextDisplayType, TextAnimationType } from './core/mapboxTypes';
 import { DEFAULT_TIMELINE } from './core/animationTiming';
 
 // =====================================================================
@@ -16,12 +16,21 @@ import { DEFAULT_TIMELINE } from './core/animationTiming';
  * VISUAL SETTINGS - Appearance controls
  */
 const VISUAL = {
-  THEME: "dark" as ThemeType,         // "dark" or "light"
-  ICON_TYPE: "flag" as IconType,    // Icon visual style
-  ICON_COVERAGE: 35,      // NEW: Desired coverage percentage (e.g., 1-95) of the country's rendered smaller dimension
+  THEME: "dark" as ThemeType,         // Changed from "dark" to "light"
+  ICON_TYPE: "skull" as IconType,    // Icon visual style
+  ICON_COVERAGE: 50,      // NEW: Desired coverage percentage (e.g., 1-95) of the country's rendered smaller dimension
   ICON_SCALE_FACTOR: 1.0, // Scaling factor to make icons larger (>1.0) or smaller (<1.0) than the calculated size
-  SHOW_HIGHLIGHT: false,  // Whether to display country highlight
-  SHOW_ICON: true,       // Whether to display icon
+  SHOW_HIGHLIGHT: true,  // Whether to display country highlight
+  SHOW_ICON: false,       // Whether to display icon
+  // Text display settings
+  SHOW_TEXT: true,       // Whether to display text
+  TEXT_DISPLAY: "custom" as TextDisplayType, // Text display type (country name, custom, or none)
+  CUSTOM_TEXT: "Hello world",       // Custom text to display (used when TEXT_DISPLAY is "custom")
+  TEXT_ANIMATION: "typewriter" as TextAnimationType, // Text animation type (none, fadeIn, typewriter)
+  // Vignette settings
+  SHOW_VIGNETTE: true,    // Whether to show vignette effect
+  VIGNETTE_INTENSITY: 0.7, // Vignette intensity (0-1)
+  VIGNETTE_FEATHER: 0.5,   // Vignette feathering (0-1)
 };
 
 /**
@@ -30,7 +39,7 @@ const VISUAL = {
 const MAP = {
   MOTION: "slowRotate" as MotionType,  // Map motion type
   PROJECTION: "mercator" as ProjectionType, // Map projection
-  COUNTRY: "AUS",        // Default country code (Ensure this exists as iso_code in boundingbox.json)
+  COUNTRY: "NLD",        // Default country code (Ensure this exists as iso_code in boundingbox.json)
 };
 
 /**
@@ -46,6 +55,19 @@ export const Composition: React.FC<AnimationProps> = (props) => {
     iconScaleFactor: VISUAL.ICON_SCALE_FACTOR, // Pass scaling factor to adjust the final size
     showHighlight: VISUAL.SHOW_HIGHLIGHT,
     showIcon: VISUAL.SHOW_ICON,
+    
+    // Text settings
+    textDisplay: VISUAL.SHOW_TEXT ? VISUAL.TEXT_DISPLAY : "none", // Use "none" when showText is false
+    customText: VISUAL.CUSTOM_TEXT, // Custom text content
+    showText: VISUAL.SHOW_TEXT, // Whether to show text
+    textAnimationType: VISUAL.TEXT_ANIMATION, // Text animation type
+    
+    // Vignette settings
+    showVignette: VISUAL.SHOW_VIGNETTE,
+    vignetteSettings: {
+      intensity: VISUAL.VIGNETTE_INTENSITY,
+      feather: VISUAL.VIGNETTE_FEATHER,
+    },
     
     // Map settings
     motion: MAP.MOTION,
@@ -67,8 +89,21 @@ export const Composition: React.FC<AnimationProps> = (props) => {
     defaultedProps.iconType = "none";
   }
   
+  // Ensure textDisplay is set to "none" if showText is false
+  if (!defaultedProps.showText) {
+    defaultedProps.textDisplay = "none";
+    defaultedProps.textAnimationType = "none";
+  }
+  
   // Get theme settings
   const theme = THEMES[defaultedProps.theme || VISUAL.THEME];
+  
+  // Force refresh when theme changes
+  const [refreshKey, setRefreshKey] = React.useState(0);
+  React.useEffect(() => {
+    // Update key to force a remount when theme changes
+    setRefreshKey(prev => prev + 1);
+  }, [defaultedProps.theme]);
   
   // Extract highlight settings
   const highlightSettings: HighlightSettings = {
@@ -105,6 +140,8 @@ export const Composition: React.FC<AnimationProps> = (props) => {
     textColor: theme.text.color,
     textFontSize: theme.text.fontSize,
     textFontWeight: theme.text.fontWeight,
+    textFontFamily: theme.text.fontFamily,
+    textOpacity: theme.text.opacity,
     infoBackgroundColor: theme.infoBox.backgroundColor,
     infoTextColor: theme.infoBox.textColor,
     infoMaxWidth: theme.infoBox.maxWidth,
@@ -124,6 +161,13 @@ export const Composition: React.FC<AnimationProps> = (props) => {
     enableIconDropShadow: theme.icon.useDropShadow
   };
   
+  // Get vignette settings from theme if not provided in props
+  const vignetteSettings = {
+    color: defaultedProps.vignetteSettings?.color || theme.vignette.color,
+    intensity: defaultedProps.vignetteSettings?.intensity || theme.vignette.intensity,
+    feather: defaultedProps.vignetteSettings?.feather || theme.vignette.feather,
+  };
+  
   return (
     <AbsoluteFill style={{ backgroundColor: theme.backgroundColor }}>
       <MapboxAnimation 
@@ -136,17 +180,25 @@ export const Composition: React.FC<AnimationProps> = (props) => {
           ...iconSettings.iconSettings,
           // Explicitly include scale factor to ensure it's passed correctly
           scaleFactor: defaultedProps.iconScaleFactor,
+          // Explicitly include the theme color to ensure it's used for all icons
+          color: theme.icon.defaultColor, 
         }}
         enableIconDropShadow={iconSettings.enableIconDropShadow}
         // Explicitly pass the iconCoverage and iconScaleFactor
         iconCoverage={defaultedProps.iconCoverage}
         iconScaleFactor={defaultedProps.iconScaleFactor}
-        // Pass text settings if needed
+        // Pass text settings
         textSettings={{ 
           fontSize: uiSettings.textFontSize, 
           color: uiSettings.textColor, 
-          fontWeight: uiSettings.textFontWeight 
+          fontWeight: uiSettings.textFontWeight,
+          fontFamily: uiSettings.textFontFamily,
+          opacity: uiSettings.textOpacity
         }}
+        textDisplay={defaultedProps.textDisplay}
+        showText={defaultedProps.showText}
+        customText={defaultedProps.customText}
+        textAnimationType={defaultedProps.textAnimationType}
         // Pass info settings if needed
         infoSettings={{
           maxWidth: uiSettings.infoMaxWidth,
@@ -156,6 +208,10 @@ export const Composition: React.FC<AnimationProps> = (props) => {
           borderRadius: uiSettings.infoBorderRadius,
           padding: uiSettings.infoPadding,
         }}
+        // Pass vignette settings
+        showVignette={defaultedProps.showVignette}
+        vignetteSettings={vignetteSettings}
+        key={refreshKey}
       />
     </AbsoluteFill>
   );

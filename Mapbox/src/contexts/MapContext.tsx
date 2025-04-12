@@ -11,7 +11,7 @@ if (!mapboxgl.accessToken) {
 }
 
 // Types for map status
-type MapStatus = 'uninitialized' | 'initializing' | 'idle' | 'updating_style' | 'error';
+type MapStatus = 'uninitialized' | 'initializing' | 'idle' | 'updating_style' | 'error' | 'loading';
 
 // Add a type for render handles
 type RenderHandle = {
@@ -31,6 +31,7 @@ interface MapContextValue {
   isMapError: boolean;
   currentCountry: string | null;
   frameRenderHandleRef: React.MutableRefObject<number | null>;
+  refreshMapStyle: (styleUrl: string) => Promise<boolean>;
 }
 
 const MapContext = createContext<MapContextValue>({
@@ -43,7 +44,8 @@ const MapContext = createContext<MapContextValue>({
   syncMapState: () => {},
   isMapError: false,
   currentCountry: null,
-  frameRenderHandleRef: { current: null }
+  frameRenderHandleRef: { current: null },
+  refreshMapStyle: async () => false
 });
 
 interface MapProviderProps {
@@ -379,21 +381,80 @@ export const MapProvider: React.FC<MapProviderProps> = ({ children }) => {
     }
   }, [mapStatus, mapService, createDelayedRender, continueDelayedRender]);
 
-  const value: MapContextValue = {
+  // Remove the unused function that's causing the TypeScript warning
+  // If needed in the future, uncomment this code:
+  /*
+  const handleStyleLoadingError = useCallback((styleUrl: string, countryCode: string, projection: string) => {
+    console.warn(`Style failed to load: ${styleUrl}, trying fallback style`);
+    
+    // Use a standard Mapbox style as fallback
+    const fallbackStyle = "mapbox://styles/mapbox/light-v11";
+    
+    if (styleUrl !== fallbackStyle) {
+      console.log(`Using fallback style: ${fallbackStyle}`);
+      syncMapState(fallbackStyle, countryCode, projection as ProjectionType);
+    }
+  }, [syncMapState]);
+  */
+
+  /**
+   * Force a refresh of the map with the provided style URL
+   * Useful when adding a new style that needs to be immediately applied
+   */
+  const refreshMapStyle = useCallback(async (styleUrl: string) => {
+    console.log(`Manually refreshing map style to: ${styleUrl}`);
+    
+    if (!mapService || !mapInstance || !currentCountryRef.current) {
+      console.error('Cannot refresh map style: Map not initialized or country not set');
+      return false;
+    }
+    
+    setMapStatus('updating_style');
+    const styleHandle = createDelayedRender('Refreshing map style...');
+    
+    try {
+      // Update map style with current parameters
+      await mapService.updateMapStyle(
+        styleUrl, 
+        currentCountryRef.current, 
+        currentProjectionRef.current || 'mercator'
+      );
+      
+      // Update current style ref
+      currentStyleRef.current = styleUrl;
+      setMapStatus('idle');
+      console.log('Map style refreshed successfully');
+      
+      // Continue render after brief delay
+      setTimeout(() => {
+        continueDelayedRender(styleHandle);
+      }, 1000);
+      
+      return true;
+    } catch (error) {
+      console.error('Map style refresh failed:', error);
+      setMapStatus('error');
+      continueDelayedRender(styleHandle);
+      return false;
+    }
+  }, [mapService, mapInstance, createDelayedRender, continueDelayedRender]);
+
+  const contextValue: MapContextValue = {
+    mapContainerRef,
     mapService,
     mapInstance,
-    mapContainerRef,
-    isMapLoaded,
-    mapLayersReady,
     mapStatus,
+    isMapLoaded: mapStatus === 'idle',
+    isMapError: mapStatus === 'error',
     syncMapState,
-    isMapError,
+    refreshMapStyle,
     currentCountry,
-    frameRenderHandleRef
+    frameRenderHandleRef,
+    mapLayersReady
   };
 
   return (
-    <MapContext.Provider value={value}>
+    <MapContext.Provider value={contextValue}>
       {children}
     </MapContext.Provider>
   );

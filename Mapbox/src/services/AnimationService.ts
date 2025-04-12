@@ -6,8 +6,6 @@ import {
   ZoomSettings 
 } from '../core/animationModel';
 import { AnimationTimeline, getAnimationFrames, getAnimationPhase } from '../core/animationTiming';
-import { Coordinates } from '../core/mapboxTypes';
-import { createAnimationTimeline } from '../core/animationTiming';
 
 // Define MotionSettings type locally combining Camera and Zoom settings
 interface MotionSettings {

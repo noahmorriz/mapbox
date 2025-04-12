@@ -21,7 +21,7 @@ interface MarkerData {
 export const DeckMarkerOverlay: React.FC = () => {
   const frame = useCurrentFrame();
   const { mapInstance, isMapLoaded } = useMapContext();
-  const { countryData, iconType, iconSize, iconCoverage, iconScaleFactor, countryCode } = useConfigContext();
+  const { countryData, iconType, iconSize, iconCoverage, iconScaleFactor, countryCode, iconSettings } = useConfigContext();
   const { timing } = useAnimationContext();
   const [isStabilized, setIsStabilized] = useState(false);
   const initialViewStateRef = useRef<any>(null);
@@ -29,6 +29,9 @@ export const DeckMarkerOverlay: React.FC = () => {
   const [initialIconSize, setInitialIconSize] = useState<number | null>(null);
   const [initialCoordinates, setInitialCoordinates] = useState<[number, number] | null>(null);
   const countryBoundsRef = useRef(countryCode ? getCountryBounds(countryCode) : null);
+  
+  // Store a global cache of icon sizes by country code and coverage
+  const iconSizeCache = useRef<Record<string, number>>({});
   
   // Get container dimensions on mount and when window resizes
   useEffect(() => {
@@ -55,21 +58,61 @@ export const DeckMarkerOverlay: React.FC = () => {
   // Much more aggressive stabilization - wait longer and store the initial state
   useEffect(() => {
     if (isMapLoaded && mapInstance && !isStabilized) {
-      // Ensure the map is completely settled before we consider it stable
-      // Use a longer delay for rendering vs preview
-      const timer = setTimeout(() => {
-        // Store the initial view state when we consider the map stable
-        const currentZoom = mapInstance.getZoom();
-        initialViewStateRef.current = {
-          longitude: mapInstance.getCenter().lng,
-          latitude: mapInstance.getCenter().lat,
-          zoom: currentZoom,
-          pitch: mapInstance.getPitch(),
-          bearing: mapInstance.getBearing(),
+      // Wait for both a minimum delay AND the style to be fully loaded
+      const stabilizationDelay = 500; // Fixed stabilization delay
+      console.log(`Waiting for map style to load with ${stabilizationDelay}ms minimum delay`);
+      
+      // Flag to track if style is loaded and delay has passed
+      let styleLoaded = false;
+      let delayPassed = false;
+      
+      // Check if the style is already loaded
+      if (mapInstance.isStyleLoaded()) {
+        console.log('Map style already loaded');
+        styleLoaded = true;
+      } else {
+        // Listen for style.load event
+        const onStyleLoad = () => {
+          console.log('Map style loaded');
+          styleLoaded = true;
+          tryStabilize();
+          // Remove listener after it fires
+          mapInstance.off('style.load', onStyleLoad);
         };
-        setIsStabilized(true);
-      }, 500); // Much longer delay (500ms instead of 100ms)
-      return () => clearTimeout(timer);
+        
+        mapInstance.on('style.load', onStyleLoad);
+      }
+      
+      // Function to stabilize map if both conditions are met
+      const tryStabilize = () => {
+        if (styleLoaded && delayPassed) {
+          // Store the initial view state when we consider the map stable
+          const currentZoom = mapInstance.getZoom();
+          initialViewStateRef.current = {
+            longitude: mapInstance.getCenter().lng,
+            latitude: mapInstance.getCenter().lat,
+            zoom: currentZoom,
+            pitch: mapInstance.getPitch(),
+            bearing: mapInstance.getBearing(),
+          };
+          setIsStabilized(true);
+          console.log('Map stabilization complete');
+        }
+      };
+      
+      // Wait for the minimum delay
+      const timer = setTimeout(() => {
+        delayPassed = true;
+        tryStabilize();
+      }, stabilizationDelay);
+      
+      return () => {
+        clearTimeout(timer);
+        // Clean up event listener if component unmounts
+        if (mapInstance && !styleLoaded) {
+          mapInstance.off('style.load', tryStabilize);
+        }
+      };
     }
   }, [isMapLoaded, mapInstance, isStabilized]);
 
@@ -85,12 +128,31 @@ export const DeckMarkerOverlay: React.FC = () => {
   }, [countryData?.alpha3]);
   
   // Also reset initialIconSize when iconSize or iconCoverage changes
+  // but NOT when only the theme/style changes
   useEffect(() => {
     setInitialIconSize(null);
-  }, [iconSize, iconCoverage]);
+    
+    // When iconSize or coverage changes, clear the cached value for this country
+    if (countryCode) {
+      const cacheKey = `${countryCode}_${iconCoverage}_${iconScaleFactor}`;
+      if (cacheKey in iconSizeCache.current) {
+        delete iconSizeCache.current[cacheKey];
+      }
+    }
+  }, [iconSize, iconCoverage, iconScaleFactor, countryCode]);
 
-  // Use getIconColor from iconData.ts
+  // Use theme color from iconSettings instead of hardcoded colors
   const getMarkerColor = (type: string = 'marker'): [number, number, number] => {
+    // If iconSettings has a color property, parse it and use that instead
+    if (iconSettings?.color) {
+      // Convert hex color to RGB
+      const hex = iconSettings.color.replace('#', '');
+      const r = parseInt(hex.substring(0, 2), 16);
+      const g = parseInt(hex.substring(2, 4), 16);
+      const b = parseInt(hex.substring(4, 6), 16);
+      return [r, g, b];
+    }
+    // Fallback to the hardcoded colors if no theme color is provided
     return getIconColor(type);
   };
 
@@ -173,16 +235,49 @@ export const DeckMarkerOverlay: React.FC = () => {
       initialIconSize,
       iconCoverage,
       iconScaleFactor,
-      countryCode
+      countryCode,
+      isMapLoaded,
+      isStabilized,
+      hasMapInstance: !!mapInstance,
+      hasCountryBounds: !!countryBoundsRef.current,
+      isStyleLoaded: mapInstance ? mapInstance.isStyleLoaded() : false
     });
+
+    // First check if we have this size in the cache
+    if (countryCode) {
+      const cacheKey = `${countryCode}_${iconCoverage}_${iconScaleFactor}`;
+      if (cacheKey in iconSizeCache.current) {
+        const cachedSize = iconSizeCache.current[cacheKey];
+        console.log(`Using cached icon size from cache: ${cachedSize} for ${cacheKey}`);
+        // Update initialIconSize from cache if not already set
+        if (initialIconSize === null) {
+          setInitialIconSize(cachedSize);
+        }
+        return cachedSize;
+      }
+    }
 
     // If we already have a fixed initial size, use it for consistent animation
     if (initialIconSize !== null) {
+      console.log(`Using cached icon size: ${initialIconSize}`);
+      
+      // Save to cache
+      if (countryCode) {
+        const cacheKey = `${countryCode}_${iconCoverage}_${iconScaleFactor}`;
+        iconSizeCache.current[cacheKey] = initialIconSize;
+      }
+      
       return initialIconSize;
     }
     
+    // Only calculate icon size when map is stabilized to ensure consistency
+    if (!isStabilized) {
+      console.log('Map not stabilized yet, deferring icon size calculation');
+      return 50; // Default temporary size until stabilized
+    }
+    
     // If we have the map instance and country bounds, use the new calculation
-    if (isMapLoaded && mapInstance && countryBoundsRef.current) {
+    if (isMapLoaded && mapInstance && countryBoundsRef.current && mapInstance.isStyleLoaded()) {
       try {
         // Ensure iconCoverage is within a reasonable range (at least 10)
         const effectiveCoverage = iconCoverage || 75;
@@ -211,6 +306,13 @@ export const DeckMarkerOverlay: React.FC = () => {
         
         // Store the initial size so it remains fixed during animation
         setInitialIconSize(finalSize);
+        
+        // Also store in the cache
+        if (countryCode) {
+          const cacheKey = `${countryCode}_${iconCoverage}_${iconScaleFactor}`;
+          iconSizeCache.current[cacheKey] = finalSize;
+          console.log(`Saved icon size ${finalSize} to cache with key ${cacheKey}`);
+        }
         
         return finalSize;
       } catch (error) {
@@ -249,7 +351,7 @@ export const DeckMarkerOverlay: React.FC = () => {
       console.error('Error calculating icon size with fallback method:', error);
       return 40; // Simple fallback on error
     }
-  }, [countryData, iconSize, iconCoverage, iconScaleFactor, initialIconSize, isMapLoaded, mapInstance, countryCode]);
+  }, [countryData, iconSize, iconCoverage, iconScaleFactor, initialIconSize, isMapLoaded, mapInstance, countryCode, isStabilized]);
 
   // Create layers based on marker type
   const layers = useMemo(() => {
@@ -275,7 +377,13 @@ export const DeckMarkerOverlay: React.FC = () => {
             mask: true  // Mask enables transparency
           }),
           getPosition: d => d.coordinates as [number, number],
-          getSize: d => (initialIconSize || computeIconSize) * (d.scale || 1),
+          getSize: d => {
+            // Make sure we have a consistent size value
+            const finalSize = initialIconSize || computeIconSize;
+            // Log to verify size is consistent 
+            if (frame % 30 === 0) console.log(`Using icon size: ${finalSize}`);
+            return finalSize * (d.scale || 1);
+          },
           getColor: d => d.color,
           sizeScale: 1,
           billboard: false, // Keep it flat on the map surface for consistency
@@ -283,8 +391,8 @@ export const DeckMarkerOverlay: React.FC = () => {
           updateTriggers: isInCriticalStartupPeriod ? {} : {
             // Remove getPosition from update triggers to prevent position changes
             getColor: [(opacity: number) => Math.floor(opacity * 5) / 5], // More aggressive discretization
-            // Add getSize to update triggers so it responds to iconSize/iconCoverage/iconScaleFactor changes
-            getSize: [iconSize, iconCoverage, iconScaleFactor, initialIconSize, containerSize]
+            // Add getSize to update triggers only after icon size is stabilized
+            getSize: isStabilized ? [initialIconSize, computeIconSize] : []
           },
           // Disable ALL transitions
           transitions: {
@@ -297,7 +405,7 @@ export const DeckMarkerOverlay: React.FC = () => {
     }
     
     return layers;
-  }, [animatedMarkerData, frame, isStabilized, isInCriticalStartupPeriod, initialIconSize, computeIconSize, iconCoverage, iconScaleFactor]);
+  }, [animatedMarkerData, frame, isStabilized, isInCriticalStartupPeriod, initialIconSize, computeIconSize]);
 
   // Now we can have conditional rendering AFTER all hooks are called
   const shouldRender = isMapLoaded && mapInstance && layers.length > 0 && frame >= 30;

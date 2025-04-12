@@ -3,6 +3,7 @@ import { AbsoluteFill } from 'remotion';
 import { useMapContext } from '../contexts/MapContext';
 import { useConfigContext } from '../contexts/ConfigContext';
 import { useAnimationContext } from '../contexts/AnimationContext';
+import { THEMES } from '../core/themes';
 
 interface MapProps {
   children?: React.ReactNode;
@@ -21,7 +22,7 @@ export const Map: React.FC<MapProps> = ({ children, mapStyle, countryCode }) => 
     mapStatus
   } = useMapContext();
   
-  const { countryData, projectionType, mapStyle: contextMapStyle, backgroundColor: contextBgColor } = useConfigContext();
+  const { countryData, projectionType, mapStyle: contextMapStyle, backgroundColor: contextBgColor, themeType } = useConfigContext();
   const { animationState } = useAnimationContext();
   const { bearing, pitch, animatedCenter, animatedZoom, fillOpacity, lineOpacity } = animationState;
   
@@ -103,6 +104,27 @@ export const Map: React.FC<MapProps> = ({ children, mapStyle, countryCode }) => 
     }
   }, [mapService, isMapLoaded, fillOpacity, lineOpacity]);
   
+  // Update the highlight colors when theme changes
+  useEffect(() => {
+    if (mapService && isMapLoaded) {
+      // Get current theme highlight colors
+      const themeHighlight = THEMES[themeType]?.highlight;
+      console.log('Theme changed to:', themeType);
+      console.log('Theme highlight settings:', themeHighlight);
+      
+      if (themeHighlight && themeHighlight.fillColor && themeHighlight.lineColor) {
+        console.log(`Updating highlight colors: fill=${themeHighlight.fillColor}, line=${themeHighlight.lineColor}`);
+        mapService.updateHighlightColors(themeHighlight.fillColor, themeHighlight.lineColor);
+        
+        // Update opacities to match the theme
+        if (themeHighlight.fillOpacity !== undefined && themeHighlight.lineOpacity !== undefined) {
+          console.log(`Setting highlight opacities: fill=${themeHighlight.fillOpacity}, line=${themeHighlight.lineOpacity}`);
+          mapService.updateLayerOpacity(themeHighlight.fillOpacity, themeHighlight.lineOpacity);
+        }
+      }
+    }
+  }, [mapService, isMapLoaded, themeType]);
+  
   // Monitor map tile loading status
   useEffect(() => {
     // Define functions outside conditionals
@@ -135,20 +157,40 @@ export const Map: React.FC<MapProps> = ({ children, mapStyle, countryCode }) => 
       setMapRenderingStatus("error loading tiles");
     };
     
+    // Add style loading related handlers
+    const styleLoadingListener = () => {
+      console.log("Map style loading started");
+      setMapRenderingStatus("loading style");
+    };
+    
+    const styleLoadedListener = () => {
+      console.log("Map style fully loaded");
+      // After style is loaded, check tile loading
+      checkTilesStatus();
+    };
+    
     // Set initial state regardless of conditions
     if (!mapInstance || !isMapLoaded) {
       setMapRenderingStatus("initializing");
       return; // Early return, but after hooks are defined
     }
     
-    // Start monitoring tile loading
-    setMapRenderingStatus("checking tiles");
-    checkTilesStatus();
+    // Check if style is loaded
+    if (mapInstance && !mapInstance.isStyleLoaded()) {
+      console.log("Style not fully loaded, waiting for style.load event");
+      setMapRenderingStatus("loading style");
+    } else {
+      // Start monitoring tile loading
+      setMapRenderingStatus("checking tiles");
+      checkTilesStatus();
+    }
     
     // Register events - only if we have a map instance
     mapInstance.on('dataloading', loadingListener);
     mapInstance.on('idle', loadedListener); 
     mapInstance.on('error', errorListener);
+    mapInstance.on('styledata', styleLoadingListener);
+    mapInstance.on('styleloaded', styleLoadedListener);
     
     // Cleanup function is always defined
     return () => {
@@ -157,6 +199,8 @@ export const Map: React.FC<MapProps> = ({ children, mapStyle, countryCode }) => 
         mapInstance.off('dataloading', loadingListener);
         mapInstance.off('idle', loadedListener);
         mapInstance.off('error', errorListener);
+        mapInstance.off('styledata', styleLoadingListener);
+        mapInstance.off('styleloaded', styleLoadedListener);
       }
     };
   }, [mapInstance, isMapLoaded]);
@@ -215,7 +259,10 @@ export const Map: React.FC<MapProps> = ({ children, mapStyle, countryCode }) => 
         data-render-status={mapRenderingStatus}
       />
       
-      {mapStatus === 'idle' && mapInstance && children}
+      {/* Only render children when map is truly ready - both loaded and style is ready */}
+      {mapStatus === 'idle' && mapInstance && 
+       (mapInstance.isStyleLoaded() || mapRenderingStatus === 'complete') && 
+       children}
     </AbsoluteFill>
   );
 }; 

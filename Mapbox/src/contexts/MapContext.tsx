@@ -2,7 +2,6 @@ import React, { createContext, useContext, useState, useRef, useEffect, useCallb
 import mapboxgl from 'mapbox-gl';
 import { continueRender, delayRender, useCurrentFrame } from 'remotion';
 import { MapService } from '../services/MapService';
-import { AnimationSettings } from '../core/animationModel';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { ProjectionType } from '../core/mapboxTypes';
 
@@ -28,7 +27,7 @@ interface MapContextValue {
   isMapLoaded: boolean;
   mapLayersReady: boolean;
   mapStatus: MapStatus;
-  syncMapState: (settings: AnimationSettings, countryCode: string) => void;
+  syncMapState: (mapStyle: string, countryCode: string, projection: ProjectionType) => void;
   isMapError: boolean;
   currentCountry: string | null;
   frameRenderHandleRef: React.MutableRefObject<number | null>;
@@ -221,16 +220,16 @@ export const MapProvider: React.FC<MapProviderProps> = ({ children }) => {
     };
   }, [currentFrame, isMapLoaded, mapInstance, createDelayedRender, continueDelayedRender]);
 
-  // The core synchronization logic
-  const syncMapState = useCallback(async (settings: AnimationSettings, countryCode: string) => {
+  // The core synchronization logic - simplified to focus on map functionality only
+  const syncMapState = useCallback(async (mapStyle: string, countryCode: string, projection: ProjectionType = 'mercator') => {
     // Prevent updates if crucial data is missing
-    if (!settings?.general?.mapStyle || !countryCode) {
-      console.warn('SyncMapState skipped: Missing settings or countryCode.');
+    if (!mapStyle || !countryCode) {
+      console.warn('SyncMapState skipped: Missing mapStyle or countryCode.');
       return;
     }
 
-    const newStyleUrl = settings.general.mapStyle;
-    const newProjection = settings.general.projection || 'mercator';
+    const newStyleUrl = mapStyle;
+    const newProjection = projection;
     
     // --- Check current status and decide action --- 
     switch (mapStatus) {
@@ -262,7 +261,8 @@ export const MapProvider: React.FC<MapProviderProps> = ({ children }) => {
             setMapService(service); // Store the new service
           }
 
-          const map = await service.initializeMap(settings, countryCode);
+          // Initialize map with our new parameters
+          const map = await service.initializeMap(mapStyle, countryCode, projection);
           
           // Update state on successful initialization
           setMapInstance(map);
@@ -318,7 +318,8 @@ export const MapProvider: React.FC<MapProviderProps> = ({ children }) => {
           try {
             if (!mapService) throw new Error('Map service missing during style update');
             
-            await mapService.updateMapStyle(newStyleUrl, settings, countryCode);
+            // Update map style with our new parameters
+            await mapService.updateMapStyle(newStyleUrl, countryCode, projection);
             
             // Update refs and state
             setCurrentCountry(countryCode);
@@ -376,8 +377,6 @@ export const MapProvider: React.FC<MapProviderProps> = ({ children }) => {
       default:
          console.warn(`SyncMapState: Unhandled status ${mapStatus}`);
     }
-  // Dependencies: Include mapStatus and mapService to react to their changes.
-  // settings and countryCode are passed as arguments, so don't need to be deps here.
   }, [mapStatus, mapService, createDelayedRender, continueDelayedRender]);
 
   const value: MapContextValue = {
@@ -387,7 +386,7 @@ export const MapProvider: React.FC<MapProviderProps> = ({ children }) => {
     isMapLoaded,
     mapLayersReady,
     mapStatus,
-    syncMapState, // Expose the new function
+    syncMapState,
     isMapError,
     currentCountry,
     frameRenderHandleRef

@@ -28,6 +28,7 @@ export class MapService {
   private mapContainerId: string;
   private isInitialized: boolean = false;
   private areLayersAdded: boolean = false; // Track if highlight layers are added
+  private activeCountry: string | null = null; // Track the active country
 
   /**
    * Create a new MapService
@@ -38,115 +39,161 @@ export class MapService {
   }
   
   /**
+   * Get the container DOM element
+   * @returns The HTML element to use as the map container
+   */
+  private get containerSelector(): HTMLElement | null {
+    return document.getElementById(this.mapContainerId);
+  }
+  
+  /**
+   * Adds the highlight layers to the map
+   * Creates a promise-based wrapper around addHighlightLayersOnce
+   * @returns A promise that resolves when the layers are added
+   */
+  private async addHighlightLayers(): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      if (!this.map || !this.isInitialized) {
+        console.error('Cannot add highlight layers: Map not initialized');
+        reject(new Error('Map not initialized'));
+        return;
+      }
+      
+      try {
+        // Default settings for highlight layers
+        const defaultSettings = {
+          highlight: {
+            fillColor: '#3182CE',
+            lineColor: '#2B6CB0',
+            lineWidth: 2,
+            fillOpacity: 0.4,
+            lineOpacity: 0.8
+          }
+        } as AnimationSettings;
+        
+        // Get active country or use a default
+        const activeCountry = this.activeCountry || 'USA';
+        
+        // Add the layers
+        this.addHighlightLayersOnce(defaultSettings, activeCountry);
+        resolve();
+      } catch (error) {
+        console.error('Error adding highlight layers:', error);
+        reject(error);
+      }
+    });
+  }
+  
+  /**
    * Initialize the map with settings and add highlight layers once.
    * @param settings Animation settings with map configuration
    * @param initialCountryCode The initial country code to highlight.
    * @returns A promise that resolves when the map is loaded and layers are added
    */
-  public async initializeMap(settings: AnimationSettings, initialCountryCode: string): Promise<mapboxgl.Map> {
+  public async initializeMap(
+    mapStyle: string, 
+    initialCountryCode: string,
+    projection: string = 'mercator'
+  ): Promise<mapboxgl.Map> {
     if (this.isInitialized && this.map) {
-      console.log('Map already initialized.');
-      // If layers are already added, just return the map
-      if (this.areLayersAdded) {
-         return this.map;
-      }
-      // Otherwise, proceed to add layers (e.g., if init was called before but layers failed)
+      // Reset the map style if it's already initialized
+      await this.updateMapStyle(mapStyle, initialCountryCode, projection);
+      return this.map;
     }
     
-    const { general } = settings;
+    // Flag to track initialization state
+    this.isInitialized = false; 
     
     return new Promise((resolve, reject) => {
       try {
-        // If map instance doesn't exist, create it
-        if (!this.map) {
-          console.log('Creating Mapbox map instance...');
-          // Force Mapbox token to be set again just in case
-          if (!mapboxgl.accessToken) {
-            console.warn('Mapbox token not set, setting now');
-            mapboxgl.accessToken = 'pk.eyJ1Ijoibm9haG1vcnJpeiIsImEiOiJjbThoZnZvbTAwMWoyMnNxMGQ1MGRyZ3VqIn0.HtrVBbWJzrviJZJn7vr66g';
-          }
-          
-          let container = document.getElementById(this.mapContainerId);
-          if (!container) {
-            container = document.querySelector(`#${this.mapContainerId}`) as HTMLElement;
-          }
-          if (!container) {
-            throw new Error(`Map container with ID ${this.mapContainerId} not found`);
-          }
-          
-          const rect = container.getBoundingClientRect();
-          if (rect.width === 0 || rect.height === 0) {
-            console.warn('Container has zero dimensions, setting explicit size');
-            container.style.width = '100%';
-            container.style.height = '100%';
-            container.style.minHeight = '400px';
-          }
-
-          // Find country data before creating map
-          const countryData = countries[initialCountryCode];
-          const initialZoom = countryData ? countryData.zoomLevel : 1;
-          
-          // Use a simple default center if country data is not available
-          let initialCenter: [number, number] = [0, 0];
-          if (countryData) {
-            // Set center based on country coordinates
-            try {
-              const coords = countryData.coordinates;
-              if (Array.isArray(coords)) {
-                initialCenter = coords as [number, number];
-              } else {
-                // @ts-ignore - Handle object format if needed
-                initialCenter = [coords.lng, coords.lat];
-              }
-            } catch (e) {
-              console.warn('Error setting initial center from country data', e);
-            }
-          }
-
-          this.map = new mapboxgl.Map({
-            container,
-            style: general.mapStyle || 'mapbox://styles/noahmorriz/cm97zlzie00gf01qlaitpaodq',
-            center: initialCenter,
-            zoom: initialZoom,
-            projection: general.projection || 'mercator',
-            interactive: false,
-            attributionControl: false,
-            preserveDrawingBuffer: true,
-            // Always enable renderWorldCopies to handle edge countries properly
-            renderWorldCopies: true,
-            fadeDuration: general.fadeDuration || 0,
-            antialias: true
-          });
-          
-          this.map.on('error', (error) => {
-             console.error('Mapbox error:', error);
-             // We might want to reject the promise here if the error is critical
-             // For now, just log it. Rejection might stop the app.
-             // reject(new Error(`Map initialization error: ${error.error?.message || 'Unknown map error'}`));
-          });
+        console.log(`Initializing map with style ${mapStyle} and country ${initialCountryCode}`);
+        const container = this.containerSelector;
+        if (!container) {
+          reject(new Error('No container selector provided'));
+          return;
+        }
+        
+        // Get country data
+        const countryData = countries[initialCountryCode];
+        
+        // Default zoom and center in case country data is missing
+        let initialZoom = 3.0;
+        let initialCenter: [number, number] = [0, 0];
+        
+        // Set default zoom and padding based on the country data
+        if (countryData) {
+          initialZoom = countryData.zoomLevel || 3;
         }
 
-        // Use 'load' event for initial setup, 'idle' might be better for subsequent operations
-        this.map.once('load', () => {
-          console.log('Map loaded. Initializing source and layers.');
-          this.isInitialized = true; 
-          
-          // Add source and layers
+        if (countryData) {
+          // Set center based on country coordinates
           try {
-            // Pass initial country code to set the filter immediately
-            this.addHighlightLayersOnce(settings, initialCountryCode); 
-            console.log('Map initialized and layers added successfully.');
-            
-            // Map is already positioned correctly during initialization, 
-            // no need to reposition it here
-            
-            resolve(this.map!); 
-          } catch (layerError) {
-            console.error('Error adding highlight layers:', layerError);
-            reject(layerError); // Reject if layers fail to add
+            const coords = countryData.coordinates;
+            if (Array.isArray(coords)) {
+              initialCenter = coords as [number, number];
+            } else {
+              // @ts-ignore - Handle object format if needed
+              initialCenter = [coords.lng, coords.lat];
+            }
+          } catch (e) {
+            console.warn('Error setting initial center from country data', e);
           }
-        });
+        }
 
+        this.map = new mapboxgl.Map({
+          container,
+          style: mapStyle || 'mapbox://styles/noahmorriz/cm97zlzie00gf01qlaitpaodq',
+          center: initialCenter,
+          zoom: initialZoom,
+          projection: projection || 'mercator',
+          interactive: false,
+          attributionControl: false,
+          preserveDrawingBuffer: true,
+          // Always enable renderWorldCopies to handle edge countries properly
+          renderWorldCopies: true,
+          fadeDuration: 0,
+          antialias: true
+        });
+        
+        this.map.on('error', (error) => {
+          console.error('Mapbox error:', error);
+          // We might want to reject the promise here if the error is critical
+          // For now, just log it. Rejection might stop the app.
+          // reject(new Error(`Map initialization error: ${error.error?.message || 'Unknown map error'}`));
+        });
+        
+        this.map.on('styledata', () => {
+          // Style data loaded, but not necessarily all layers and sources
+          console.log('Map style data loaded.');
+        });
+        
+        // Wait for both style load and map idle state
+        this.map.on('load', () => {
+          console.log('Map loaded!');
+          console.time('map-initialization');
+          
+          // Mark as initialized once the initial style and map are loaded
+          this.isInitialized = true;
+          
+          // Set the active country
+          this.activeCountry = initialCountryCode;
+          
+          // Add layers and filters for the initial country
+          this.addHighlightLayers()
+            .then(() => {
+              // Once layers are ready, set the country filter
+              this.updateHighlightFilter(initialCountryCode);
+              
+              console.log(`Finished map initialization for country ${initialCountryCode}`);
+              console.timeEnd('map-initialization');
+              resolve(this.map!);
+            })
+            .catch(error => {
+              console.error('Error initializing map layers:', error);
+              // Still resolve - we can work without highlight layers
+              resolve(this.map!);
+            });
+        });
       } catch (error) {
         console.error('Error initializing map:', error);
         reject(error);
@@ -174,73 +221,22 @@ export class MapService {
       }
       
       // Always enable renderWorldCopies for better handling of edge countries
-      this.map.setRenderWorldCopies(true);
+      // This might be necessary if the default view shows multiple world copies
+      this.map.setRenderWorldCopies(true); 
+
+      // Always use jumpTo with the specified coordinates and zoom level
+      const center = countryData.visualCenter || countryData.coordinates;
+      const zoom = countryData.zoomLevel;
       
-      // For large countries, northern countries, or countries with precise bounds, compute a bounding box
-      if (LARGE_COUNTRIES.includes(countryCode) || NORTHERN_COUNTRIES.includes(countryCode)) {
-        // Create a generous bounding box around the center point
-        const [lng, lat] = countryData.coordinates;
-        
-        // Larger offset for northern countries to ensure they're fully visible
-        const isNorthern = NORTHERN_COUNTRIES.includes(countryCode);
-        const baseOffset = countryData.zoomLevel < 5 ? 30 : 15; // Larger offset for larger countries
-        const offset = isNorthern ? Math.max(baseOffset, 40) : baseOffset; // Even larger for northern countries
-        
-        // For extreme northern countries, add extra padding to ensure visibility
-        const northPadding = isNorthern ? 150 : 50;
-        const otherPadding = 50;
-        
-        // Calculate bounds with offset adjusted based on longitude
-        // This helps countries near the date line by shifting the bounding box
-        const westOffset = lng > 160 || lng < -160 ? 40 : offset;
-        const eastOffset = lng > 160 || lng < -160 ? 40 : offset;
-        
-        // For northern countries, extend the bounding box more to the south
-        const northOffset = isNorthern ? offset * 0.5 : offset;
-        const southOffset = isNorthern ? offset * 1.5 : offset;
-        
-        const bounds = new mapboxgl.LngLatBounds(
-          [lng - westOffset, lat - southOffset],
-          [lng + eastOffset, lat + northOffset]
-        );
-        
-        // Fit bounds with appropriate padding
-        this.map.fitBounds(bounds, {
-          padding: {
-            top: northPadding,    // More padding at the top for northern countries
-            bottom: otherPadding,
-            left: otherPadding,
-            right: otherPadding
-          },
-          duration: 0,
-          maxZoom: isNorthern ? 3 : 6 // Lower max zoom for northern countries
-        });
-        
-        // For countries very close to the date line, ensure proper centering
-        if (lng > 160 || lng < -160) {
-          // Allow a brief moment for the fitBounds to take effect
-          setTimeout(() => {
-            // For countries very close to the edge, adjust center to ensure visibility
-            const center = this.map!.getCenter();
-            
-            // Adjust longitude based on where the country is
-            let adjustedLng = center.lng;
-            if (lng > 160) adjustedLng -= 10; // Shift west for far east countries
-            if (lng < -160) adjustedLng += 10; // Shift east for far west countries
-            
-            this.map!.setCenter([adjustedLng, center.lat]);
-          }, 50);
-        }
-        
-        return true;
-      } else {
-        // For normal countries, just center and zoom
-        this.map.jumpTo({
-          center: countryData.coordinates,
-          zoom: countryData.zoomLevel
-        });
-        return true;
-      }
+      console.log(`Positioning map for ${countryCode}: Center=${center}, Zoom=${zoom}`);
+      
+      this.map.jumpTo({
+        center: center,
+        zoom: zoom
+      });
+      
+      return true;
+      
     } catch (error) {
       console.error('Error positioning map for country:', error);
       return false;
@@ -371,8 +367,10 @@ export class MapService {
          console.warn(`Layer ${COUNTRY_HIGHLIGHT_LINE_LAYER_ID} not found for filtering.`);
       }
       
-      // Position the map for the current country
-      this.positionMapForCountry(countryCode);
+      // Remove the redundant call to positionMapForCountry during initialization/filter update
+      // The initial position is set by the map constructor.
+      // Subsequent positioning happens via updateCamera or explicit calls when country changes.
+      // this.positionMapForCountry(countryCode);
       
       console.log(`Filter updated successfully for ${countryCode}`);
     } catch (error) {
@@ -513,73 +511,66 @@ export class MapService {
    * @param settings Current animation settings (needed for re-adding layers).
    * @param currentCountryCode The country currently highlighted (needed for re-applying filter).
    */
-  public async updateMapStyle(newStyleUrl: string, settings: AnimationSettings, currentCountryCode: string): Promise<void> {
-    if (!this.map || !this.isInitialized) {
-      console.error('Cannot update style: Map not initialized.');
-      return Promise.reject('Map not initialized');
-    }
-    if (this.map?.getStyle()?.sprite === newStyleUrl) { 
-        console.log(`Style ${newStyleUrl} is already set.`);
-        return Promise.resolve();
-    }
-
-    console.log(`Updating map style to: ${newStyleUrl}`);
-
-    // Get simplification mode from settings
-    const simplificationMode = settings.general.mapSimplificationMode || 'minimal';
-    
-    // Skip simplification only if mode is explicitly set to 'none'
-    if (simplificationMode === 'none') {
-      console.log('Map simplification disabled, using original style');
-      // Proceed with standard style update
-    } else {
-      // Apply simplification for all styles by default
-      return this.applySimplifiedStyle(newStyleUrl, settings, currentCountryCode, simplificationMode);
-    }
-
-    // Reset the layer added flag as setStyle removes them
-    // We set it to false temporarily; addHighlightLayersOnce will set it back to true.
-    this.areLayersAdded = false; 
-
+  public async updateMapStyle(
+    newStyleUrl: string, 
+    countryCode: string,
+    projection: string = 'mercator'
+  ): Promise<void> {
     return new Promise((resolve, reject) => {
-      // Handle potential errors during style loading itself
-      const onError = (error: any) => {
-         console.error('Error loading new map style:', error);
-         this.map?.off('error', onError); // Clean up listener
-         reject(error);
-      };
-      this.map?.once('error', onError);
-
-      // Listen for the style.load event *once*
-      this.map?.once('style.load', () => {
-        this.map?.off('error', onError); // Clean up error listener on success
-        console.log('New map style loaded.');
-        try {
-          // Re-add the source and layers using the existing private method,
-          // passing the current country code to set the filter correctly.
-          this.addHighlightLayersOnce(settings, currentCountryCode); 
-
-          // No longer need a separate updateHighlightFilter call here.
-          if (this.areLayersAdded) {
-             console.log(`Source, layers re-added with filter for ${currentCountryCode} after style change.`);
-             
-             // Position the map for the current country
-             this.positionMapForCountry(currentCountryCode);
-             
-             resolve(); // Resolve the promise successfully
-          } else {
-             console.error('Failed to re-add layers after style change.');
-             reject('Failed to re-add layers after style change.');
-          }
-
-        } catch (error) {
-          console.error('Error re-adding layers/filter after style change:', error);
-          reject(error); // Reject the promise if re-adding fails
-        }
-      });
-
-      // Initiate the style change
-      this.map?.setStyle(newStyleUrl);
+      if (!this.map || !this.isInitialized) {
+        console.error('Cannot update style: Map not initialized');
+        reject(new Error('Map not initialized'));
+        return;
+      }
+      
+      try {
+        console.log(`Updating map style to: ${newStyleUrl}`);
+        
+        // Store the current view state
+        const currentCenter = this.map.getCenter();
+        const currentZoom = this.map.getZoom();
+        const currentBearing = this.map.getBearing();
+        const currentPitch = this.map.getPitch();
+        
+        // Reset areLayersAdded flag since we're changing style
+        this.areLayersAdded = false;
+          
+        // Set the new projection first
+        this.map.setProjection(projection as any);
+        
+        // Set the new style
+        this.map.setStyle(newStyleUrl);
+        
+        // Listen for style load
+        this.map.once('styledata', () => {
+          // Restore view state after style is loaded
+          this.map!.jumpTo({
+            center: currentCenter,
+            zoom: currentZoom,
+            bearing: currentBearing,
+            pitch: currentPitch
+          });
+          
+          console.log('Map style updated, recreating layers...');
+          
+          // Re-create the highlight layers for the new style
+          this.addHighlightLayers()
+            .then(() => {
+              // Update the country highlight for the current country
+              this.updateHighlightFilter(countryCode);
+              console.log('Style update complete');
+              resolve();
+            })
+            .catch(error => {
+              console.error('Error creating highlight layers:', error);
+              // Still resolve since we can work without highlight
+              resolve();
+            });
+        });
+      } catch (error) {
+        console.error('Error updating map style:', error);
+        reject(error);
+      }
     });
   }
 

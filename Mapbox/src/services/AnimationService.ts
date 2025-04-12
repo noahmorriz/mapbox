@@ -1,28 +1,18 @@
 import { useCurrentFrame, useVideoConfig, spring } from 'remotion';
-import { AnimationSettings, AnimationFrameState } from '../core/animationModel';
+import { 
+  AnimationFrameState, 
+  HighlightSettings, 
+  CameraSettings, 
+  ZoomSettings 
+} from '../core/animationModel';
+import { AnimationTimeline, getAnimationFrames, getAnimationPhase } from '../core/animationTiming';
 import { Coordinates } from '../core/mapboxTypes';
-import { createAnimationTimeline, getAnimationFrames, getAnimationPhase } from '../core/animationTiming';
+import { createAnimationTimeline } from '../core/animationTiming';
 
-// Define MotionSettings type directly here
+// Define MotionSettings type locally combining Camera and Zoom settings
 interface MotionSettings {
-  camera: {
-    initialRotation: number;
-    finalRotation: number;
-    initialPitch: number;
-    finalPitch: number;
-    rotationDamping: number;
-    rotationStiffness: number;
-    rotationMass: number;
-    pitchDamping: number;
-    pitchStiffness: number;
-    pitchMass: number;
-  };
-  zoom: {
-    zoomDamping: number;
-    zoomStiffness: number;
-    zoomMass: number;
-    zoomLevelOffset?: number;
-  };
+  camera: CameraSettings;
+  zoom: ZoomSettings & { zoomLevelOffset?: number };
 }
 
 // Default animation state if an error occurs
@@ -35,24 +25,26 @@ const DEFAULT_ANIMATION_STATE = {
   lineOpacity: 0,
 };
 
-// Helper to safely get value from potentially undefined object
+// Restore local getSafe helper function
 const getSafe = <T, K extends keyof T>(obj: T | undefined, key: K, defaultValue: T[K]): T[K] => {
   if (!obj) return defaultValue;
+  // Check if the key exists and the value is not undefined
   return obj[key] !== undefined ? obj[key] : defaultValue;
 };
 
 /**
- * Calculates all animation values for a specific frame
+ * Calculates all animation values for a specific frame - Updated for new context structure
  * 
  * All timing values are based on 30fps throughout this file
  * All countries now share identical animation behavior
  * 
  * @param frame Current frame number
  * @param fps Frames per second
- * @param settings Animation settings
- * @param countryCoordinates Country coordinates
+ * @param coordinates Country coordinates
  * @param zoomLevel Target zoom level
  * @param motionSettings Motion settings
+ * @param timing Animation timing settings
+ * @param highlightSettings Highlight settings
  * @param additionalInfo Whether additional info is shown
  * @param countryCode Country code for animation orchestration
  * @returns Animation state for the current frame
@@ -60,26 +52,22 @@ const getSafe = <T, K extends keyof T>(obj: T | undefined, key: K, defaultValue:
 export const calculateAnimationFrame = (
   frame: number,
   fps: number,
-  settings: AnimationSettings,
-  countryCoordinates: Coordinates,
+  coordinates: any, // Accept any type for coordinates
   zoomLevel: number,
   motionSettings: MotionSettings,
+  timing: AnimationTimeline,
+  highlightSettings: HighlightSettings,
   additionalInfo?: string,
   countryCode: string = 'default'
 ): Omit<AnimationFrameState, 'labelOpacity' | 'labelScale' | 'labelY'> => {
   // Validate inputs to prevent errors
-  if (!settings || !settings.camera || !settings.highlight || !settings.general) {
-    console.error('Invalid animation settings:', settings);
-    return DEFAULT_ANIMATION_STATE;
-  }
-  
-  // Validate country coordinates based on type
-  if (!countryCoordinates) {
+  if (!coordinates) {
     console.error('Invalid country coordinates: undefined');
     return DEFAULT_ANIMATION_STATE;
   }
-  if (Array.isArray(countryCoordinates) && countryCoordinates.length !== 2) {
-    console.error('Invalid country coordinates array:', countryCoordinates);
+  
+  if (Array.isArray(coordinates) && coordinates.length !== 2) {
+    console.error('Invalid country coordinates array:', coordinates);
     return DEFAULT_ANIMATION_STATE;
   } 
   
@@ -89,19 +77,17 @@ export const calculateAnimationFrame = (
   }
   
   try {
-    const { camera, highlight, general } = settings;
+    const camera = motionSettings.camera;
     
-    // Always use the standardized animation timing system
-    // Country code is now disregarded to ensure consistent behavior
-    const timeline = createAnimationTimeline('FRA', settings.timing);
-    const animationFrames = getAnimationFrames(timeline, 0); // 0 is base frame
-    
-    // Get the animation phases for the current frame
+    // Calculate animation frame points using the helper function
+    const animationFrames = getAnimationFrames(timing, 0); // Assuming baseFrame is 0 for now
+
+    // Define phases based on the current frame and calculated points
     const phases = getAnimationPhase(frame, animationFrames);
     
     // Debug logging
     if (frame % 15 === 0) {
-      console.log(`Standard animation timing:`, { 
+      console.log(`Animation timing:`, { 
         frame, 
         phases,
         animationFrames
@@ -134,9 +120,15 @@ export const calculateAnimationFrame = (
     });
     
     // Use the country coordinates - Handle both array and object types
-    const animatedCenter: [number, number] = Array.isArray(countryCoordinates)
-      ? countryCoordinates // If it's an array [lng, lat]
-      : [countryCoordinates.lng, countryCoordinates.lat]; // If it's an object {lng, lat}
+    let animatedCenter: [number, number];
+    if (Array.isArray(coordinates) && coordinates.length === 2) {
+      animatedCenter = coordinates as [number, number];
+    } else if (coordinates && typeof coordinates === 'object' && 'lng' in coordinates && 'lat' in coordinates) {
+      animatedCenter = [coordinates.lng, coordinates.lat];
+    } else {
+      // Fallback
+      animatedCenter = [0, 0];
+    }
     
     // Apply zoom level offset safely
     const zoomLevelOffset = getSafe(motionSettings.zoom, 'zoomLevelOffset', 0);
@@ -164,11 +156,11 @@ export const calculateAnimationFrame = (
         Math.max(0, (frame - animationFrames.highlightStart)) : 0,
       fps,
       from: 0,
-      to: getSafe(highlight, 'fillOpacityTarget', 0.5),
+      to: highlightSettings.fillOpacityTarget,
       config: { 
-        damping: getSafe(highlight, 'fillAnimationDamping', 25), 
-        stiffness: getSafe(highlight, 'fillAnimationStiffness', 80), 
-        mass: getSafe(highlight, 'fillAnimationMass', 1)
+        damping: highlightSettings.fillAnimationDamping,
+        stiffness: highlightSettings.fillAnimationStiffness,
+        mass: highlightSettings.fillAnimationMass
       },
     });
     
@@ -178,11 +170,11 @@ export const calculateAnimationFrame = (
         Math.max(0, (frame - animationFrames.highlightStart)) : 0,
       fps,
       from: 0,
-      to: getSafe(highlight, 'lineOpacityTarget', 0.8),
+      to: highlightSettings.lineOpacityTarget,
       config: { 
-        damping: getSafe(highlight, 'lineAnimationDamping', 25), 
-        stiffness: getSafe(highlight, 'lineAnimationStiffness', 80), 
-        mass: getSafe(highlight, 'lineAnimationMass', 1)
+        damping: highlightSettings.lineAnimationDamping,
+        stiffness: highlightSettings.lineAnimationStiffness,
+        mass: highlightSettings.lineAnimationMass
       },
     });
 
@@ -204,10 +196,11 @@ export const calculateAnimationFrame = (
  * Hook that provides animation values for the current frame
  */
 export const useAnimationFrame = (
-  settings: AnimationSettings,
-  countryCoordinates: Coordinates,
+  coordinates: any,
   zoomLevel: number,
   motionSettings: MotionSettings,
+  timing: AnimationTimeline,
+  highlightSettings: HighlightSettings,
   additionalInfo?: string
 ): Omit<AnimationFrameState, 'labelOpacity' | 'labelScale' | 'labelY'> => {
   const frame = useCurrentFrame();
@@ -217,10 +210,11 @@ export const useAnimationFrame = (
     return calculateAnimationFrame(
       frame,
       fps,
-      settings,
-      countryCoordinates,
+      coordinates,
       zoomLevel,
       motionSettings,
+      timing,
+      highlightSettings,
       additionalInfo
     );
   } catch (error) {

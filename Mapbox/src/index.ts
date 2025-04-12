@@ -14,5 +14,5 @@ export * from './core/animationModel';
 
 // Export subcomponents
 export { Map } from './components/Map';
-export { CountryLayer } from './components/CountryLayer';
+// export { CountryLayer } from './components/CountryLayer';
 export { DeckMarkerOverlay } from './components/DeckMarkerOverlay';

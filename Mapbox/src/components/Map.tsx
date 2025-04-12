@@ -6,9 +6,11 @@ import { useAnimationContext } from '../contexts/AnimationContext';
 
 interface MapProps {
   children?: React.ReactNode;
+  mapStyle?: string;
+  countryCode?: string;
 }
 
-export const Map: React.FC<MapProps> = ({ children }) => {
+export const Map: React.FC<MapProps> = ({ children, mapStyle, countryCode }) => {
   const { 
     mapContainerRef, 
     syncMapState,
@@ -19,24 +21,26 @@ export const Map: React.FC<MapProps> = ({ children }) => {
     mapStatus
   } = useMapContext();
   
-  const { countryData, settings } = useConfigContext();
+  const { countryData, projectionType, mapStyle: contextMapStyle, backgroundColor: contextBgColor } = useConfigContext();
   const { animationState } = useAnimationContext();
-  const { bearing, pitch, animatedCenter, animatedZoom } = animationState;
+  const { bearing, pitch, animatedCenter, animatedZoom, fillOpacity, lineOpacity } = animationState;
   
   const [mapCompError, setMapCompError] = useState<string | null>(null);
   const [mapRenderingStatus, setMapRenderingStatus] = useState<string>("initializing");
   // Add a ref to track if the map container is ready
   const containerReadyRef = useRef<boolean>(false);
   
+  // Use provided props or fall back to context values
+  const effectiveCountryCode = countryCode || countryData?.alpha3;
+  const effectiveMapStyle = mapStyle || contextMapStyle;
+  
   useEffect(() => {
     console.log('Map.tsx: Sync effect running.');
-    const currentSettings = settings;
-    const currentCountryCode = countryData?.alpha3;
 
-    if (!currentSettings || !currentSettings.general?.mapStyle || !currentCountryCode) {
-      console.warn('Map.tsx: Sync skipped - Missing settings, style URL, or country code.', 
-         { hasSettings: !!currentSettings, hasStyle: !!currentSettings?.general?.mapStyle, hasCode: !!currentCountryCode });
-      setMapCompError('Invalid settings or country data provided to Map component.');
+    if (!effectiveMapStyle || !effectiveCountryCode) {
+      console.warn('Map.tsx: Sync skipped - Missing style URL or country code.', 
+         { hasStyle: !!effectiveMapStyle, hasCode: !!effectiveCountryCode });
+      setMapCompError('Invalid map style or country code provided to Map component.');
       return;
     } else {
        setMapCompError(null);
@@ -52,10 +56,10 @@ export const Map: React.FC<MapProps> = ({ children }) => {
     // Mark container as ready
     containerReadyRef.current = true;
 
-    console.log(`Map.tsx: Calling syncMapState with country ${currentCountryCode} and style ${currentSettings.general.mapStyle}`);
-    syncMapState(currentSettings, currentCountryCode);
+    console.log(`Map.tsx: Calling syncMapState with country ${effectiveCountryCode} and style ${effectiveMapStyle}`);
+    syncMapState(effectiveMapStyle, effectiveCountryCode, projectionType);
 
-  }, [settings, countryData?.alpha3, syncMapState]);
+  }, [effectiveMapStyle, effectiveCountryCode, projectionType, syncMapState]);
   
   // Add effect to check for container element
   useEffect(() => {
@@ -68,16 +72,16 @@ export const Map: React.FC<MapProps> = ({ children }) => {
           containerReadyRef.current = true;
           
           // Trigger map sync when container becomes available
-          if (settings && countryData?.alpha3) {
+          if (effectiveMapStyle && effectiveCountryCode) {
             console.log('Map container found, initializing map');
-            syncMapState(settings, countryData.alpha3);
+            syncMapState(effectiveMapStyle, effectiveCountryCode, projectionType);
           }
         }
       }, 100);
       
       return () => clearInterval(checkContainer);
     }
-  }, [syncMapState, settings, countryData?.alpha3]);
+  }, [syncMapState, effectiveMapStyle, effectiveCountryCode, projectionType]);
   
   useEffect(() => {
     if (mapService && isMapLoaded) {
@@ -86,10 +90,18 @@ export const Map: React.FC<MapProps> = ({ children }) => {
         animatedZoom,
         bearing,
         pitch,
-        countryData?.alpha3
+        effectiveCountryCode
       );
     }
-  }, [mapService, isMapLoaded, animatedCenter, animatedZoom, bearing, pitch, countryData?.alpha3]);
+  }, [mapService, isMapLoaded, animatedCenter, animatedZoom, bearing, pitch, effectiveCountryCode]);
+  
+  // Add Effect to update layer opacity based on animation state
+  useEffect(() => {
+    if (mapService && isMapLoaded) {
+      // Update highlight layer opacities
+      mapService.updateLayerOpacity(fillOpacity, lineOpacity);
+    }
+  }, [mapService, isMapLoaded, fillOpacity, lineOpacity]);
   
   // Monitor map tile loading status
   useEffect(() => {
@@ -149,8 +161,11 @@ export const Map: React.FC<MapProps> = ({ children }) => {
     };
   }, [mapInstance, isMapLoaded]);
   
+  // Get background color from context or fallback to white
+  const backgroundColor = contextBgColor || '#ffffff';
+  
   const bgStyle: React.CSSProperties = {
-    backgroundColor: settings?.general?.backgroundColor || '#ffffff',
+    backgroundColor,
   };
   
   const containerStyle: React.CSSProperties = {

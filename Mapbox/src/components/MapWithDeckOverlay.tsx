@@ -3,7 +3,6 @@ import { AbsoluteFill } from 'remotion';
 import { useCurrentFrame } from 'remotion';
 import { useMapContext } from '../contexts/MapContext';
 import { useConfigContext } from '../contexts/ConfigContext';
-import { CountryLayer } from './CountryLayer';
 import { ICON_SVGS } from '../core/iconData';
 
 // Use the skull icon from our centralized icon data
@@ -174,12 +173,12 @@ export const MapWithDeckOverlay: React.FC<{ children?: React.ReactNode }> = ({ c
     if (!initialized || !mapInstance || !layerAddedRef.current) return;
     
     // Animation parameters from settings
-    const labelDelayFrames = settings?.general?.labelDelayFrames || 30;
-    const labelFadeDuration = settings?.general?.labelFadeDuration || 15;
-    const animationStartFrame = settings?.general?.animationStartFrame || 0;
+    const labelDelay = settings?.timing?.labelDelay || 30;
+    const labelFadeDuration = settings?.timing?.labelFadeDuration || 15;
+    const stabilizationBuffer = settings?.timing?.stabilizationBuffer || 0;
     
     // Wait until we're past the delay to start animation
-    if (frame < animationStartFrame + labelDelayFrames) {
+    if (frame < stabilizationBuffer + labelDelay) {
       if (animationStartedRef.current) {
         animationStartedRef.current = false;
       }
@@ -187,7 +186,7 @@ export const MapWithDeckOverlay: React.FC<{ children?: React.ReactNode }> = ({ c
     }
     
     // Calculate opacity step (0-20)
-    const progress = (frame - (animationStartFrame + labelDelayFrames)) / labelFadeDuration;
+    const progress = (frame - (stabilizationBuffer + labelDelay)) / labelFadeDuration;
     const newOpacityStep = Math.min(20, Math.floor(progress * 20));
     
     // Only update the layer if the opacity step has changed
@@ -246,7 +245,6 @@ export const MapWithDeckOverlay: React.FC<{ children?: React.ReactNode }> = ({ c
         id="map-container"
         style={{ width: '100%', height: '100%', position: 'relative' }}
       />
-      <CountryLayer />
       {children}
     </AbsoluteFill>
   );

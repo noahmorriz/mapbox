@@ -129,6 +129,23 @@ export interface AnimationProps {
    * ensuring proper display for countries with distant territories.
    */
   iconSize?: number;
+  /**
+   * Icon coverage as a percentage of the country's rendered smaller dimension (1-95)
+   * - 75: Icon covers 75% of the country's smaller dimension
+   * - 50: Icon covers 50% of the country's smaller dimension
+   * 
+   * Coverage is calculated based on the country's actual rendered dimensions on the map,
+   * adapting to projection, zoom level, and country shape.
+   */
+  iconCoverage?: number;
+  /**
+   * Additional scaling factor applied to the icon after size calculation (default: 1.0)
+   * - Values < 1.0: Make the icon smaller than the calculated size
+   * - Values > 1.0: Make the icon larger than the calculated size
+   * 
+   * This allows fine-tuning the icon size without changing the coverage percentage.
+   */
+  iconScaleFactor?: number;
   projection?: ProjectionType;
   
   // Show/hide controls

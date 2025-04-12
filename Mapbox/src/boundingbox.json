@@ -1,0 +1,4130 @@
+[
+    {
+        "country": "Indonesia",
+        "iso_code": "IDN",
+        "bbox": {
+            "minx": 108.855479,
+            "miny": -4.184177,
+            "maxx": 119.011729,
+            "maxy": 4.396787,
+            "width": 10.15625,
+            "height": 8.580964
+        },
+        "visual_center": {
+            "longitude": 114.2185815,
+            "latitude": -0.9663155000000001
+        }
+    },
+    {
+        "country": "Malaysia",
+        "iso_code": "MYS",
+        "bbox": {
+            "minx": 109.528436,
+            "miny": 0.85137,
+            "maxx": 119.278087,
+            "maxy": 7.02676,
+            "width": 9.749651,
+            "height": 6.17539
+        },
+        "visual_center": {
+            "longitude": 114.1599785,
+            "latitude": 2.3952175
+        }
+    },
+    {
+        "country": "Chile",
+        "iso_code": "CHL",
+        "bbox": {
+            "minx": -75.711415,
+            "miny": -53.886,
+            "maxx": -67.013967,
+            "maxy": -17.506588,
+            "width": 8.697448000000009,
+            "height": 36.379412
+        },
+        "visual_center": {
+            "longitude": -69.7319195,
+            "latitude": -26.162884499999976
+        }
+    },
+    {
+        "country": "Bolivia",
+        "iso_code": "BOL",
+        "bbox": {
+            "minx": -69.666492,
+            "miny": -22.897258,
+            "maxx": -57.465661,
+            "maxy": -9.679821,
+            "width": 12.200831000000008,
+            "height": 13.217437
+        },
+        "visual_center": {
+            "longitude": -64.68475368279191,
+            "latitude": -16.706876795999225
+        }
+    },
+    {
+        "country": "Peru",
+        "iso_code": "PER",
+        "bbox": {
+            "minx": -81.337558,
+            "miny": -18.337746,
+            "maxx": -68.684252,
+            "maxy": -0.029093,
+            "width": 12.653306,
+            "height": 18.308653
+        },
+        "visual_center": {
+            "longitude": -73.03382593750003,
+            "latitude": -13.197340437499998
+        }
+    },
+    {
+        "country": "Argentina",
+        "iso_code": "ARG",
+        "bbox": {
+            "minx": -73.57274,
+            "miny": -52.390749,
+            "maxx": -53.661552,
+            "maxy": -21.786938,
+            "width": 19.911187999999996,
+            "height": 30.603811
+        },
+        "visual_center": {
+            "longitude": -64.23937062499999,
+            "latitude": -31.857336375000006
+        }
+    },
+    {
+        "country": "Dhekelia Sovereign Base Area",
+        "iso_code": "-99",
+        "bbox": {
+            "minx": 33.674099,
+            "miny": 34.937893,
+            "maxx": 33.921474,
+            "maxy": 35.118994,
+            "width": 0.24737500000000523,
+            "height": 0.18110099999999818
+        },
+        "visual_center": {
+            "longitude": 33.79245677859315,
+            "latitude": 35.017688652573675
+        }
+    },
+    {
+        "country": "Cyprus",
+        "iso_code": "CYP",
+        "bbox": {
+            "minx": 32.271739,
+            "miny": 34.625019,
+            "maxx": 33.702935,
+            "maxy": 35.187082,
+            "width": 1.431196,
+            "height": 0.5620629999999949
+        },
+        "visual_center": {
+            "longitude": 33.11483349999999,
+            "latitude": 34.9060505
+        }
+    },
+    {
+        "country": "India",
+        "iso_code": "IND",
+        "bbox": {
+            "minx": 68.143403,
+            "miny": 8.075995,
+            "maxx": 97.362253,
+            "maxy": 35.495406,
+            "width": 29.21884999999999,
+            "height": 27.419411000000004
+        },
+        "visual_center": {
+            "longitude": 79.28253871875,
+            "latitude": 22.642557093750003
+        }
+    },
+    {
+        "country": "China",
+        "iso_code": "CHN",
+        "bbox": {
+            "minx": 73.602256,
+            "miny": 20.238267,
+            "maxx": 134.772579,
+            "maxy": 53.569444,
+            "width": 61.17032300000001,
+            "height": 33.331177
+        },
+        "visual_center": {
+            "longitude": 109.53743120312498,
+            "latitude": 32.216658734375
+        }
+    },
+    {
+        "country": "Israel",
+        "iso_code": "ISR",
+        "bbox": {
+            "minx": 34.248351,
+            "miny": 29.489691,
+            "maxx": 35.888073,
+            "maxy": 33.406722,
+            "width": 1.639721999999999,
+            "height": 3.9170310000000015
+        },
+        "visual_center": {
+            "longitude": 34.6582815,
+            "latitude": 30.719482499999998
+        }
+    },
+    {
+        "country": "Palestine",
+        "iso_code": "PSE",
+        "bbox": {
+            "minx": 34.867153,
+            "miny": 31.34491,
+            "maxx": 35.572536,
+            "maxy": 32.54264,
+            "width": 0.7053829999999977,
+            "height": 1.19773
+        },
+        "visual_center": {
+            "longitude": 35.2198445,
+            "latitude": 32.402984499999995
+        }
+    },
+    {
+        "country": "Lebanon",
+        "iso_code": "LBN",
+        "bbox": {
+            "minx": 35.09962,
+            "miny": 33.05558,
+            "maxx": 36.604101,
+            "maxy": 34.687548,
+            "width": 1.5044809999999984,
+            "height": 1.6319680000000005
+        },
+        "visual_center": {
+            "longitude": 36.22798075,
+            "latitude": 34.18394075
+        }
+    },
+    {
+        "country": "Ethiopia",
+        "iso_code": "ETH",
+        "bbox": {
+            "minx": 32.9898,
+            "miny": 3.403333,
+            "maxx": 47.979169,
+            "maxy": 14.879532,
+            "width": 14.989368999999996,
+            "height": 11.476199
+        },
+        "visual_center": {
+            "longitude": 38.369268281249994,
+            "latitude": 8.78280128125
+        }
+    },
+    {
+        "country": "South Sudan",
+        "iso_code": "SSD",
+        "bbox": {
+            "minx": 24.121556,
+            "miny": 3.490202,
+            "maxx": 35.920835,
+            "maxy": 12.216155,
+            "width": 11.799278999999995,
+            "height": 8.725953
+        },
+        "visual_center": {
+            "longitude": 30.301119588363918,
+            "latitude": 7.2835306619022475
+        }
+    },
+    {
+        "country": "Somalia",
+        "iso_code": "SOM",
+        "bbox": {
+            "minx": 40.965385,
+            "miny": -1.696303,
+            "maxx": 51.417038,
+            "maxy": 11.989119,
+            "width": 10.451653,
+            "height": 13.685422
+        },
+        "visual_center": {
+            "longitude": 42.92506993749999,
+            "latitude": 2.8762951875000002
+        }
+    },
+    {
+        "country": "Kenya",
+        "iso_code": "KEN",
+        "bbox": {
+            "minx": 33.890468,
+            "miny": -4.677504,
+            "maxx": 41.885019,
+            "maxy": 5.030376,
+            "width": 7.994551000000001,
+            "height": 9.70788
+        },
+        "visual_center": {
+            "longitude": 37.82148805070403,
+            "latitude": 0.5515463365273315
+        }
+    },
+    {
+        "country": "Malawi",
+        "iso_code": "MWI",
+        "bbox": {
+            "minx": 32.663308,
+            "miny": -17.135335,
+            "maxx": 35.904299,
+            "maxy": -9.381235,
+            "width": 3.240991000000001,
+            "height": 7.754100000000001
+        },
+        "visual_center": {
+            "longitude": 33.878679625000004,
+            "latitude": -13.489220125
+        }
+    },
+    {
+        "country": "United Republic of Tanzania",
+        "iso_code": "TZA",
+        "bbox": {
+            "minx": 29.321032,
+            "miny": -11.731272,
+            "maxx": 40.449392,
+            "maxy": -0.98583,
+            "width": 11.128360000000004,
+            "height": 10.745442
+        },
+        "visual_center": {
+            "longitude": 34.02216287500001,
+            "latitude": -5.6869608750000005
+        }
+    },
+    {
+        "country": "Syria",
+        "iso_code": "SYR",
+        "bbox": {
+            "minx": 35.723399,
+            "miny": 32.313042,
+            "maxx": 42.377186,
+            "maxy": 37.324906,
+            "width": 6.653787000000001,
+            "height": 5.011863999999996
+        },
+        "visual_center": {
+            "longitude": 38.50456478766346,
+            "latitude": 35.023003439210655
+        }
+    },
+    {
+        "country": "Somaliland",
+        "iso_code": "-99",
+        "bbox": {
+            "minx": 42.647247,
+            "miny": 7.996516,
+            "maxx": 48.939112,
+            "maxy": 11.498928,
+            "width": 6.291865000000001,
+            "height": 3.5024119999999996
+        },
+        "visual_center": {
+            "longitude": 47.4630635,
+            "latitude": 9.3099205
+        }
+    },
+    {
+        "country": "France",
+        "iso_code": "-99",
+        "bbox": {
+            "minx": -4.784901,
+            "miny": 42.325661,
+            "maxx": 8.200305,
+            "maxy": 51.087541,
+            "width": 12.985206,
+            "height": 8.761880000000005
+        },
+        "visual_center": {
+            "longitude": 2.4521778816551882,
+            "latitude": 46.62056349021509
+        }
+    },
+    {
+        "country": "Suriname",
+        "iso_code": "SUR",
+        "bbox": {
+            "minx": -58.067691,
+            "miny": 1.833507,
+            "maxx": -53.986357,
+            "maxy": 6.011574,
+            "width": 4.081334000000005,
+            "height": 4.178067
+        },
+        "visual_center": {
+            "longitude": -55.91107135496467,
+            "latitude": 4.131244948279502
+        }
+    },
+    {
+        "country": "Guyana",
+        "iso_code": "GUY",
+        "bbox": {
+            "minx": -61.396713,
+            "miny": 1.18582,
+            "maxx": -56.481819,
+            "maxy": 8.55801,
+            "width": 4.914893999999997,
+            "height": 7.37219
+        },
+        "visual_center": {
+            "longitude": -58.939266,
+            "latitude": 4.8719149999999996
+        }
+    },
+    {
+        "country": "South Korea",
+        "iso_code": "KOR",
+        "bbox": {
+            "minx": 126.128184,
+            "miny": 34.292222,
+            "maxx": 129.58725,
+            "maxy": 38.624335,
+            "width": 3.459066000000007,
+            "height": 4.332113
+        },
+        "visual_center": {
+            "longitude": 127.86718271131653,
+            "latitude": 36.459823612894226
+        }
+    },
+    {
+        "country": "North Korea",
+        "iso_code": "PRK",
+        "bbox": {
+            "minx": 124.321544,
+            "miny": 37.675605,
+            "maxx": 130.699962,
+            "maxy": 43.01027,
+            "width": 6.378417999999996,
+            "height": 5.334665000000001
+        },
+        "visual_center": {
+            "longitude": 126.322043375,
+            "latitude": 39.676104374999994
+        }
+    },
+    {
+        "country": "Morocco",
+        "iso_code": "MAR",
+        "bbox": {
+            "minx": -17.013743,
+            "miny": 21.419971,
+            "maxx": -1.031999,
+            "maxy": 35.926519,
+            "width": 15.981744,
+            "height": 14.506547999999999
+        },
+        "visual_center": {
+            "longitude": -6.587161625000003,
+            "latitude": 31.846552375
+        }
+    },
+    {
+        "country": "Western Sahara",
+        "iso_code": "ESH",
+        "bbox": {
+            "minx": -17.104644,
+            "miny": 20.766913,
+            "maxx": -8.680809,
+            "maxy": 27.661465,
+            "width": 8.423835,
+            "height": 6.894552000000001
+        },
+        "visual_center": {
+            "longitude": -9.7791825,
+            "latitude": 26.3687365
+        }
+    },
+    {
+        "country": "Costa Rica",
+        "iso_code": "CRI",
+        "bbox": {
+            "minx": -85.946441,
+            "miny": 8.034748,
+            "maxx": -82.562837,
+            "maxy": 11.209937,
+            "width": 3.383603999999991,
+            "height": 3.1751889999999996
+        },
+        "visual_center": {
+            "longitude": -84.19194118746655,
+            "latitude": 9.974782761940622
+        }
+    },
+    {
+        "country": "Nicaragua",
+        "iso_code": "NIC",
+        "bbox": {
+            "minx": -87.685821,
+            "miny": 10.713482,
+            "maxx": -83.130444,
+            "maxy": 15.03097,
+            "width": 4.555377000000007,
+            "height": 4.317487999999999
+        },
+        "visual_center": {
+            "longitude": -85.03434539906641,
+            "latitude": 12.845240173772428
+        }
+    },
+    {
+        "country": "Republic of the Congo",
+        "iso_code": "COG",
+        "bbox": {
+            "minx": 11.114016,
+            "miny": -5.019631,
+            "maxx": 18.642407,
+            "maxy": 3.708276,
+            "width": 7.528390999999999,
+            "height": 8.727907
+        },
+        "visual_center": {
+            "longitude": 16.2897848125,
+            "latitude": 0.15613781249999903
+        }
+    },
+    {
+        "country": "Democratic Republic of the Congo",
+        "iso_code": "COD",
+        "bbox": {
+            "minx": 12.210541,
+            "miny": -13.458351,
+            "maxx": 31.280447,
+            "maxy": 5.37528,
+            "width": 19.069906,
+            "height": 18.833631
+        },
+        "visual_center": {
+            "longitude": 23.393009406249995,
+            "latitude": -1.0987806562500002
+        }
+    },
+    {
+        "country": "Bhutan",
+        "iso_code": "BTN",
+        "bbox": {
+            "minx": 88.730067,
+            "miny": 26.696149,
+            "maxx": 92.088776,
+            "maxy": 28.358399,
+            "width": 3.3587089999999904,
+            "height": 1.6622500000000002
+        },
+        "visual_center": {
+            "longitude": 90.40942150000001,
+            "latitude": 27.527274
+        }
+    },
+    {
+        "country": "Ukraine",
+        "iso_code": "UKR",
+        "bbox": {
+            "minx": 22.13284,
+            "miny": 45.213568,
+            "maxx": 40.159543,
+            "maxy": 52.368949,
+            "width": 18.026702999999998,
+            "height": 7.155380999999998
+        },
+        "visual_center": {
+            "longitude": 31.971488874999995,
+            "latitude": 49.685681125
+        }
+    },
+    {
+        "country": "Belarus",
+        "iso_code": "BLR",
+        "bbox": {
+            "minx": 23.165645,
+            "miny": 51.235168,
+            "maxx": 32.719532,
+            "maxy": 56.156806,
+            "width": 9.553887,
+            "height": 4.9216380000000015
+        },
+        "visual_center": {
+            "longitude": 27.9425885,
+            "latitude": 53.695987
+        }
+    },
+    {
+        "country": "Namibia",
+        "iso_code": "NAM",
+        "bbox": {
+            "minx": 11.717621,
+            "miny": -28.959368,
+            "maxx": 25.259781,
+            "maxy": -16.951057,
+            "width": 13.54216,
+            "height": 12.008311000000003
+        },
+        "visual_center": {
+            "longitude": 16.971257062499998,
+            "latitude": -20.7036541875
+        }
+    },
+    {
+        "country": "South Africa",
+        "iso_code": "ZAF",
+        "bbox": {
+            "minx": 16.469981,
+            "miny": -34.821954,
+            "maxx": 32.893077,
+            "maxy": -22.126452,
+            "width": 16.423095999999997,
+            "height": 12.695501999999998
+        },
+        "visual_center": {
+            "longitude": 24.40466975,
+            "latitude": -30.061140749999996
+        }
+    },
+    {
+        "country": "Saint Martin",
+        "iso_code": "MAF",
+        "bbox": {
+            "minx": -63.14684,
+            "miny": 18.033391,
+            "maxx": -63.010732,
+            "maxy": 18.122138,
+            "width": 0.13610800000000012,
+            "height": 0.08874699999999791
+        },
+        "visual_center": {
+            "longitude": -63.055070659622565,
+            "latitude": 18.077620495255516
+        }
+    },
+    {
+        "country": "Sint Maarten",
+        "iso_code": "SXM",
+        "bbox": {
+            "minx": -63.118886,
+            "miny": 18.01911,
+            "maxx": -63.017569,
+            "maxy": 18.06212,
+            "width": 0.10131700000000166,
+            "height": 0.04300999999999888
+        },
+        "visual_center": {
+            "longitude": -63.07013294646646,
+            "latitude": 18.040630259696655
+        }
+    },
+    {
+        "country": "Oman",
+        "iso_code": "OMN",
+        "bbox": {
+            "minx": 51.978615,
+            "miny": 16.642401,
+            "maxx": 59.844574,
+            "maxy": 24.978217,
+            "width": 7.865959000000004,
+            "height": 8.335816000000001
+        },
+        "visual_center": {
+            "longitude": 57.3864618125,
+            "latitude": 22.050247812500004
+        }
+    },
+    {
+        "country": "Uzbekistan",
+        "iso_code": "UZB",
+        "bbox": {
+            "minx": 55.975839,
+            "miny": 37.185147,
+            "maxx": 73.148641,
+            "maxy": 45.558719,
+            "width": 17.172801999999997,
+            "height": 8.373572000000003
+        },
+        "visual_center": {
+            "longitude": 63.826062750000006,
+            "latitude": 41.89528125
+        }
+    },
+    {
+        "country": "Kazakhstan",
+        "iso_code": "KAZ",
+        "bbox": {
+            "minx": 46.478279,
+            "miny": 40.584656,
+            "maxx": 87.323796,
+            "maxy": 55.43455,
+            "width": 40.845517,
+            "height": 14.849893999999999
+        },
+        "visual_center": {
+            "longitude": 67.82500162499998,
+            "latitude": 48.937721375
+        }
+    },
+    {
+        "country": "Tajikistan",
+        "iso_code": "TJK",
+        "bbox": {
+            "minx": 67.34269,
+            "miny": 36.678641,
+            "maxx": 75.164125,
+            "maxy": 41.039977,
+            "width": 7.821434999999994,
+            "height": 4.361336000000001
+        },
+        "visual_center": {
+            "longitude": 72.24919299999999,
+            "latitude": 38.314142
+        }
+    },
+    {
+        "country": "Lithuania",
+        "iso_code": "LTU",
+        "bbox": {
+            "minx": 21.044688,
+            "miny": 53.886841,
+            "maxx": 26.80072,
+            "maxy": 56.442602,
+            "width": 5.756031999999998,
+            "height": 2.555761000000004
+        },
+        "visual_center": {
+            "longitude": 23.922704,
+            "latitude": 55.1647215
+        }
+    },
+    {
+        "country": "Brazil",
+        "iso_code": "BRA",
+        "bbox": {
+            "minx": -74.018475,
+            "miny": -33.74228,
+            "maxx": -34.793609,
+            "maxy": 5.267225,
+            "width": 39.224866,
+            "height": 39.009505000000004
+        },
+        "visual_center": {
+            "longitude": -49.02801085937499,
+            "latitude": -12.408956953125
+        }
+    },
+    {
+        "country": "Uruguay",
+        "iso_code": "URY",
+        "bbox": {
+            "minx": -58.439361,
+            "miny": -34.973403,
+            "maxx": -53.110836,
+            "maxy": -30.09687,
+            "width": 5.328524999999999,
+            "height": 4.8765329999999985
+        },
+        "visual_center": {
+            "longitude": -56.01713024805114,
+            "latitude": -32.798251179882115
+        }
+    },
+    {
+        "country": "Mongolia",
+        "iso_code": "MNG",
+        "bbox": {
+            "minx": 87.735709,
+            "miny": 41.586145,
+            "maxx": 119.907027,
+            "maxy": 52.129584,
+            "width": 32.171318,
+            "height": 10.543439
+        },
+        "visual_center": {
+            "longitude": 105.52776231249999,
+            "latitude": 46.1988995625
+        }
+    },
+    {
+        "country": "Russia",
+        "iso_code": "RUS",
+        "bbox": {
+            "minx": 27.328027,
+            "miny": 41.192681,
+            "maxx": 180.0,
+            "maxy": 77.737535,
+            "width": 152.671973,
+            "height": 36.544853999999994
+        },
+        "visual_center": {
+            "longitude": 94.13658821874999,
+            "latitude": 63.46220140625
+        }
+    },
+    {
+        "country": "Czechia",
+        "iso_code": "CZE",
+        "bbox": {
+            "minx": 12.076141,
+            "miny": 48.557916,
+            "maxx": 18.837434,
+            "maxy": 51.040012,
+            "width": 6.761292999999998,
+            "height": 2.4820959999999985
+        },
+        "visual_center": {
+            "longitude": 15.456787499999999,
+            "latitude": 49.798964
+        }
+    },
+    {
+        "country": "Germany",
+        "iso_code": "DEU",
+        "bbox": {
+            "minx": 5.85249,
+            "miny": 47.271121,
+            "maxx": 15.022059,
+            "maxy": 54.9059,
+            "width": 9.169569,
+            "height": 7.634779000000002
+        },
+        "visual_center": {
+            "longitude": 9.6698795,
+            "latitude": 51.0885105
+        }
+    },
+    {
+        "country": "Estonia",
+        "iso_code": "EST",
+        "bbox": {
+            "minx": 23.408376,
+            "miny": 57.515819,
+            "maxx": 28.186475,
+            "maxy": 59.670885,
+            "width": 4.778099000000001,
+            "height": 2.155065999999998
+        },
+        "visual_center": {
+            "longitude": 26.640974999999997,
+            "latitude": 58.593351999999996
+        }
+    },
+    {
+        "country": "Latvia",
+        "iso_code": "LVA",
+        "bbox": {
+            "minx": 20.968598,
+            "miny": 55.666991,
+            "maxx": 28.217275,
+            "maxy": 58.075138,
+            "width": 7.248677000000001,
+            "height": 2.4081469999999996
+        },
+        "visual_center": {
+            "longitude": 26.9889655,
+            "latitude": 56.8710645
+        }
+    },
+    {
+        "country": "Norway",
+        "iso_code": "-99",
+        "bbox": {
+            "minx": 4.926768,
+            "miny": 57.99315,
+            "maxx": 31.076996,
+            "maxy": 71.127102,
+            "width": 26.150228000000002,
+            "height": 13.133951999999994
+        },
+        "visual_center": {
+            "longitude": 10.262435999999997,
+            "latitude": 61.687073999999996
+        }
+    },
+    {
+        "country": "Sweden",
+        "iso_code": "SWE",
+        "bbox": {
+            "minx": 11.108165,
+            "miny": 55.342678,
+            "maxx": 24.163414,
+            "maxy": 69.036356,
+            "width": 13.055249,
+            "height": 13.693677999999998
+        },
+        "visual_center": {
+            "longitude": 18.04376603125,
+            "latitude": 65.54209128125
+        }
+    },
+    {
+        "country": "Finland",
+        "iso_code": "FIN",
+        "bbox": {
+            "minx": 20.623165,
+            "miny": 59.811225,
+            "maxx": 31.569525,
+            "maxy": 70.07531,
+            "width": 10.946359999999999,
+            "height": 10.264085000000001
+        },
+        "visual_center": {
+            "longitude": 27.679723437500005,
+            "latitude": 63.01875156250001
+        }
+    },
+    {
+        "country": "Vietnam",
+        "iso_code": "VNM",
+        "bbox": {
+            "minx": 102.118655,
+            "miny": 8.565579,
+            "maxx": 109.472423,
+            "maxy": 23.366275,
+            "width": 7.353768000000002,
+            "height": 14.800696000000002
+        },
+        "visual_center": {
+            "longitude": 105.3359285,
+            "latitude": 21.894283500000004
+        }
+    },
+    {
+        "country": "Cambodia",
+        "iso_code": "KHM",
+        "bbox": {
+            "minx": 102.313424,
+            "miny": 10.415774,
+            "maxx": 107.610516,
+            "maxy": 14.704582,
+            "width": 5.297092000000006,
+            "height": 4.2888079999999995
+        },
+        "visual_center": {
+            "longitude": 104.45782799999999,
+            "latitude": 12.560178
+        }
+    },
+    {
+        "country": "Luxembourg",
+        "iso_code": "LUX",
+        "bbox": {
+            "minx": 5.714927,
+            "miny": 49.441324,
+            "maxx": 6.502579,
+            "maxy": 50.174975,
+            "width": 0.7876519999999996,
+            "height": 0.7336510000000018
+        },
+        "visual_center": {
+            "longitude": 6.0717639255183515,
+            "latitude": 49.766824342624346
+        }
+    },
+    {
+        "country": "United Arab Emirates",
+        "iso_code": "ARE",
+        "bbox": {
+            "minx": 51.569347,
+            "miny": 22.620946,
+            "maxx": 56.383637,
+            "maxy": 26.074792,
+            "width": 4.81429,
+            "height": 3.4538459999999986
+        },
+        "visual_center": {
+            "longitude": 54.1597315,
+            "latitude": 23.4844075
+        }
+    },
+    {
+        "country": "Belgium",
+        "iso_code": "BEL",
+        "bbox": {
+            "minx": 2.5218,
+            "miny": 49.495223,
+            "maxx": 6.374525,
+            "maxy": 51.496238,
+            "width": 3.8527250000000004,
+            "height": 2.0010149999999953
+        },
+        "visual_center": {
+            "longitude": 4.639960543106148,
+            "latitude": 50.637461611660214
+        }
+    },
+    {
+        "country": "Georgia",
+        "iso_code": "GEO",
+        "bbox": {
+            "minx": 39.985976,
+            "miny": 41.044111,
+            "maxx": 46.694803,
+            "maxy": 43.575843,
+            "width": 6.708826999999999,
+            "height": 2.531731999999998
+        },
+        "visual_center": {
+            "longitude": 43.3403895,
+            "latitude": 42.309977
+        }
+    },
+    {
+        "country": "North Macedonia",
+        "iso_code": "MKD",
+        "bbox": {
+            "minx": 20.444157,
+            "miny": 40.849394,
+            "maxx": 23.009582,
+            "maxy": 42.370335,
+            "width": 2.565425000000001,
+            "height": 1.5209410000000005
+        },
+        "visual_center": {
+            "longitude": 21.683830378631733,
+            "latitude": 41.595004949153996
+        }
+    },
+    {
+        "country": "Albania",
+        "iso_code": "ALB",
+        "bbox": {
+            "minx": 19.272033,
+            "miny": 39.637013,
+            "maxx": 21.036679,
+            "maxy": 42.654814,
+            "width": 1.764645999999999,
+            "height": 3.0178009999999986
+        },
+        "visual_center": {
+            "longitude": 20.154356,
+            "latitude": 40.519336
+        }
+    },
+    {
+        "country": "Azerbaijan",
+        "iso_code": "AZE",
+        "bbox": {
+            "minx": 45.0024,
+            "miny": 38.392645,
+            "maxx": 50.391124,
+            "maxy": 41.890442,
+            "width": 5.388723999999996,
+            "height": 3.4977969999999985
+        },
+        "visual_center": {
+            "longitude": 47.659729522951594,
+            "latitude": 40.34583007763794
+        }
+    },
+    {
+        "country": "Kosovo",
+        "iso_code": "-99",
+        "bbox": {
+            "minx": 20.024751,
+            "miny": 41.84401,
+            "maxx": 21.772758,
+            "maxy": 43.263071,
+            "width": 1.7480070000000012,
+            "height": 1.4190609999999992
+        },
+        "visual_center": {
+            "longitude": 20.87374291966775,
+            "latitude": 42.57288337420267
+        }
+    },
+    {
+        "country": "Turkey",
+        "iso_code": "TUR",
+        "bbox": {
+            "minx": 26.069998,
+            "miny": 35.819779,
+            "maxx": 44.806993,
+            "maxy": 42.098782,
+            "width": 18.736995,
+            "height": 6.279003000000003
+        },
+        "visual_center": {
+            "longitude": 33.5263140625,
+            "latitude": 39.351718187500005
+        }
+    },
+    {
+        "country": "Spain",
+        "iso_code": "ESP",
+        "bbox": {
+            "minx": -9.291982,
+            "miny": 36.006456,
+            "maxx": 3.317719,
+            "maxy": 43.793443,
+            "width": 12.609701000000001,
+            "height": 7.786987000000003
+        },
+        "visual_center": {
+            "longitude": -3.562909761276861,
+            "latitude": 40.38954441375016
+        }
+    },
+    {
+        "country": "Laos",
+        "iso_code": "LAO",
+        "bbox": {
+            "minx": 100.097073,
+            "miny": 13.915457,
+            "maxx": 107.664363,
+            "maxy": 22.496044,
+            "width": 7.56729,
+            "height": 8.580587000000001
+        },
+        "visual_center": {
+            "longitude": 102.461851125,
+            "latitude": 19.117968875
+        }
+    },
+    {
+        "country": "Kyrgyzstan",
+        "iso_code": "KGZ",
+        "bbox": {
+            "minx": 69.226296,
+            "miny": 39.189237,
+            "maxx": 80.257561,
+            "maxy": 43.261702,
+            "width": 11.03126499999999,
+            "height": 4.072465000000001
+        },
+        "visual_center": {
+            "longitude": 74.825935375,
+            "latitude": 41.734527625
+        }
+    },
+    {
+        "country": "Armenia",
+        "iso_code": "ARM",
+        "bbox": {
+            "minx": 43.436294,
+            "miny": 38.863701,
+            "maxx": 46.602612,
+            "maxy": 41.290452,
+            "width": 3.166318000000004,
+            "height": 2.426751000000003
+        },
+        "visual_center": {
+            "longitude": 44.93173083293472,
+            "latitude": 40.28859687477563
+        }
+    },
+    {
+        "country": "Denmark",
+        "iso_code": "DNK",
+        "bbox": {
+            "minx": 8.094005,
+            "miny": 54.801617,
+            "maxx": 10.964122,
+            "maxy": 57.751166,
+            "width": 2.8701170000000005,
+            "height": 2.9495489999999975
+        },
+        "visual_center": {
+            "longitude": 9.5290635,
+            "latitude": 56.236675500000004
+        }
+    },
+    {
+        "country": "Libya",
+        "iso_code": "LBY",
+        "bbox": {
+            "minx": 9.286544,
+            "miny": 19.496124,
+            "maxx": 25.156261,
+            "maxy": 33.181225,
+            "width": 15.869717000000001,
+            "height": 13.685101
+        },
+        "visual_center": {
+            "longitude": 20.833347968750004,
+            "latitude": 25.911015093749995
+        }
+    },
+    {
+        "country": "Tunisia",
+        "iso_code": "TUN",
+        "bbox": {
+            "minx": 7.479832,
+            "miny": 30.228905,
+            "maxx": 11.564131,
+            "maxy": 37.345201,
+            "width": 4.084299,
+            "height": 7.116296000000002
+        },
+        "visual_center": {
+            "longitude": 9.011444124999999,
+            "latitude": 33.80266662499999
+        }
+    },
+    {
+        "country": "Romania",
+        "iso_code": "ROU",
+        "bbox": {
+            "minx": 20.242826,
+            "miny": 43.65005,
+            "maxx": 29.699555,
+            "maxy": 48.274832,
+            "width": 9.456729,
+            "height": 4.624782000000003
+        },
+        "visual_center": {
+            "longitude": 24.97294188915982,
+            "latitude": 45.85346412471655
+        }
+    },
+    {
+        "country": "Hungary",
+        "iso_code": "HUN",
+        "bbox": {
+            "minx": 16.094035,
+            "miny": 45.741343,
+            "maxx": 22.877601,
+            "maxy": 48.569233,
+            "width": 6.783565999999997,
+            "height": 2.8278899999999965
+        },
+        "visual_center": {
+            "longitude": 20.335869999999996,
+            "latitude": 47.155288
+        }
+    },
+    {
+        "country": "Slovakia",
+        "iso_code": "SVK",
+        "bbox": {
+            "minx": 16.84448,
+            "miny": 47.750006,
+            "maxx": 22.539637,
+            "maxy": 49.60178,
+            "width": 5.695156999999998,
+            "height": 1.851773999999999
+        },
+        "visual_center": {
+            "longitude": 19.480382917716206,
+            "latitude": 48.70493530009984
+        }
+    },
+    {
+        "country": "Poland",
+        "iso_code": "POL",
+        "bbox": {
+            "minx": 14.123923,
+            "miny": 48.994013,
+            "maxx": 24.143156,
+            "maxy": 54.838324,
+            "width": 10.019233000000002,
+            "height": 5.844310999999998
+        },
+        "visual_center": {
+            "longitude": 19.394322185332108,
+            "latitude": 52.12477181004806
+        }
+    },
+    {
+        "country": "Ireland",
+        "iso_code": "IRL",
+        "bbox": {
+            "minx": -10.478179,
+            "miny": 51.445705,
+            "maxx": -5.99352,
+            "maxy": 55.386379,
+            "width": 4.484659000000001,
+            "height": 3.9406740000000013
+        },
+        "visual_center": {
+            "longitude": -8.138262461068981,
+            "latitude": 53.17669593113693
+        }
+    },
+    {
+        "country": "United Kingdom",
+        "iso_code": "GBR",
+        "bbox": {
+            "minx": -6.236399,
+            "miny": 49.959133,
+            "maxx": 1.771169,
+            "maxy": 58.677069,
+            "width": 8.007568,
+            "height": 8.717936000000002
+        },
+        "visual_center": {
+            "longitude": -1.732142,
+            "latitude": 53.462444000000005
+        }
+    },
+    {
+        "country": "Greece",
+        "iso_code": "GRC",
+        "bbox": {
+            "minx": 19.999848,
+            "miny": 36.390937,
+            "maxx": 26.636596,
+            "maxy": 41.750476,
+            "width": 6.636748000000001,
+            "height": 5.359538999999998
+        },
+        "visual_center": {
+            "longitude": 22.009675125,
+            "latitude": 39.740648875
+        }
+    },
+    {
+        "country": "Zambia",
+        "iso_code": "ZMB",
+        "bbox": {
+            "minx": 21.979878,
+            "miny": -18.069232,
+            "maxx": 33.674203,
+            "maxy": -8.194124,
+            "width": 11.694325,
+            "height": 9.875107999999999
+        },
+        "visual_center": {
+            "longitude": 26.30023775,
+            "latitude": -14.983260750000001
+        }
+    },
+    {
+        "country": "Sierra Leone",
+        "iso_code": "SLE",
+        "bbox": {
+            "minx": -13.301096,
+            "miny": 6.91942,
+            "maxx": -10.282236,
+            "maxy": 9.996006,
+            "width": 3.01886,
+            "height": 3.076586
+        },
+        "visual_center": {
+            "longitude": -11.787342954688867,
+            "latitude": 8.571910827822828
+        }
+    },
+    {
+        "country": "Guinea",
+        "iso_code": "GIN",
+        "bbox": {
+            "minx": -15.081125,
+            "miny": 7.190208,
+            "maxx": -7.662447,
+            "maxy": 12.673388,
+            "width": 7.418678,
+            "height": 5.483179999999999
+        },
+        "visual_center": {
+            "longitude": -10.283342500000002,
+            "latitude": 10.6171955
+        }
+    },
+    {
+        "country": "Liberia",
+        "iso_code": "LBR",
+        "bbox": {
+            "minx": -11.476186,
+            "miny": 4.347235,
+            "maxx": -7.384118,
+            "maxy": 8.565396,
+            "width": 4.092068,
+            "height": 4.218160999999999
+        },
+        "visual_center": {
+            "longitude": -9.430152,
+            "latitude": 6.4563155000000005
+        }
+    },
+    {
+        "country": "Central African Republic",
+        "iso_code": "CAF",
+        "bbox": {
+            "minx": 14.387266,
+            "miny": 2.236454,
+            "maxx": 27.441301,
+            "maxy": 11.000828,
+            "width": 13.054034999999999,
+            "height": 8.764374
+        },
+        "visual_center": {
+            "longitude": 21.508319875,
+            "latitude": 7.1664143750000004
+        }
+    },
+    {
+        "country": "Sudan",
+        "iso_code": "SDN",
+        "bbox": {
+            "minx": 21.809449,
+            "miny": 8.681642,
+            "maxx": 38.603852,
+            "maxy": 22.226965,
+            "width": 16.794403000000003,
+            "height": 13.545323
+        },
+        "visual_center": {
+            "longitude": 29.85198453125,
+            "latitude": 16.724177531250003
+        }
+    },
+    {
+        "country": "Djibouti",
+        "iso_code": "DJI",
+        "bbox": {
+            "minx": 41.74911,
+            "miny": 10.929825,
+            "maxx": 43.418712,
+            "maxy": 12.707913,
+            "width": 1.6696019999999976,
+            "height": 1.7780880000000003
+        },
+        "visual_center": {
+            "longitude": 42.1665105,
+            "latitude": 11.347225499999999
+        }
+    },
+    {
+        "country": "Eritrea",
+        "iso_code": "ERI",
+        "bbox": {
+            "minx": 36.423647,
+            "miny": 12.360022,
+            "maxx": 43.123871,
+            "maxy": 18.004828,
+            "width": 6.700223999999999,
+            "height": 5.644805999999999
+        },
+        "visual_center": {
+            "longitude": 38.54044925000001,
+            "latitude": 15.888025749999999
+        }
+    },
+    {
+        "country": "Austria",
+        "iso_code": "AUT",
+        "bbox": {
+            "minx": 9.521155,
+            "miny": 46.378643,
+            "maxx": 17.148338,
+            "maxy": 49.009774,
+            "width": 7.627182999999999,
+            "height": 2.6311310000000034
+        },
+        "visual_center": {
+            "longitude": 14.130672976238591,
+            "latitude": 47.58565692753174
+        }
+    },
+    {
+        "country": "Iraq",
+        "iso_code": "IRQ",
+        "bbox": {
+            "minx": 38.774511,
+            "miny": 29.063137,
+            "maxx": 48.559255,
+            "maxy": 37.375498,
+            "width": 9.784744000000003,
+            "height": 8.312361
+        },
+        "visual_center": {
+            "longitude": 42.930691499999995,
+            "latitude": 33.2193175
+        }
+    },
+    {
+        "country": "Italy",
+        "iso_code": "ITA",
+        "bbox": {
+            "minx": 6.602728,
+            "miny": 37.919013,
+            "maxx": 18.517426,
+            "maxy": 47.085215,
+            "width": 11.914698000000001,
+            "height": 9.166201999999998
+        },
+        "visual_center": {
+            "longitude": 10.612941374999998,
+            "latitude": 45.366552125
+        }
+    },
+    {
+        "country": "Switzerland",
+        "iso_code": "CHE",
+        "bbox": {
+            "minx": 5.954809,
+            "miny": 45.820718,
+            "maxx": 10.466627,
+            "maxy": 47.801166,
+            "width": 4.511818000000001,
+            "height": 1.9804480000000027
+        },
+        "visual_center": {
+            "longitude": 8.925481000000005,
+            "latitude": 46.810942
+        }
+    },
+    {
+        "country": "Iran",
+        "iso_code": "IRN",
+        "bbox": {
+            "minx": 44.014863,
+            "miny": 25.059408,
+            "maxx": 63.319628,
+            "maxy": 39.771527,
+            "width": 19.304765000000003,
+            "height": 14.712118999999998
+        },
+        "visual_center": {
+            "longitude": 55.50870596874999,
+            "latitude": 31.955713781249997
+        }
+    },
+    {
+        "country": "Netherlands",
+        "iso_code": "NLD",
+        "bbox": {
+            "minx": 3.447032,
+            "miny": 50.74755,
+            "maxx": 7.198506,
+            "maxy": 53.460639,
+            "width": 3.751474,
+            "height": 2.7130890000000036
+        },
+        "visual_center": {
+            "longitude": 5.322769,
+            "latitude": 52.1040945
+        }
+    },
+    {
+        "country": "Liechtenstein",
+        "iso_code": "LIE",
+        "bbox": {
+            "minx": 9.475886,
+            "miny": 47.0524,
+            "maxx": 9.615723,
+            "maxy": 47.262801,
+            "width": 0.139837,
+            "height": 0.2104010000000045
+        },
+        "visual_center": {
+            "longitude": 9.5458045,
+            "latitude": 47.1223185
+        }
+    },
+    {
+        "country": "Ivory Coast",
+        "iso_code": "CIV",
+        "bbox": {
+            "minx": -8.61872,
+            "miny": 4.344062,
+            "maxx": -2.506328,
+            "maxy": 10.726478,
+            "width": 6.112392,
+            "height": 6.382416
+        },
+        "visual_center": {
+            "longitude": -5.562524,
+            "latitude": 7.535270000000001
+        }
+    },
+    {
+        "country": "Republic of Serbia",
+        "iso_code": "SRB",
+        "bbox": {
+            "minx": 18.844978,
+            "miny": 42.234945,
+            "maxx": 22.984571,
+            "maxy": 46.173875,
+            "width": 4.139592999999998,
+            "height": 3.938929999999999
+        },
+        "visual_center": {
+            "longitude": 20.789252435137993,
+            "latitude": 44.22214764404894
+        }
+    },
+    {
+        "country": "Mali",
+        "iso_code": "MLI",
+        "bbox": {
+            "minx": -12.26413,
+            "miny": 10.140054,
+            "maxx": 4.235638,
+            "maxy": 24.995065,
+            "width": 16.499768,
+            "height": 14.855011000000001
+        },
+        "visual_center": {
+            "longitude": -2.0513099374999992,
+            "latitude": 18.495997687500005
+        }
+    },
+    {
+        "country": "Senegal",
+        "iso_code": "SEN",
+        "bbox": {
+            "minx": -17.536041,
+            "miny": 12.305607,
+            "maxx": -11.377776,
+            "maxy": 16.691385,
+            "width": 6.158265,
+            "height": 4.385778
+        },
+        "visual_center": {
+            "longitude": -14.79492975,
+            "latitude": 15.04671825
+        }
+    },
+    {
+        "country": "Nigeria",
+        "iso_code": "NGA",
+        "bbox": {
+            "minx": 2.671082,
+            "miny": 4.272162,
+            "maxx": 14.669936,
+            "maxy": 13.880291,
+            "width": 11.998854,
+            "height": 9.608129
+        },
+        "visual_center": {
+            "longitude": 8.0756545625,
+            "latitude": 9.6767345625
+        }
+    },
+    {
+        "country": "Benin",
+        "iso_code": "BEN",
+        "bbox": {
+            "minx": 0.759881,
+            "miny": 6.213894,
+            "maxx": 3.837419,
+            "maxy": 12.399244,
+            "width": 3.077538,
+            "height": 6.18535
+        },
+        "visual_center": {
+            "longitude": 2.32874068287614,
+            "latitude": 9.641216602468432
+        }
+    },
+    {
+        "country": "Angola",
+        "iso_code": "AGO",
+        "bbox": {
+            "minx": 11.735525,
+            "miny": -18.031405,
+            "maxx": 24.061714,
+            "maxy": -5.841606,
+            "width": 12.326188999999998,
+            "height": 12.189799
+        },
+        "visual_center": {
+            "longitude": 17.8304245,
+            "latitude": -11.936505499999999
+        }
+    },
+    {
+        "country": "Croatia",
+        "iso_code": "HRV",
+        "bbox": {
+            "minx": 13.501475,
+            "miny": 42.942084,
+            "maxx": 19.407838,
+            "maxy": 46.546979,
+            "width": 5.9063630000000025,
+            "height": 3.604894999999999
+        },
+        "visual_center": {
+            "longitude": 16.20514625,
+            "latitude": 45.64575525
+        }
+    },
+    {
+        "country": "Slovenia",
+        "iso_code": "SVN",
+        "bbox": {
+            "minx": 13.365261,
+            "miny": 45.423637,
+            "maxx": 16.515302,
+            "maxy": 46.863962,
+            "width": 3.150040999999998,
+            "height": 1.4403250000000014
+        },
+        "visual_center": {
+            "longitude": 14.9402815,
+            "latitude": 46.1437995
+        }
+    },
+    {
+        "country": "Qatar",
+        "iso_code": "QAT",
+        "bbox": {
+            "minx": 50.750987,
+            "miny": 24.559872,
+            "maxx": 51.616547,
+            "maxy": 26.160102,
+            "width": 0.865559999999995,
+            "height": 1.6002299999999998
+        },
+        "visual_center": {
+            "longitude": 51.183767,
+            "latitude": 24.992651999999996
+        }
+    },
+    {
+        "country": "Saudi Arabia",
+        "iso_code": "SAU",
+        "bbox": {
+            "minx": 34.572765,
+            "miny": 16.370958,
+            "maxx": 55.637565,
+            "maxy": 32.121348,
+            "width": 21.064800000000005,
+            "height": 15.750389999999996
+        },
+        "visual_center": {
+            "longitude": 44.9089584375,
+            "latitude": 23.753953312500002
+        }
+    },
+    {
+        "country": "Botswana",
+        "iso_code": "BWA",
+        "bbox": {
+            "minx": 19.978346,
+            "miny": -26.891794,
+            "maxx": 29.350074,
+            "maxy": -17.781808,
+            "width": 9.371728000000001,
+            "height": 9.109986
+        },
+        "visual_center": {
+            "longitude": 23.963964875,
+            "latitude": -21.767426875
+        }
+    },
+    {
+        "country": "Zimbabwe",
+        "iso_code": "ZWE",
+        "bbox": {
+            "minx": 25.21937,
+            "miny": -22.39734,
+            "maxx": 33.042768,
+            "maxy": -15.614808,
+            "width": 7.823398000000001,
+            "height": 6.782532
+        },
+        "visual_center": {
+            "longitude": 29.851884627150138,
+            "latitude": -19.002536684602713
+        }
+    },
+    {
+        "country": "Pakistan",
+        "iso_code": "PAK",
+        "bbox": {
+            "minx": 60.844379,
+            "miny": 23.694525,
+            "maxx": 77.048971,
+            "maxy": 37.054484,
+            "width": 16.20459199999999,
+            "height": 13.359959000000003
+        },
+        "visual_center": {
+            "longitude": 71.28184696875,
+            "latitude": 30.79200321875
+        }
+    },
+    {
+        "country": "Bulgaria",
+        "iso_code": "BGR",
+        "bbox": {
+            "minx": 22.345023,
+            "miny": 41.238104,
+            "maxx": 28.603526,
+            "maxy": 44.228435,
+            "width": 6.2585029999999975,
+            "height": 2.9903309999999976
+        },
+        "visual_center": {
+            "longitude": 23.8401885,
+            "latitude": 42.7332695
+        }
+    },
+    {
+        "country": "Thailand",
+        "iso_code": "THA",
+        "bbox": {
+            "minx": 97.351401,
+            "miny": 5.62989,
+            "maxx": 105.650998,
+            "maxy": 20.445006,
+            "width": 8.299597000000006,
+            "height": 14.815116
+        },
+        "visual_center": {
+            "longitude": 100.98247468749999,
+            "latitude": 15.485661437500006
+        }
+    },
+    {
+        "country": "San Marino",
+        "iso_code": "SMR",
+        "bbox": {
+            "minx": 12.385629,
+            "miny": 43.892056,
+            "maxx": 12.492392,
+            "maxy": 43.982567,
+            "width": 0.10676300000000083,
+            "height": 0.09051100000000645
+        },
+        "visual_center": {
+            "longitude": 12.442222545511523,
+            "latitude": 43.936466263838234
+        }
+    },
+    {
+        "country": "Haiti",
+        "iso_code": "HTI",
+        "bbox": {
+            "minx": -74.489166,
+            "miny": 18.025946,
+            "maxx": -71.639111,
+            "maxy": 19.945624,
+            "width": 2.8500549999999976,
+            "height": 1.9196779999999976
+        },
+        "visual_center": {
+            "longitude": -72.0895685,
+            "latitude": 19.4657045
+        }
+    },
+    {
+        "country": "Dominican Republic",
+        "iso_code": "DOM",
+        "bbox": {
+            "minx": -72.009838,
+            "miny": 17.604804,
+            "maxx": -68.328603,
+            "maxy": 19.93769,
+            "width": 3.681235000000001,
+            "height": 2.3328859999999985
+        },
+        "visual_center": {
+            "longitude": -70.50034295429798,
+            "latitude": 18.899232844306592
+        }
+    },
+    {
+        "country": "Chad",
+        "iso_code": "TCD",
+        "bbox": {
+            "minx": 13.449184,
+            "miny": 7.455567,
+            "maxx": 23.984406,
+            "maxy": 23.44472,
+            "width": 10.535222,
+            "height": 15.989153
+        },
+        "visual_center": {
+            "longitude": 19.375246375000003,
+            "latitude": 17.332337624999997
+        }
+    },
+    {
+        "country": "Kuwait",
+        "iso_code": "KWT",
+        "bbox": {
+            "minx": 46.532436,
+            "miny": 28.533505,
+            "maxx": 48.432781,
+            "maxy": 30.098216,
+            "width": 1.9003450000000015,
+            "height": 1.564710999999999
+        },
+        "visual_center": {
+            "longitude": 47.3147915,
+            "latitude": 29.3158605
+        }
+    },
+    {
+        "country": "El Salvador",
+        "iso_code": "SLV",
+        "bbox": {
+            "minx": -90.114779,
+            "miny": 13.158637,
+            "maxx": -87.703608,
+            "maxy": 14.445373,
+            "width": 2.411170999999996,
+            "height": 1.2867359999999994
+        },
+        "visual_center": {
+            "longitude": -88.87232465890604,
+            "latitude": 13.736452836766091
+        }
+    },
+    {
+        "country": "Guatemala",
+        "iso_code": "GTM",
+        "bbox": {
+            "minx": -92.246257,
+            "miny": 13.731404,
+            "maxx": -88.220937,
+            "maxy": 17.81602,
+            "width": 4.025319999999994,
+            "height": 4.084616000000002
+        },
+        "visual_center": {
+            "longitude": -90.736762,
+            "latitude": 15.240898999999997
+        }
+    },
+    {
+        "country": "East Timor",
+        "iso_code": "TLS",
+        "bbox": {
+            "minx": 124.90791,
+            "miny": -9.485772,
+            "maxx": 127.313243,
+            "maxy": -8.309015,
+            "width": 2.405332999999999,
+            "height": 1.1767570000000003
+        },
+        "visual_center": {
+            "longitude": 125.4962885,
+            "latitude": -8.8973935
+        }
+    },
+    {
+        "country": "Brunei",
+        "iso_code": "BRN",
+        "bbox": {
+            "minx": 113.99879,
+            "miny": 4.016681,
+            "maxx": 115.103201,
+            "maxy": 5.057196,
+            "width": 1.104410999999999,
+            "height": 1.040515
+        },
+        "visual_center": {
+            "longitude": 114.59802904733365,
+            "latitude": 4.493326239724306
+        }
+    },
+    {
+        "country": "Monaco",
+        "iso_code": "MCO",
+        "bbox": {
+            "minx": 7.36575,
+            "miny": 43.717969,
+            "maxx": 7.437454,
+            "maxy": 43.763506,
+            "width": 0.07170399999999955,
+            "height": 0.04553700000000305
+        },
+        "visual_center": {
+            "longitude": 7.398974150240065,
+            "latitude": 43.73984629366116
+        }
+    },
+    {
+        "country": "Algeria",
+        "iso_code": "DZA",
+        "bbox": {
+            "minx": -8.682385,
+            "miny": 18.975561,
+            "maxx": 11.968861,
+            "maxy": 37.09394,
+            "width": 20.651246,
+            "height": 18.118379000000004
+        },
+        "visual_center": {
+            "longitude": 3.207801218750003,
+            "latitude": 27.46855115625
+        }
+    },
+    {
+        "country": "Mozambique",
+        "iso_code": "MOZ",
+        "bbox": {
+            "minx": 30.213845,
+            "miny": -26.860272,
+            "maxx": 40.847992,
+            "maxy": -10.469008,
+            "width": 10.634146999999999,
+            "height": 16.391264
+        },
+        "visual_center": {
+            "longitude": 38.189455249999995,
+            "latitude": -13.56758825
+        }
+    },
+    {
+        "country": "eSwatini",
+        "iso_code": "SWZ",
+        "bbox": {
+            "minx": 30.782906,
+            "miny": -27.316264,
+            "maxx": 32.117398,
+            "maxy": -25.735999,
+            "width": 1.334492000000001,
+            "height": 1.5802650000000007
+        },
+        "visual_center": {
+            "longitude": 31.450152000000003,
+            "latitude": -26.526131499999998
+        }
+    },
+    {
+        "country": "Burundi",
+        "iso_code": "BDI",
+        "bbox": {
+            "minx": 28.986892,
+            "miny": -4.463344,
+            "maxx": 30.833962,
+            "maxy": -2.303062,
+            "width": 1.8470699999999987,
+            "height": 2.160282
+        },
+        "visual_center": {
+            "longitude": 29.875082730106854,
+            "latitude": -3.357425368272592
+        }
+    },
+    {
+        "country": "Rwanda",
+        "iso_code": "RWA",
+        "bbox": {
+            "minx": 28.857236,
+            "miny": -2.826855,
+            "maxx": 30.887809,
+            "maxy": -1.058694,
+            "width": 2.0305730000000004,
+            "height": 1.768161
+        },
+        "visual_center": {
+            "longitude": 29.7413165,
+            "latitude": -1.9427745
+        }
+    },
+    {
+        "country": "Myanmar",
+        "iso_code": "MMR",
+        "bbox": {
+            "minx": 92.174973,
+            "miny": 9.987454,
+            "maxx": 101.173855,
+            "maxy": 28.538466,
+            "width": 8.998882000000009,
+            "height": 18.551012
+        },
+        "visual_center": {
+            "longitude": 96.11198387499999,
+            "latitude": 21.79848662500001
+        }
+    },
+    {
+        "country": "Bangladesh",
+        "iso_code": "BGD",
+        "bbox": {
+            "minx": 88.02179,
+            "miny": 20.738715,
+            "maxx": 92.642851,
+            "maxy": 26.623544,
+            "width": 4.621060999999997,
+            "height": 5.884829
+        },
+        "visual_center": {
+            "longitude": 89.754687875,
+            "latitude": 23.626878124999998
+        }
+    },
+    {
+        "country": "Andorra",
+        "iso_code": "AND",
+        "bbox": {
+            "minx": 1.406456,
+            "miny": 42.428677,
+            "maxx": 1.765091,
+            "maxy": 42.649362,
+            "width": 0.35863500000000004,
+            "height": 0.22068500000000313
+        },
+        "visual_center": {
+            "longitude": 1.5607561360943203,
+            "latitude": 42.541326538780375
+        }
+    },
+    {
+        "country": "Afghanistan",
+        "iso_code": "AFG",
+        "bbox": {
+            "minx": 60.486778,
+            "miny": 29.386605,
+            "maxx": 74.892307,
+            "maxy": 38.473673,
+            "width": 14.405529000000001,
+            "height": 9.087067999999999
+        },
+        "visual_center": {
+            "longitude": 66.00844766862276,
+            "latitude": 33.83626703717452
+        }
+    },
+    {
+        "country": "Montenegro",
+        "iso_code": "MNE",
+        "bbox": {
+            "minx": 18.433531,
+            "miny": 41.852362,
+            "maxx": 20.355171,
+            "maxy": 43.547886,
+            "width": 1.92164,
+            "height": 1.695523999999999
+        },
+        "visual_center": {
+            "longitude": 19.238499986124708,
+            "latitude": 42.785818154072736
+        }
+    },
+    {
+        "country": "Bosnia and Herzegovina",
+        "iso_code": "BIH",
+        "bbox": {
+            "minx": 15.716074,
+            "miny": 42.559212,
+            "maxx": 19.618885,
+            "maxy": 45.284524,
+            "width": 3.902810999999998,
+            "height": 2.7253119999999953
+        },
+        "visual_center": {
+            "longitude": 17.773407982879856,
+            "latitude": 44.17173403636956
+        }
+    },
+    {
+        "country": "Uganda",
+        "iso_code": "UGA",
+        "bbox": {
+            "minx": 29.54846,
+            "miny": -1.475206,
+            "maxx": 35.006473,
+            "maxy": 4.219692,
+            "width": 5.458013000000001,
+            "height": 5.694898
+        },
+        "visual_center": {
+            "longitude": 32.959718125,
+            "latitude": 1.9360521250000007
+        }
+    },
+    {
+        "country": "US Naval Base Guantanamo Bay",
+        "iso_code": "-99",
+        "bbox": {
+            "minx": -75.165296,
+            "miny": 19.891142,
+            "maxx": -75.09495,
+            "maxy": 19.971584,
+            "width": 0.07034600000000069,
+            "height": 0.08044200000000146
+        },
+        "visual_center": {
+            "longitude": -75.1236716210091,
+            "latitude": 19.923430785583232
+        }
+    },
+    {
+        "country": "Cuba",
+        "iso_code": "CUB",
+        "bbox": {
+            "minx": -84.949615,
+            "miny": 19.827826,
+            "maxx": -74.132883,
+            "maxy": 23.212388,
+            "width": 10.816731999999988,
+            "height": 3.384561999999999
+        },
+        "visual_center": {
+            "longitude": -80.7189125,
+            "latitude": 22.366247500000004
+        }
+    },
+    {
+        "country": "Honduras",
+        "iso_code": "HND",
+        "bbox": {
+            "minx": -89.363791,
+            "miny": 12.979777,
+            "maxx": -83.130444,
+            "maxy": 16.033149,
+            "width": 6.233347000000009,
+            "height": 3.0533720000000013
+        },
+        "visual_center": {
+            "longitude": -86.62516179518441,
+            "latitude": 14.818428228993954
+        }
+    },
+    {
+        "country": "Ecuador",
+        "iso_code": "ECU",
+        "bbox": {
+            "minx": -81.01301,
+            "miny": -5.011373,
+            "maxx": -75.227264,
+            "maxy": 1.434312,
+            "width": 5.785745999999989,
+            "height": 6.445685
+        },
+        "visual_center": {
+            "longitude": -78.3872175589692,
+            "latitude": -1.448862386242283
+        }
+    },
+    {
+        "country": "Colombia",
+        "iso_code": "COL",
+        "bbox": {
+            "minx": -79.021512,
+            "miny": -4.236484,
+            "maxx": -66.875061,
+            "maxy": 12.468329,
+            "width": 12.146450999999999,
+            "height": 16.704813
+        },
+        "visual_center": {
+            "longitude": -73.32786309375,
+            "latitude": 3.7346244687499994
+        }
+    },
+    {
+        "country": "Paraguay",
+        "iso_code": "PRY",
+        "bbox": {
+            "minx": -62.650357,
+            "miny": -27.586842,
+            "maxx": -54.245289,
+            "maxy": -19.286729,
+            "width": 8.405068,
+            "height": 8.300113
+        },
+        "visual_center": {
+            "longitude": -60.0565716875,
+            "latitude": -21.8805143125
+        }
+    },
+    {
+        "country": "Brazilian Island",
+        "iso_code": "-99",
+        "bbox": {
+            "minx": -57.642466,
+            "miny": -30.193092,
+            "maxx": -57.602793,
+            "maxy": -30.182963,
+            "width": 0.03967300000000051,
+            "height": 0.010128999999999166
+        },
+        "visual_center": {
+            "longitude": -57.627272500000004,
+            "latitude": -30.1880275
+        }
+    },
+    {
+        "country": "Portugal",
+        "iso_code": "PRT",
+        "bbox": {
+            "minx": -9.497467,
+            "miny": 36.986762,
+            "maxx": -6.205947,
+            "maxy": 42.15363,
+            "width": 3.2915200000000002,
+            "height": 5.166868000000001
+        },
+        "visual_center": {
+            "longitude": -8.263147,
+            "latitude": 39.866842
+        }
+    },
+    {
+        "country": "Moldova",
+        "iso_code": "MDA",
+        "bbox": {
+            "minx": 26.617889,
+            "miny": 45.461774,
+            "maxx": 30.131576,
+            "maxy": 48.486034,
+            "width": 3.5136869999999973,
+            "height": 3.024259999999998
+        },
+        "visual_center": {
+            "longitude": 28.461397099134043,
+            "latitude": 47.195101515319045
+        }
+    },
+    {
+        "country": "Turkmenistan",
+        "iso_code": "TKM",
+        "bbox": {
+            "minx": 52.437671,
+            "miny": 35.140647,
+            "maxx": 66.645782,
+            "maxy": 42.791188,
+            "width": 14.208110999999995,
+            "height": 7.650540999999997
+        },
+        "visual_center": {
+            "longitude": 59.61005318749999,
+            "latitude": 39.44407631250001
+        }
+    },
+    {
+        "country": "Jordan",
+        "iso_code": "JOR",
+        "bbox": {
+            "minx": 34.949385,
+            "miny": 29.189951,
+            "maxx": 39.291999,
+            "maxy": 33.371685,
+            "width": 4.3426139999999975,
+            "height": 4.181733999999999
+        },
+        "visual_center": {
+            "longitude": 36.517535249999995,
+            "latitude": 30.758101250000003
+        }
+    },
+    {
+        "country": "Nepal",
+        "iso_code": "NPL",
+        "bbox": {
+            "minx": 80.030288,
+            "miny": 26.343768,
+            "maxx": 88.169067,
+            "maxy": 30.416904,
+            "width": 8.138779,
+            "height": 4.073135999999998
+        },
+        "visual_center": {
+            "longitude": 83.91625338114278,
+            "latitude": 28.24792223160932
+        }
+    },
+    {
+        "country": "Lesotho",
+        "iso_code": "LSO",
+        "bbox": {
+            "minx": 27.002155,
+            "miny": -30.658799,
+            "maxx": 29.435908,
+            "maxy": -28.570761,
+            "width": 2.433753000000003,
+            "height": 2.0880379999999974
+        },
+        "visual_center": {
+            "longitude": 28.046173999999997,
+            "latitude": -29.61478
+        }
+    },
+    {
+        "country": "Cameroon",
+        "iso_code": "CMR",
+        "bbox": {
+            "minx": 8.505056,
+            "miny": 1.654551,
+            "maxx": 16.207723,
+            "maxy": 13.081141,
+            "width": 7.702667000000002,
+            "height": 11.426590000000001
+        },
+        "visual_center": {
+            "longitude": 12.8378061875,
+            "latitude": 4.0616344374999995
+        }
+    },
+    {
+        "country": "Gabon",
+        "iso_code": "GAB",
+        "bbox": {
+            "minx": 8.695567,
+            "miny": -3.936856,
+            "maxx": 14.498991,
+            "maxy": 2.322495,
+            "width": 5.803424,
+            "height": 6.2593510000000006
+        },
+        "visual_center": {
+            "longitude": 12.322707000000001,
+            "latitude": -0.3097160000000003
+        }
+    },
+    {
+        "country": "Niger",
+        "iso_code": "NER",
+        "bbox": {
+            "minx": 0.152941,
+            "miny": 11.695773,
+            "maxx": 15.970322,
+            "maxy": 23.517351,
+            "width": 15.817381,
+            "height": 11.821578
+        },
+        "visual_center": {
+            "longitude": 10.8662460625,
+            "latitude": 17.9759863125
+        }
+    },
+    {
+        "country": "Burkina Faso",
+        "iso_code": "BFA",
+        "bbox": {
+            "minx": -5.522578,
+            "miny": 9.391883,
+            "maxx": 2.390169,
+            "maxy": 15.079908,
+            "width": 7.912747,
+            "height": 5.688025
+        },
+        "visual_center": {
+            "longitude": -0.9010576875000005,
+            "latitude": 12.5913970625
+        }
+    },
+    {
+        "country": "Togo",
+        "iso_code": "TGO",
+        "bbox": {
+            "minx": -0.166109,
+            "miny": 6.100491,
+            "maxx": 1.782351,
+            "maxy": 11.13498,
+            "width": 1.94846,
+            "height": 5.034489000000001
+        },
+        "visual_center": {
+            "longitude": 0.8081210000000001,
+            "latitude": 9.023181000000001
+        }
+    },
+    {
+        "country": "Ghana",
+        "iso_code": "GHA",
+        "bbox": {
+            "minx": -3.262509,
+            "miny": 4.737128,
+            "maxx": 1.187968,
+            "maxy": 11.162937,
+            "width": 4.450477,
+            "height": 6.425808999999999
+        },
+        "visual_center": {
+            "longitude": -1.0372705,
+            "latitude": 6.9623665
+        }
+    },
+    {
+        "country": "Guinea-Bissau",
+        "iso_code": "GNB",
+        "bbox": {
+            "minx": -16.728437,
+            "miny": 10.927639,
+            "maxx": -13.660712,
+            "maxy": 12.679434,
+            "width": 3.0677249999999994,
+            "height": 1.7517950000000013
+        },
+        "visual_center": {
+            "longitude": -14.538693249999998,
+            "latitude": 12.24148525
+        }
+    },
+    {
+        "country": "Gibraltar",
+        "iso_code": "GIB",
+        "bbox": {
+            "minx": -5.358387,
+            "miny": 36.1105,
+            "maxx": -5.338773,
+            "maxy": 36.14112,
+            "width": 0.019613999999999798,
+            "height": 0.03061999999999898
+        },
+        "visual_center": {
+            "longitude": -5.346700411155376,
+            "latitude": 36.12946347205964
+        }
+    },
+    {
+        "country": "United States of America",
+        "iso_code": "USA",
+        "bbox": {
+            "minx": -124.734607,
+            "miny": 25.121405,
+            "maxx": -66.977325,
+            "maxy": 49.369494,
+            "width": 57.757282000000004,
+            "height": 24.248089000000004
+        },
+        "visual_center": {
+            "longitude": -97.834383265625,
+            "latitude": 39.13983145312499
+        }
+    },
+    {
+        "country": "Canada",
+        "iso_code": "CAN",
+        "bbox": {
+            "minx": -141.005564,
+            "miny": 41.669086,
+            "maxx": -55.616526,
+            "maxy": 72.002143,
+            "width": 85.389038,
+            "height": 30.333057000000004
+        },
+        "visual_center": {
+            "longitude": -119.677633296875,
+            "latitude": 59.205384578125006
+        }
+    },
+    {
+        "country": "Mexico",
+        "iso_code": "MEX",
+        "bbox": {
+            "minx": -117.125121,
+            "miny": 14.546279,
+            "maxx": -86.741567,
+            "maxy": 32.712836,
+            "width": 30.38355399999999,
+            "height": 18.166557000000005
+        },
+        "visual_center": {
+            "longitude": -101.933344,
+            "latitude": 23.629557500000004
+        }
+    },
+    {
+        "country": "Belize",
+        "iso_code": "BLZ",
+        "bbox": {
+            "minx": -89.236512,
+            "miny": 15.879652,
+            "maxx": -88.083567,
+            "maxy": 18.490759,
+            "width": 1.1529450000000026,
+            "height": 2.6111070000000005
+        },
+        "visual_center": {
+            "longitude": -88.7040434232086,
+            "latitude": 17.20147149529139
+        }
+    },
+    {
+        "country": "Panama",
+        "iso_code": "PAN",
+        "bbox": {
+            "minx": -83.053246,
+            "miny": 7.205715,
+            "maxx": -77.16327,
+            "maxy": 9.629292,
+            "width": 5.889976000000004,
+            "height": 2.423577
+        },
+        "visual_center": {
+            "longitude": -80.02377475000002,
+            "latitude": 9.023397749999999
+        }
+    },
+    {
+        "country": "Venezuela",
+        "iso_code": "VEN",
+        "bbox": {
+            "minx": -73.391149,
+            "miny": 0.649315,
+            "maxx": -59.815595,
+            "maxy": 12.19892,
+            "width": 13.575553999999997,
+            "height": 11.549605
+        },
+        "visual_center": {
+            "longitude": -64.0070949375,
+            "latitude": 7.1459678124999995
+        }
+    },
+    {
+        "country": "Papua New Guinea",
+        "iso_code": "PNG",
+        "bbox": {
+            "minx": 140.849211,
+            "miny": -10.701349,
+            "maxx": 150.874034,
+            "maxy": -2.589776,
+            "width": 10.024822999999998,
+            "height": 8.111573
+        },
+        "visual_center": {
+            "longitude": 143.891050875,
+            "latitude": -5.6316158750000005
+        }
+    },
+    {
+        "country": "Egypt",
+        "iso_code": "EGY",
+        "bbox": {
+            "minx": 24.688343,
+            "miny": 21.994369,
+            "maxx": 36.899181,
+            "maxy": 31.65648,
+            "width": 12.210837999999999,
+            "height": 9.662111
+        },
+        "visual_center": {
+            "longitude": 28.915516562500002,
+            "latitude": 26.221542562499998
+        }
+    },
+    {
+        "country": "Yemen",
+        "iso_code": "YEM",
+        "bbox": {
+            "minx": 42.610118,
+            "miny": 12.598049,
+            "maxx": 53.090343,
+            "maxy": 18.995638,
+            "width": 10.480224999999997,
+            "height": 6.397589
+        },
+        "visual_center": {
+            "longitude": 45.409063187499996,
+            "latitude": 15.396994187499999
+        }
+    },
+    {
+        "country": "Mauritania",
+        "iso_code": "MRT",
+        "bbox": {
+            "minx": -17.081175,
+            "miny": 14.734399,
+            "maxx": -4.821613,
+            "maxy": 27.285416,
+            "width": 12.259562000000003,
+            "height": 12.551017000000002
+        },
+        "visual_center": {
+            "longitude": -9.41894875,
+            "latitude": 19.331734750000003
+        }
+    },
+    {
+        "country": "Equatorial Guinea",
+        "iso_code": "GNQ",
+        "bbox": {
+            "minx": 9.34669,
+            "miny": 0.924854,
+            "maxx": 11.336341,
+            "maxy": 2.341742,
+            "width": 1.9896509999999985,
+            "height": 1.4168880000000001
+        },
+        "visual_center": {
+            "longitude": 10.467410548545242,
+            "latitude": 1.5651757825697405
+        }
+    },
+    {
+        "country": "Gambia",
+        "iso_code": "GMB",
+        "bbox": {
+            "minx": -16.829701,
+            "miny": 13.065009,
+            "maxx": -13.818713,
+            "maxy": 13.819984,
+            "width": 3.0109879999999993,
+            "height": 0.754975
+        },
+        "visual_center": {
+            "longitude": -14.187288499999998,
+            "latitude": 13.4424965
+        }
+    },
+    {
+        "country": "Hong Kong S.A.R.",
+        "iso_code": "HKG",
+        "bbox": {
+            "minx": 113.896983,
+            "miny": 22.258287,
+            "maxx": 114.401296,
+            "maxy": 22.563946,
+            "width": 0.5043129999999962,
+            "height": 0.3056590000000021
+        },
+        "visual_center": {
+            "longitude": 114.0498125,
+            "latitude": 22.4111165
+        }
+    },
+    {
+        "country": "Vatican",
+        "iso_code": "VAT",
+        "bbox": {
+            "minx": 12.452714,
+            "miny": 41.902752,
+            "maxx": 12.454035,
+            "maxy": 41.903915,
+            "width": 0.0013209999999990174,
+            "height": 0.0011629999999982488
+        },
+        "visual_center": {
+            "longitude": 12.453418041588543,
+            "latitude": 41.90331385505639
+        }
+    },
+    {
+        "country": "Northern Cyprus",
+        "iso_code": "-99",
+        "bbox": {
+            "minx": 32.710592,
+            "miny": 35.002722,
+            "maxx": 34.59254,
+            "maxy": 35.691962,
+            "width": 1.8819480000000013,
+            "height": 0.6892399999999981
+        },
+        "visual_center": {
+            "longitude": 33.59948453858874,
+            "latitude": 35.2765951190083
+        }
+    },
+    {
+        "country": "Cyprus No Mans Area",
+        "iso_code": "-99",
+        "bbox": {
+            "minx": 32.691549,
+            "miny": 34.977763,
+            "maxx": 33.71544,
+            "maxy": 35.199403,
+            "width": 1.023890999999999,
+            "height": 0.22163999999999362
+        },
+        "visual_center": {
+            "longitude": 33.46728899999998,
+            "latitude": 35.088583
+        }
+    },
+    {
+        "country": "Siachen Glacier",
+        "iso_code": "-99",
+        "bbox": {
+            "minx": 76.777351,
+            "miny": 35.110442,
+            "maxx": 77.800346,
+            "maxy": 35.647799,
+            "width": 1.0229950000000088,
+            "height": 0.5373570000000001
+        },
+        "visual_center": {
+            "longitude": 77.17995264309052,
+            "latitude": 35.39108187215903
+        }
+    },
+    {
+        "country": "Baykonur Cosmodrome",
+        "iso_code": "-99",
+        "bbox": {
+            "minx": 62.800642,
+            "miny": 45.565824,
+            "maxx": 63.967134,
+            "maxy": 46.390839,
+            "width": 1.166491999999998,
+            "height": 0.8250150000000005
+        },
+        "visual_center": {
+            "longitude": 63.383888,
+            "latitude": 45.978331499999996
+        }
+    },
+    {
+        "country": "Akrotiri Sovereign Base Area",
+        "iso_code": "-99",
+        "bbox": {
+            "minx": 32.760102,
+            "miny": 34.568549,
+            "maxx": 33.030284,
+            "maxy": 34.700948,
+            "width": 0.27018199999999837,
+            "height": 0.1323989999999995
+        },
+        "visual_center": {
+            "longitude": 32.933995063426885,
+            "latitude": 34.63181339366444
+        }
+    },
+    {
+        "country": "Southern Patagonian Ice Field",
+        "iso_code": "-99",
+        "bbox": {
+            "minx": -73.588036,
+            "miny": -49.759959,
+            "maxx": -73.057424,
+            "maxy": -49.272754,
+            "width": 0.530612000000005,
+            "height": 0.487205000000003
+        },
+        "visual_center": {
+            "longitude": -73.318833671289,
+            "latitude": -49.51234275309508
+        }
+    },
+    {
+        "country": "Bir Tawil",
+        "iso_code": "-99",
+        "bbox": {
+            "minx": 33.181136,
+            "miny": 21.710957,
+            "maxx": 34.084179,
+            "maxy": 21.995454,
+            "width": 0.9030429999999967,
+            "height": 0.2844969999999982
+        },
+        "visual_center": {
+            "longitude": 33.6078815,
+            "latitude": 21.8532055
+        }
+    },
+    {
+        "country": "Antarctica",
+        "iso_code": "ATA",
+        "bbox": {
+            "minx": -180.0,
+            "miny": -90.0,
+            "maxx": 180.0,
+            "maxy": -63.214776,
+            "width": 360.0,
+            "height": 26.785224
+        },
+        "visual_center": {
+            "longitude": 102.9189285,
+            "latitude": -78.28146450000001
+        }
+    },
+    {
+        "country": "Australia",
+        "iso_code": "AUS",
+        "bbox": {
+            "minx": 113.15698,
+            "miny": -39.144952,
+            "maxx": 153.630626,
+            "maxy": -10.687677,
+            "width": 40.473646,
+            "height": 28.457275000000003
+        },
+        "visual_center": {
+            "longitude": 132.72135656250003,
+            "latitude": -23.137734812500003
+        }
+    },
+    {
+        "country": "Greenland",
+        "iso_code": "GRL",
+        "bbox": {
+            "minx": -73.05724,
+            "miny": 59.987942,
+            "maxx": -11.37682,
+            "maxy": 83.634101,
+            "width": 61.68041999999999,
+            "height": 23.646159000000004
+        },
+        "visual_center": {
+            "longitude": -41.282713843749995,
+            "latitude": 74.02784890625
+        }
+    },
+    {
+        "country": "Fiji",
+        "iso_code": "FJI",
+        "bbox": {
+            "minx": 177.251638,
+            "miny": -18.273126,
+            "maxx": 178.711436,
+            "maxy": -17.300551,
+            "width": 1.459797999999978,
+            "height": 0.9725750000000026
+        },
+        "visual_center": {
+            "longitude": 177.97519893322445,
+            "latitude": -17.824134041182138
+        }
+    },
+    {
+        "country": "New Zealand",
+        "iso_code": "NZL",
+        "bbox": {
+            "minx": 166.466482,
+            "miny": -46.681899,
+            "maxx": 174.326427,
+            "maxy": -40.50213,
+            "width": 7.859944999999982,
+            "height": 6.179769
+        },
+        "visual_center": {
+            "longitude": 169.94260206250001,
+            "latitude": -44.7507211875
+        }
+    },
+    {
+        "country": "New Caledonia",
+        "iso_code": "NCL",
+        "bbox": {
+            "minx": 163.986013,
+            "miny": -22.395603,
+            "maxx": 167.034434,
+            "maxy": -20.083103,
+            "width": 3.0484209999999905,
+            "height": 2.3125
+        },
+        "visual_center": {
+            "longitude": 164.564138,
+            "latitude": -20.661228
+        }
+    },
+    {
+        "country": "Madagascar",
+        "iso_code": "MDG",
+        "bbox": {
+            "minx": 43.222911,
+            "miny": -25.598565,
+            "maxx": 50.503917,
+            "maxy": -11.943617,
+            "width": 7.281005999999998,
+            "height": 13.654948000000001
+        },
+        "visual_center": {
+            "longitude": 46.863414000000006,
+            "latitude": -18.771091
+        }
+    },
+    {
+        "country": "Philippines",
+        "iso_code": "PHL",
+        "bbox": {
+            "minx": 119.755707,
+            "miny": 12.535834,
+            "maxx": 124.188243,
+            "maxy": 18.645941,
+            "width": 4.432535999999999,
+            "height": 6.110107000000001
+        },
+        "visual_center": {
+            "longitude": 121.41790800000001,
+            "latitude": 17.522437
+        }
+    },
+    {
+        "country": "Sri Lanka",
+        "iso_code": "LKA",
+        "bbox": {
+            "minx": 79.696788,
+            "miny": 5.923733,
+            "maxx": 81.89031,
+            "maxy": 9.829576,
+            "width": 2.1935220000000015,
+            "height": 3.905842999999999
+        },
+        "visual_center": {
+            "longitude": 80.793549,
+            "latitude": 7.020494000000001
+        }
+    },
+    {
+        "country": "Curaçao",
+        "iso_code": "CUW",
+        "bbox": {
+            "minx": -69.171742,
+            "miny": 12.041327,
+            "maxx": -68.739735,
+            "maxy": 12.391506,
+            "width": 0.4320069999999987,
+            "height": 0.3501789999999989
+        },
+        "visual_center": {
+            "longitude": -68.97130566275223,
+            "latitude": 12.193821081115393
+        }
+    },
+    {
+        "country": "Aruba",
+        "iso_code": "ABW",
+        "bbox": {
+            "minx": -70.062408,
+            "miny": 12.41767,
+            "maxx": -69.87682,
+            "maxy": 12.632148,
+            "width": 0.18558800000000986,
+            "height": 0.2144780000000015
+        },
+        "visual_center": {
+            "longitude": -69.97420088758894,
+            "latitude": 12.516935254392758
+        }
+    },
+    {
+        "country": "The Bahamas",
+        "iso_code": "BHS",
+        "bbox": {
+            "minx": -78.442983,
+            "miny": 24.272854,
+            "maxx": -77.718739,
+            "maxy": 25.206732,
+            "width": 0.7242439999999988,
+            "height": 0.933878
+        },
+        "visual_center": {
+            "longitude": -78.03972995723687,
+            "latitude": 24.703818193735174
+        }
+    },
+    {
+        "country": "Turks and Caicos Islands",
+        "iso_code": "TCA",
+        "bbox": {
+            "minx": -71.850657,
+            "miny": 21.743883,
+            "maxx": -71.63093,
+            "maxy": 21.856269,
+            "width": 0.2197269999999918,
+            "height": 0.11238600000000076
+        },
+        "visual_center": {
+            "longitude": -71.74188454619689,
+            "latitude": 21.809260241799723
+        }
+    },
+    {
+        "country": "Taiwan",
+        "iso_code": "TWN",
+        "bbox": {
+            "minx": 120.052419,
+            "miny": 21.904608,
+            "maxx": 122.005382,
+            "maxy": 25.287421,
+            "width": 1.952962999999997,
+            "height": 3.3828129999999987
+        },
+        "visual_center": {
+            "longitude": 120.96434711927277,
+            "latitude": 23.753332143721668
+        }
+    },
+    {
+        "country": "Japan",
+        "iso_code": "JPN",
+        "bbox": {
+            "minx": 130.861583,
+            "miny": 33.433336,
+            "maxx": 142.070323,
+            "maxy": 41.546857,
+            "width": 11.208740000000006,
+            "height": 8.113521000000006
+        },
+        "visual_center": {
+            "longitude": 139.48219906249997,
+            "latitude": 36.98300143749999
+        }
+    },
+    {
+        "country": "Saint Pierre and Miquelon",
+        "iso_code": "SPM",
+        "bbox": {
+            "minx": -56.396596,
+            "miny": 46.780748,
+            "maxx": -56.235504,
+            "maxy": 47.141262,
+            "width": 0.16109200000000357,
+            "height": 0.3605139999999949
+        },
+        "visual_center": {
+            "longitude": -56.316050000000004,
+            "latitude": 46.861294
+        }
+    },
+    {
+        "country": "Iceland",
+        "iso_code": "ISL",
+        "bbox": {
+            "minx": -24.539906,
+            "miny": 63.396715,
+            "maxx": -13.502919,
+            "maxy": 66.536607,
+            "width": 11.036986999999998,
+            "height": 3.1398920000000032
+        },
+        "visual_center": {
+            "longitude": -16.69017599999999,
+            "latitude": 64.966661
+        }
+    },
+    {
+        "country": "Pitcairn Islands",
+        "iso_code": "PCN",
+        "bbox": {
+            "minx": -128.35025,
+            "miny": -24.41367,
+            "maxx": -128.290151,
+            "maxy": -24.324314,
+            "width": 0.060098999999979696,
+            "height": 0.08935599999999866
+        },
+        "visual_center": {
+            "longitude": -128.31708071968015,
+            "latitude": -24.36603158570121
+        }
+    },
+    {
+        "country": "French Polynesia",
+        "iso_code": "PYF",
+        "bbox": {
+            "minx": -149.642161,
+            "miny": -17.869073,
+            "maxx": -149.149119,
+            "maxy": -17.494073,
+            "width": 0.4930419999999742,
+            "height": 0.375
+        },
+        "visual_center": {
+            "longitude": -149.42048351192827,
+            "latitude": -17.6639140244777
+        }
+    },
+    {
+        "country": "French Southern and Antarctic Lands",
+        "iso_code": "ATF",
+        "bbox": {
+            "minx": 68.74879,
+            "miny": -49.721612,
+            "maxx": 70.568533,
+            "maxy": -48.654555,
+            "width": 1.8197430000000026,
+            "height": 1.0670569999999984
+        },
+        "visual_center": {
+            "longitude": 70.3493755,
+            "latitude": -49.188083500000005
+        }
+    },
+    {
+        "country": "Seychelles",
+        "iso_code": "SYC",
+        "bbox": {
+            "minx": 55.365617,
+            "miny": -4.803769,
+            "maxx": 55.537916,
+            "maxy": -4.560511,
+            "width": 0.17229900000000242,
+            "height": 0.24325799999999997
+        },
+        "visual_center": {
+            "longitude": 55.46712578196696,
+            "latitude": -4.676076977301252
+        }
+    },
+    {
+        "country": "Kiribati",
+        "iso_code": "KIR",
+        "bbox": {
+            "minx": -157.581166,
+            "miny": 1.709296,
+            "maxx": -157.174631,
+            "maxy": 2.03441,
+            "width": 0.406534999999991,
+            "height": 0.3251139999999999
+        },
+        "visual_center": {
+            "longitude": -157.37789850000001,
+            "latitude": 1.8718529999999998
+        }
+    },
+    {
+        "country": "Marshall Islands",
+        "iso_code": "MHL",
+        "bbox": {
+            "minx": 171.035655,
+            "miny": 7.067694,
+            "maxx": 171.393565,
+            "maxy": 7.170722,
+            "width": 0.35791000000000395,
+            "height": 0.10302799999999923
+        },
+        "visual_center": {
+            "longitude": 171.087169,
+            "latitude": 7.119208
+        }
+    },
+    {
+        "country": "Trinidad and Tobago",
+        "iso_code": "TTO",
+        "bbox": {
+            "minx": -61.9287,
+            "miny": 10.04206,
+            "maxx": -60.907297,
+            "maxy": 10.845282,
+            "width": 1.0214029999999994,
+            "height": 0.8032219999999999
+        },
+        "visual_center": {
+            "longitude": -61.29393707337621,
+            "latitude": 10.421859387850109
+        }
+    },
+    {
+        "country": "Grenada",
+        "iso_code": "GRD",
+        "bbox": {
+            "minx": -61.790517,
+            "miny": 12.002834,
+            "maxx": -61.602773,
+            "maxy": 12.239732,
+            "width": 0.18774400000000213,
+            "height": 0.23689800000000005
+        },
+        "visual_center": {
+            "longitude": -61.6790389914009,
+            "latitude": 12.117726394796868
+        }
+    },
+    {
+        "country": "Saint Vincent and the Grenadines",
+        "iso_code": "VCT",
+        "bbox": {
+            "minx": -61.279368,
+            "miny": 13.132514,
+            "maxx": -61.123931,
+            "maxy": 13.380764,
+            "width": 0.15543699999999916,
+            "height": 0.24824999999999875
+        },
+        "visual_center": {
+            "longitude": -61.19397494611186,
+            "latitude": 13.256501181195453
+        }
+    },
+    {
+        "country": "Barbados",
+        "iso_code": "BRB",
+        "bbox": {
+            "minx": -59.654205,
+            "miny": 13.051174,
+            "maxx": -59.42691,
+            "maxy": 13.34455,
+            "width": 0.22729499999999803,
+            "height": 0.2933760000000003
+        },
+        "visual_center": {
+            "longitude": -59.5405575,
+            "latitude": 13.164821499999999
+        }
+    },
+    {
+        "country": "Saint Lucia",
+        "iso_code": "LCA",
+        "bbox": {
+            "minx": -61.078521,
+            "miny": 13.714667,
+            "maxx": -60.882965,
+            "maxy": 14.111884,
+            "width": 0.1955560000000034,
+            "height": 0.3972169999999995
+        },
+        "visual_center": {
+            "longitude": -60.97031644424319,
+            "latitude": 13.902670590761801
+        }
+    },
+    {
+        "country": "Dominica",
+        "iso_code": "DMA",
+        "bbox": {
+            "minx": -61.488922,
+            "miny": 15.201809,
+            "maxx": -61.249257,
+            "maxy": 15.633857,
+            "width": 0.23966500000000224,
+            "height": 0.432048
+        },
+        "visual_center": {
+            "longitude": -61.356917677804,
+            "latitude": 15.436440522105727
+        }
+    },
+    {
+        "country": "United States Minor Outlying Islands",
+        "iso_code": "UMI",
+        "bbox": {
+            "minx": -162.103627,
+            "miny": 5.869371,
+            "maxx": -162.057607,
+            "maxy": 5.890245,
+            "width": 0.04601999999999862,
+            "height": 0.02087400000000006
+        },
+        "visual_center": {
+            "longitude": -162.072316,
+            "latitude": 5.879808000000001
+        }
+    },
+    {
+        "country": "Montserrat",
+        "iso_code": "MSR",
+        "bbox": {
+            "minx": -62.230133,
+            "miny": 16.67536,
+            "maxx": -62.140533,
+            "maxy": 16.819322,
+            "width": 0.08960000000000434,
+            "height": 0.14396199999999837
+        },
+        "visual_center": {
+            "longitude": -62.18739871722237,
+            "latitude": 16.73752340276069
+        }
+    },
+    {
+        "country": "Antigua and Barbuda",
+        "iso_code": "ATG",
+        "bbox": {
+            "minx": -61.894154,
+            "miny": 16.989244,
+            "maxx": -61.667592,
+            "maxy": 17.168769,
+            "width": 0.22656200000000126,
+            "height": 0.1795250000000017
+        },
+        "visual_center": {
+            "longitude": -61.8043915,
+            "latitude": 17.0790065
+        }
+    },
+    {
+        "country": "Saint Kitts and Nevis",
+        "iso_code": "KNA",
+        "bbox": {
+            "minx": -62.861073,
+            "miny": 17.21719,
+            "maxx": -62.624745,
+            "maxy": 17.415839,
+            "width": 0.23632800000000032,
+            "height": 0.19864899999999963
+        },
+        "visual_center": {
+            "longitude": -62.75797542269243,
+            "latitude": 17.332253513912118
+        }
+    },
+    {
+        "country": "United States Virgin Islands",
+        "iso_code": "VIR",
+        "bbox": {
+            "minx": -64.895172,
+            "miny": 17.682766,
+            "maxx": -64.559397,
+            "maxy": 17.792629,
+            "width": 0.33577499999999816,
+            "height": 0.10986300000000071
+        },
+        "visual_center": {
+            "longitude": -64.76263762306792,
+            "latitude": 17.73930627241101
+        }
+    },
+    {
+        "country": "Saint Barthelemy",
+        "iso_code": "BLM",
+        "bbox": {
+            "minx": -62.86734,
+            "miny": 17.881985,
+            "maxx": -62.791656,
+            "maxy": 17.929145,
+            "width": 0.07568399999999542,
+            "height": 0.04715999999999809
+        },
+        "visual_center": {
+            "longitude": -62.83261980945388,
+            "latitude": 17.90558456135353
+        }
+    },
+    {
+        "country": "Puerto Rico",
+        "iso_code": "PRI",
+        "bbox": {
+            "minx": -67.270842,
+            "miny": 17.922919,
+            "maxx": -65.591764,
+            "maxy": 18.522773,
+            "width": 1.679078000000004,
+            "height": 0.5998540000000006
+        },
+        "visual_center": {
+            "longitude": -66.371061,
+            "latitude": 18.222846
+        }
+    },
+    {
+        "country": "Anguilla",
+        "iso_code": "AIA",
+        "bbox": {
+            "minx": -63.167836,
+            "miny": 18.169094,
+            "maxx": -62.972646,
+            "maxy": 18.276435,
+            "width": 0.19519000000000375,
+            "height": 0.10734099999999813
+        },
+        "visual_center": {
+            "longitude": -63.057414303927146,
+            "latitude": 18.224522508466748
+        }
+    },
+    {
+        "country": "British Virgin Islands",
+        "iso_code": "VGB",
+        "bbox": {
+            "minx": -64.714128,
+            "miny": 18.383072,
+            "maxx": -64.516845,
+            "maxy": 18.454103,
+            "width": 0.19728299999999876,
+            "height": 0.0710310000000014
+        },
+        "visual_center": {
+            "longitude": -64.62166432566107,
+            "latitude": 18.42410074604956
+        }
+    },
+    {
+        "country": "Jamaica",
+        "iso_code": "JAM",
+        "bbox": {
+            "minx": -78.374664,
+            "miny": 17.703192,
+            "maxx": -76.187978,
+            "maxy": 18.525092,
+            "width": 2.1866859999999946,
+            "height": 0.8218999999999994
+        },
+        "visual_center": {
+            "longitude": -77.31881037050489,
+            "latitude": 18.155226401736165
+        }
+    },
+    {
+        "country": "Cayman Islands",
+        "iso_code": "CYM",
+        "bbox": {
+            "minx": -81.416542,
+            "miny": 19.263864,
+            "maxx": -81.086586,
+            "maxy": 19.394761,
+            "width": 0.3299560000000099,
+            "height": 0.13089699999999738
+        },
+        "visual_center": {
+            "longitude": -81.25179869068725,
+            "latitude": 19.318286502145536
+        }
+    },
+    {
+        "country": "Bermuda",
+        "iso_code": "BMU",
+        "bbox": {
+            "minx": -64.885994,
+            "miny": 32.248077,
+            "maxx": -64.647631,
+            "maxy": 32.388658,
+            "width": 0.23836299999999255,
+            "height": 0.1405809999999974
+        },
+        "visual_center": {
+            "longitude": -64.76176748355792,
+            "latitude": 32.31094370859234
+        }
+    },
+    {
+        "country": "Heard Island and McDonald Islands",
+        "iso_code": "HMD",
+        "bbox": {
+            "minx": 73.236013,
+            "miny": -53.19256,
+            "maxx": 73.812185,
+            "maxy": -52.961602,
+            "width": 0.5761719999999997,
+            "height": 0.2309580000000011
+        },
+        "visual_center": {
+            "longitude": 73.50521040755123,
+            "latitude": -53.08881697235377
+        }
+    },
+    {
+        "country": "Saint Helena",
+        "iso_code": "SHN",
+        "bbox": {
+            "minx": -5.78954,
+            "miny": -16.01572,
+            "maxx": -5.65038,
+            "maxy": -15.902114,
+            "width": 0.1391599999999995,
+            "height": 0.11360600000000254
+        },
+        "visual_center": {
+            "longitude": -5.732736999999998,
+            "latitude": -15.958917
+        }
+    },
+    {
+        "country": "Mauritius",
+        "iso_code": "MUS",
+        "bbox": {
+            "minx": 57.303477,
+            "miny": -20.517348,
+            "maxx": 57.795746,
+            "maxy": -19.979425,
+            "width": 0.4922690000000003,
+            "height": 0.5379229999999993
+        },
+        "visual_center": {
+            "longitude": 57.569566703232034,
+            "latitude": -20.279323671303334
+        }
+    },
+    {
+        "country": "Comoros",
+        "iso_code": "COM",
+        "bbox": {
+            "minx": 43.213227,
+            "miny": -11.932875,
+            "maxx": 43.49879,
+            "maxy": -11.361261,
+            "width": 0.28556299999999624,
+            "height": 0.5716139999999985
+        },
+        "visual_center": {
+            "longitude": 43.3560085,
+            "latitude": -11.790093500000001
+        }
+    },
+    {
+        "country": "São Tomé and Principe",
+        "iso_code": "STP",
+        "bbox": {
+            "minx": 6.461681,
+            "miny": 0.024115,
+            "maxx": 6.760916,
+            "maxy": 0.410793,
+            "width": 0.29923500000000036,
+            "height": 0.386678
+        },
+        "visual_center": {
+            "longitude": 6.607635325268479,
+            "latitude": 0.23556464865881072
+        }
+    },
+    {
+        "country": "Cabo Verde",
+        "iso_code": "CPV",
+        "bbox": {
+            "minx": -23.792592,
+            "miny": 14.90762,
+            "maxx": -23.443105,
+            "maxy": 15.33275,
+            "width": 0.3494869999999999,
+            "height": 0.4251300000000011
+        },
+        "visual_center": {
+            "longitude": -23.636846273241066,
+            "latitude": 15.081798748946554
+        }
+    },
+    {
+        "country": "Malta",
+        "iso_code": "MLT",
+        "bbox": {
+            "minx": 14.322032,
+            "miny": 35.801215,
+            "maxx": 14.567149,
+            "maxy": 35.993638,
+            "width": 0.24511700000000047,
+            "height": 0.192422999999998
+        },
+        "visual_center": {
+            "longitude": 14.418243499999999,
+            "latitude": 35.897426499999995
+        }
+    },
+    {
+        "country": "Jersey",
+        "iso_code": "JEY",
+        "bbox": {
+            "minx": -2.242014,
+            "miny": 49.171332,
+            "maxx": -2.00829,
+            "maxy": 49.267035,
+            "width": 0.23372400000000004,
+            "height": 0.09570300000000032
+        },
+        "visual_center": {
+            "longitude": -2.0984594999999997,
+            "latitude": 49.2191835
+        }
+    },
+    {
+        "country": "Guernsey",
+        "iso_code": "GGY",
+        "bbox": {
+            "minx": -2.673451,
+            "miny": 49.426703,
+            "maxx": -2.501698,
+            "maxy": 49.51553,
+            "width": 0.17175299999999982,
+            "height": 0.08882699999999488
+        },
+        "visual_center": {
+            "longitude": -2.5773504535422727,
+            "latitude": 49.46335355780991
+        }
+    },
+    {
+        "country": "Isle of Man",
+        "iso_code": "IMN",
+        "bbox": {
+            "minx": -4.790151,
+            "miny": 54.056952,
+            "maxx": -4.31192,
+            "maxy": 54.419013,
+            "width": 0.4782310000000001,
+            "height": 0.3620609999999971
+        },
+        "visual_center": {
+            "longitude": -4.533695232960807,
+            "latitude": 54.229101901154046
+        }
+    },
+    {
+        "country": "Aland",
+        "iso_code": "ALA",
+        "bbox": {
+            "minx": 19.646983,
+            "miny": 60.047675,
+            "maxx": 20.277599,
+            "maxy": 60.405585,
+            "width": 0.6306159999999998,
+            "height": 0.35791000000000395
+        },
+        "visual_center": {
+            "longitude": 20.183848000000005,
+            "latitude": 60.22663
+        }
+    },
+    {
+        "country": "Faroe Islands",
+        "iso_code": "FRO",
+        "bbox": {
+            "minx": -7.236318,
+            "miny": 61.938218,
+            "maxx": -6.698842,
+            "maxy": 62.314602,
+            "width": 0.5374759999999998,
+            "height": 0.3763840000000016
+        },
+        "visual_center": {
+            "longitude": -6.96758,
+            "latitude": 62.12641
+        }
+    },
+    {
+        "country": "Indian Ocean Territories",
+        "iso_code": "-99",
+        "bbox": {
+            "minx": 105.581798,
+            "miny": -10.566013,
+            "maxx": 105.714692,
+            "maxy": -10.430841,
+            "width": 0.13289399999999318,
+            "height": 0.13517200000000074
+        },
+        "visual_center": {
+            "longitude": 105.66252267730601,
+            "latitude": -10.492523204697424
+        }
+    },
+    {
+        "country": "British Indian Ocean Territory",
+        "iso_code": "IOT",
+        "bbox": {
+            "minx": 72.357677,
+            "miny": -7.432224,
+            "maxx": 72.48463,
+            "maxy": -7.268324,
+            "width": 0.12695300000000032,
+            "height": 0.16389999999999993
+        },
+        "visual_center": {
+            "longitude": 72.42623550058282,
+            "latitude": -7.346796867469177
+        }
+    },
+    {
+        "country": "Singapore",
+        "iso_code": "SGP",
+        "bbox": {
+            "minx": 103.640391,
+            "miny": 1.264309,
+            "maxx": 104.003429,
+            "maxy": 1.448635,
+            "width": 0.3630380000000031,
+            "height": 0.184326
+        },
+        "visual_center": {
+            "longitude": 103.82191,
+            "latitude": 1.356472
+        }
+    },
+    {
+        "country": "Norfolk Island",
+        "iso_code": "NFK",
+        "bbox": {
+            "minx": 167.91212,
+            "miny": -29.080011,
+            "maxx": 167.996349,
+            "maxy": -28.997491,
+            "width": 0.08422900000002187,
+            "height": 0.08251999999999882
+        },
+        "visual_center": {
+            "longitude": 167.95516953700766,
+            "latitude": -29.03497514555686
+        }
+    },
+    {
+        "country": "Cook Islands",
+        "iso_code": "COK",
+        "bbox": {
+            "minx": -159.846262,
+            "miny": -21.254327,
+            "maxx": -159.736033,
+            "maxy": -21.18613,
+            "width": 0.11022900000000391,
+            "height": 0.0681970000000014
+        },
+        "visual_center": {
+            "longitude": -159.78651049069845,
+            "latitude": -21.219343874108745
+        }
+    },
+    {
+        "country": "Tonga",
+        "iso_code": "TON",
+        "bbox": {
+            "minx": -175.364817,
+            "miny": -21.267999,
+            "maxx": -175.050893,
+            "maxy": -21.062595,
+            "width": 0.3139239999999859,
+            "height": 0.20540399999999792
+        },
+        "visual_center": {
+            "longitude": -175.262115,
+            "latitude": -21.165297000000002
+        }
+    },
+    {
+        "country": "Wallis and Futuna",
+        "iso_code": "WLF",
+        "bbox": {
+            "minx": -176.199574,
+            "miny": -13.350274,
+            "maxx": -176.1256,
+            "maxy": -13.208917,
+            "width": 0.07397400000002108,
+            "height": 0.14135700000000107
+        },
+        "visual_center": {
+            "longitude": -176.16192801052313,
+            "latitude": -13.281862394020216
+        }
+    },
+    {
+        "country": "Samoa",
+        "iso_code": "WSM",
+        "bbox": {
+            "minx": -172.782582,
+            "miny": -13.805352,
+            "maxx": -172.175649,
+            "maxy": -13.462823,
+            "width": 0.606932999999998,
+            "height": 0.342528999999999
+        },
+        "visual_center": {
+            "longitude": -172.43824307624826,
+            "latitude": -13.630546954499215
+        }
+    },
+    {
+        "country": "Solomon Islands",
+        "iso_code": "SLB",
+        "bbox": {
+            "minx": 159.592133,
+            "miny": -9.937107,
+            "maxx": 160.826345,
+            "maxy": -9.247735,
+            "width": 1.2342120000000136,
+            "height": 0.6893719999999988
+        },
+        "visual_center": {
+            "longitude": 160.17030259031182,
+            "latitude": -9.622609272978329
+        }
+    },
+    {
+        "country": "Tuvalu",
+        "iso_code": "TUV",
+        "bbox": {
+            "minx": 179.191254,
+            "miny": -8.542087,
+            "maxx": 179.21754,
+            "maxy": -8.460626,
+            "width": 0.026286000000027343,
+            "height": 0.0814610000000009
+        },
+        "visual_center": {
+            "longitude": 179.20500726196917,
+            "latitude": -8.504067989312354
+        }
+    },
+    {
+        "country": "Maldives",
+        "iso_code": "MDV",
+        "bbox": {
+            "minx": 73.431201,
+            "miny": 4.162087,
+            "maxx": 73.552883,
+            "maxy": 4.243039,
+            "width": 0.12168199999999274,
+            "height": 0.08095199999999991
+        },
+        "visual_center": {
+            "longitude": 73.50755312862532,
+            "latitude": 4.190794061705637
+        }
+    },
+    {
+        "country": "Nauru",
+        "iso_code": "NRU",
+        "bbox": {
+            "minx": 166.906993,
+            "miny": -0.551853,
+            "maxx": 166.958263,
+            "maxy": -0.490411,
+            "width": 0.05126999999998816,
+            "height": 0.06144200000000005
+        },
+        "visual_center": {
+            "longitude": 166.932628,
+            "latitude": -0.521132
+        }
+    },
+    {
+        "country": "Federated States of Micronesia",
+        "iso_code": "FSM",
+        "bbox": {
+            "minx": 158.125824,
+            "miny": 6.788275,
+            "maxx": 158.338634,
+            "maxy": 6.978949,
+            "width": 0.21281000000001882,
+            "height": 0.19067400000000045
+        },
+        "visual_center": {
+            "longitude": 158.23401905202564,
+            "latitude": 6.882687896255287
+        }
+    },
+    {
+        "country": "South Georgia and the Islands",
+        "iso_code": "SGS",
+        "bbox": {
+            "minx": -38.032379,
+            "miny": -54.887465,
+            "maxx": -35.784291,
+            "maxy": -53.972426,
+            "width": 2.2480879999999956,
+            "height": 0.9150390000000002
+        },
+        "visual_center": {
+            "longitude": -36.683671501065334,
+            "latitude": -54.36767525672684
+        }
+    },
+    {
+        "country": "Falkland Islands",
+        "iso_code": "FLK",
+        "bbox": {
+            "minx": -59.721547,
+            "miny": -52.341729,
+            "maxx": -57.734283,
+            "maxy": -51.248468,
+            "width": 1.9872640000000033,
+            "height": 1.0932609999999983
+        },
+        "visual_center": {
+            "longitude": -58.75412708438863,
+            "latitude": -51.734802048941134
+        }
+    },
+    {
+        "country": "Vanuatu",
+        "iso_code": "VUT",
+        "bbox": {
+            "minx": 166.522634,
+            "miny": -15.658298,
+            "maxx": 167.247244,
+            "maxy": -14.625258,
+            "width": 0.7246099999999842,
+            "height": 1.0330399999999997
+        },
+        "visual_center": {
+            "longitude": 166.884939,
+            "latitude": -15.295993000000008
+        }
+    },
+    {
+        "country": "Niue",
+        "iso_code": "NIU",
+        "bbox": {
+            "minx": -169.950429,
+            "miny": -19.142755,
+            "maxx": -169.782908,
+            "maxy": -18.964044,
+            "width": 0.167521000000022,
+            "height": 0.17871099999999984
+        },
+        "visual_center": {
+            "longitude": -169.8666685,
+            "latitude": -19.0533995
+        }
+    },
+    {
+        "country": "American Samoa",
+        "iso_code": "ASM",
+        "bbox": {
+            "minx": -170.831248,
+            "miny": -14.374688,
+            "maxx": -170.56725,
+            "maxy": -14.252374,
+            "width": 0.26399799999998663,
+            "height": 0.12231400000000114
+        },
+        "visual_center": {
+            "longitude": -170.77009099999998,
+            "latitude": -14.313531000000001
+        }
+    },
+    {
+        "country": "Palau",
+        "iso_code": "PLW",
+        "bbox": {
+            "minx": 134.482921,
+            "miny": 7.355699,
+            "maxx": 134.663341,
+            "maxy": 7.734076,
+            "width": 0.18041999999999803,
+            "height": 0.3783769999999995
+        },
+        "visual_center": {
+            "longitude": 134.58014880810452,
+            "latitude": 7.513818739880775
+        }
+    },
+    {
+        "country": "Guam",
+        "iso_code": "GUM",
+        "bbox": {
+            "minx": 144.624197,
+            "miny": 13.241034,
+            "maxx": 144.952159,
+            "maxy": 13.65412,
+            "width": 0.3279619999999852,
+            "height": 0.41308599999999984
+        },
+        "visual_center": {
+            "longitude": 144.771939117746,
+            "latitude": 13.443792985816577
+        }
+    },
+    {
+        "country": "Northern Mariana Islands",
+        "iso_code": "MNP",
+        "bbox": {
+            "minx": 145.68214,
+            "miny": 15.096015,
+            "maxx": 145.823741,
+            "maxy": 15.272162,
+            "width": 0.14160100000000853,
+            "height": 0.17614700000000028
+        },
+        "visual_center": {
+            "longitude": 145.7413694590196,
+            "latitude": 15.183666979169324
+        }
+    },
+    {
+        "country": "Bahrain",
+        "iso_code": "BHR",
+        "bbox": {
+            "minx": 50.448904,
+            "miny": 25.789537,
+            "maxx": 50.64566,
+            "maxy": 26.24258,
+            "width": 0.1967560000000006,
+            "height": 0.453043000000001
+        },
+        "visual_center": {
+            "longitude": 50.547281999999996,
+            "latitude": 26.0160585
+        }
+    },
+    {
+        "country": "Coral Sea Islands",
+        "iso_code": "-99",
+        "bbox": {
+            "minx": 154.38852,
+            "miny": -21.030043,
+            "maxx": 154.391287,
+            "maxy": -21.028741,
+            "width": 0.002767000000005737,
+            "height": 0.0013019999999990262
+        },
+        "visual_center": {
+            "longitude": 154.39036432351742,
+            "latitude": -21.029283620082527
+        }
+    },
+    {
+        "country": "Spratly Islands",
+        "iso_code": "-99",
+        "bbox": {
+            "minx": 115.812836,
+            "miny": 10.720852,
+            "maxx": 115.833995,
+            "maxy": 10.735989,
+            "width": 0.021158999999997263,
+            "height": 0.01513699999999929
+        },
+        "visual_center": {
+            "longitude": 115.82040450000001,
+            "latitude": 10.7284205
+        }
+    },
+    {
+        "country": "Clipperton Island",
+        "iso_code": "-99",
+        "bbox": {
+            "minx": -109.234242,
+            "miny": 10.281562,
+            "maxx": -109.210357,
+            "maxy": 10.311021,
+            "width": 0.02388499999999283,
+            "height": 0.029459000000001012
+        },
+        "visual_center": {
+            "longitude": -109.2212642722283,
+            "latitude": 10.297389267262702
+        }
+    },
+    {
+        "country": "Macao S.A.R",
+        "iso_code": "MAC",
+        "bbox": {
+            "minx": 113.532237,
+            "miny": 22.105373,
+            "maxx": 113.587494,
+            "maxy": 22.165839,
+            "width": 0.05525700000001166,
+            "height": 0.06046599999999813
+        },
+        "visual_center": {
+            "longitude": 113.5598655,
+            "latitude": 22.133001500000006
+        }
+    },
+    {
+        "country": "Ashmore and Cartier Islands",
+        "iso_code": "-99",
+        "bbox": {
+            "minx": 123.575043,
+            "miny": -12.438572,
+            "maxx": 123.597748,
+            "maxy": -12.426609,
+            "width": 0.022705000000001974,
+            "height": 0.0119630000000015
+        },
+        "visual_center": {
+            "longitude": 123.58636769931577,
+            "latitude": -12.432577309903753
+        }
+    },
+    {
+        "country": "Bajo Nuevo Bank (Petrel Is.)",
+        "iso_code": "-99",
+        "bbox": {
+            "minx": -79.989288,
+            "miny": 15.794176,
+            "maxx": -79.986399,
+            "maxy": 15.79621,
+            "width": 0.0028889999999961447,
+            "height": 0.0020340000000000913
+        },
+        "visual_center": {
+            "longitude": -79.98786593298956,
+            "latitude": 15.795010211933917
+        }
+    },
+    {
+        "country": "Serranilla Bank",
+        "iso_code": "-99",
+        "bbox": {
+            "minx": -78.640411,
+            "miny": 15.862087,
+            "maxx": -78.636871,
+            "maxy": 15.867296,
+            "width": 0.003540000000000987,
+            "height": 0.005208999999998909
+        },
+        "visual_center": {
+            "longitude": -78.63811859762035,
+            "latitude": 15.864460986082099
+        }
+    },
+    {
+        "country": "Scarborough Reef",
+        "iso_code": "-99",
+        "bbox": {
+            "minx": 117.751856,
+            "miny": 15.150082,
+            "maxx": 117.755692,
+            "maxy": 15.154369,
+            "width": 0.003835999999992623,
+            "height": 0.004287000000001484
+        },
+        "visual_center": {
+            "longitude": 117.75381156242595,
+            "latitude": 15.152112653283604
+        }
+    }
+]

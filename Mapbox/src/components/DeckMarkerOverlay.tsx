@@ -7,6 +7,7 @@ import { useMapContext } from '../contexts/MapContext';
 import { useConfigContext } from '../contexts/ConfigContext';
 import { useAnimationContext } from '../contexts/AnimationContext';
 import { ICON_URLS, getIconColor } from '../core/iconData';
+import { getCountryVisualCenter, getCountryBounds, calculateIconSize } from '../utils/iconSizeCalculator';
 
 interface MarkerData {
   id: string;
@@ -20,14 +21,14 @@ interface MarkerData {
 export const DeckMarkerOverlay: React.FC = () => {
   const frame = useCurrentFrame();
   const { mapInstance, isMapLoaded } = useMapContext();
-  const { countryData, settings, iconType, iconSize } = useConfigContext();
-  const { animationState } = useAnimationContext();
+  const { countryData, iconType, iconSize, iconCoverage, iconScaleFactor, countryCode } = useConfigContext();
+  const { timing } = useAnimationContext();
   const [isStabilized, setIsStabilized] = useState(false);
   const initialViewStateRef = useRef<any>(null);
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
   const [initialIconSize, setInitialIconSize] = useState<number | null>(null);
-  const [initialZoomLevel, setInitialZoomLevel] = useState<number | null>(null);
   const [initialCoordinates, setInitialCoordinates] = useState<[number, number] | null>(null);
+  const countryBoundsRef = useRef(countryCode ? getCountryBounds(countryCode) : null);
   
   // Get container dimensions on mount and when window resizes
   useEffect(() => {
@@ -66,34 +67,37 @@ export const DeckMarkerOverlay: React.FC = () => {
           pitch: mapInstance.getPitch(),
           bearing: mapInstance.getBearing(),
         };
-        setInitialZoomLevel(currentZoom);
         setIsStabilized(true);
       }, 500); // Much longer delay (500ms instead of 100ms)
       return () => clearTimeout(timer);
     }
   }, [isMapLoaded, mapInstance, isStabilized]);
 
+  // Update countryBoundsRef when countryCode changes
+  useEffect(() => {
+    countryBoundsRef.current = countryCode ? getCountryBounds(countryCode) : null;
+  }, [countryCode]);
+
   // Reset initialIconSize when country changes
   useEffect(() => {
     setInitialIconSize(null);
-    setInitialZoomLevel(null);
     setInitialCoordinates(null);
   }, [countryData?.alpha3]);
   
-  // Also reset initialIconSize when iconSize changes
+  // Also reset initialIconSize when iconSize or iconCoverage changes
   useEffect(() => {
     setInitialIconSize(null);
-  }, [iconSize]);
+  }, [iconSize, iconCoverage]);
 
   // Use getIconColor from iconData.ts
   const getMarkerColor = (type: string = 'marker'): [number, number, number] => {
     return getIconColor(type);
   };
 
-  // Animation parameters from settings - fixed to use timing instead of referencing non-existent properties on general
-  const labelDelayFrames = settings?.timing?.labelDelay || 30;
-  const labelFadeDuration = settings?.timing?.labelFadeDuration || 15;
-  const animationStartFrame = settings?.timing?.stabilizationBuffer || 0;
+  // Animation parameters from the timing context
+  const labelDelayFrames = timing?.labelDelay || 30;
+  const labelFadeDuration = timing?.labelFadeDuration || 15;
+  const animationStartFrame = timing?.stabilizationBuffer || 0;
   
   // Determine critical startup period where we want to prevent any rendering changes
   const isInCriticalStartupPeriod = frame < (animationStartFrame + 60); // Don't change for first 60 frames
@@ -104,8 +108,13 @@ export const DeckMarkerOverlay: React.FC = () => {
     
     const markerColor = getMarkerColor(iconType || 'marker');
     
-    // Use visualCenter from countryData if available, otherwise fall back to the default coordinates
+    // First try to get coordinates from the visual center in our boundingbox data
+    const visualCenterFromBounds = countryCode ? getCountryVisualCenter(countryCode) : null;
+
+    // Use visualCenter from country bounds if available, then from countryData if available, 
+    // otherwise fall back to the default coordinates
     const coordinates: [number, number] = initialCoordinates || 
+      visualCenterFromBounds ||
       countryData.visualCenter || 
       (Array.isArray(countryData.coordinates) 
         ? countryData.coordinates as [number, number]
@@ -116,7 +125,9 @@ export const DeckMarkerOverlay: React.FC = () => {
       setInitialCoordinates(coordinates);
     }
     
-    console.log(`Using coordinates for ${countryData.alpha3}:`, coordinates, countryData.visualCenter ? '(visual center)' : '(default)');
+    console.log(`Using coordinates for ${countryData.alpha3}:`, coordinates, 
+      visualCenterFromBounds ? '(bounding box visual center)' : 
+      countryData.visualCenter ? '(country data visual center)' : '(default)');
     
     return [{
       id: 'main-marker',
@@ -126,7 +137,7 @@ export const DeckMarkerOverlay: React.FC = () => {
       color: [...markerColor, 255],  // RGBA color
       iconType: iconType || 'marker'
     }];
-  }, [countryData, iconType, initialCoordinates]);
+  }, [countryData, iconType, initialCoordinates, countryCode]);
 
   // Compute animated opacity and scale using the animation state from context
   const animatedMarkerData = useMemo(() => {
@@ -155,36 +166,90 @@ export const DeckMarkerOverlay: React.FC = () => {
     });
   }, [baseMarkerData, frame, labelDelayFrames, labelFadeDuration, animationStartFrame]);
   
-  // Calculate icon size based on the country's zoom level
-  const calculateIconSize = useMemo(() => {
-    // If we already have a fixed initial size, use it
+  // Calculate icon size based on the country's rendered dimensions using iconCoverage
+  const computeIconSize = useMemo(() => {
+    // Log current values for debugging
+    console.log('DeckMarkerOverlay icon size params:', {
+      initialIconSize,
+      iconCoverage,
+      iconScaleFactor,
+      countryCode
+    });
+
+    // If we already have a fixed initial size, use it for consistent animation
     if (initialIconSize !== null) {
       return initialIconSize;
     }
     
-    // Default fallback if country data isn't available
-    if (!countryData) {
-      return 40; // Default fallback
+    // If we have the map instance and country bounds, use the new calculation
+    if (isMapLoaded && mapInstance && countryBoundsRef.current) {
+      try {
+        // Ensure iconCoverage is within a reasonable range (at least 10)
+        const effectiveCoverage = iconCoverage || 75;
+        // Ensure iconScaleFactor is at least 0.1 to prevent icons from becoming too small
+        const effectiveScaleFactor = typeof iconScaleFactor === 'number' ? 
+                                    Math.max(iconScaleFactor, 0.1) : 1.0;
+        
+        console.log('Using effective values:', {
+          effectiveCoverage,
+          effectiveScaleFactor
+        });
+        
+        // Use the new icon size calculator that considers the country's rendered dimensions
+        const calculatedSize = calculateIconSize(
+          mapInstance,
+          countryBoundsRef.current,
+          effectiveCoverage,
+          countryCode, // Pass the countryCode for special case handling
+          effectiveScaleFactor // Pass the optional scale factor
+        );
+        
+        console.log(`Calculated icon size: ${calculatedSize}`);
+        
+        // If calculated size is too small, apply a minimum
+        const finalSize = Math.max(calculatedSize, 25);
+        
+        // Store the initial size so it remains fixed during animation
+        setInitialIconSize(finalSize);
+        
+        return finalSize;
+      } catch (error) {
+        console.error('Error calculating icon size with coverage:', error);
+      }
     }
     
+    // Fallback to the old method if the new one fails
     try {
-      // Base size calculation using the country's zoom level
-      // Lower zoom (large countries) = larger base size
-      // Higher zoom (small countries) = smaller base size
+      // Old calculation based on zoom level
       const baseSize = 300 / Math.pow(1.5, countryData.zoomLevel - 4);
       
       // Apply iconSize as a simple percentage scaling factor
-      const calculatedSize = baseSize * (iconSize || 40) / 100;
+      // and also apply the iconScaleFactor if available
+      const effectiveIconSize = iconSize || 40;
+      // Ensure iconScaleFactor is at least 0.1 to prevent icons from becoming too small
+      const effectiveScaleFactor = typeof iconScaleFactor === 'number' ? 
+                                  Math.max(iconScaleFactor, 0.1) : 1.0;
       
-      // Store the initial size so it remains fixed regardless of zoom level changes
-      setInitialIconSize(calculatedSize);
+      console.log('Fallback calculation with:', {
+        baseSize,
+        effectiveIconSize,
+        effectiveScaleFactor
+      });
       
-      return calculatedSize;
+      const calculatedSize = baseSize * (effectiveIconSize / 100) * effectiveScaleFactor;
+      const finalSize = Math.max(calculatedSize, 25); // Ensure minimum size
+      
+      console.log(`Fallback icon size: ${finalSize}`);
+      
+      // Store the initial size
+      setInitialIconSize(finalSize);
+      
+      return finalSize;
     } catch (error) {
-      console.error('Error calculating icon size:', error);
+      console.error('Error calculating icon size with fallback method:', error);
       return 40; // Simple fallback on error
     }
-  }, [countryData, iconSize, initialIconSize]);
+  }, [countryData, iconSize, iconCoverage, iconScaleFactor, initialIconSize, isMapLoaded, mapInstance, countryCode]);
 
   // Create layers based on marker type
   const layers = useMemo(() => {
@@ -210,7 +275,7 @@ export const DeckMarkerOverlay: React.FC = () => {
             mask: true  // Mask enables transparency
           }),
           getPosition: d => d.coordinates as [number, number],
-          getSize: d => (initialIconSize || calculateIconSize) * (d.scale || 1),
+          getSize: d => (initialIconSize || computeIconSize) * (d.scale || 1),
           getColor: d => d.color,
           sizeScale: 1,
           billboard: false, // Keep it flat on the map surface for consistency
@@ -218,8 +283,8 @@ export const DeckMarkerOverlay: React.FC = () => {
           updateTriggers: isInCriticalStartupPeriod ? {} : {
             // Remove getPosition from update triggers to prevent position changes
             getColor: [(opacity: number) => Math.floor(opacity * 5) / 5], // More aggressive discretization
-            // Add getSize to update triggers so it responds to iconSize changes
-            getSize: [iconSize, initialIconSize, containerSize]
+            // Add getSize to update triggers so it responds to iconSize/iconCoverage/iconScaleFactor changes
+            getSize: [iconSize, iconCoverage, iconScaleFactor, initialIconSize, containerSize]
           },
           // Disable ALL transitions
           transitions: {
@@ -232,7 +297,7 @@ export const DeckMarkerOverlay: React.FC = () => {
     }
     
     return layers;
-  }, [animatedMarkerData, frame, isStabilized, isInCriticalStartupPeriod, initialIconSize]);
+  }, [animatedMarkerData, frame, isStabilized, isInCriticalStartupPeriod, initialIconSize, computeIconSize, iconCoverage, iconScaleFactor]);
 
   // Now we can have conditional rendering AFTER all hooks are called
   const shouldRender = isMapLoaded && mapInstance && layers.length > 0 && frame >= 30;

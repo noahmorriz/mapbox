@@ -1,36 +1,13 @@
 import React, { createContext, useContext, useMemo, useState, useEffect } from 'react';
 import { useCurrentFrame, useVideoConfig } from 'remotion';
-import { useConfigContext } from './ConfigContext';
-import { AnimationSettings, AnimationFrameState } from '../core/animationModel';
-import { CountryData } from '../core/mapboxTypes';
+import { AnimationFrameState, HighlightSettings, CameraSettings, ZoomSettings } from '../core/animationModel';
 import { calculateAnimationFrame } from '../services/AnimationService';
+import { AnimationTimeline, createAnimationTimeline } from '../core/animationTiming';
 
 // Define the MotionSettings type directly here
 interface MotionSettings {
-  camera: {
-    initialRotation: number;
-    finalRotation: number;
-    initialPitch: number;
-    finalPitch: number;
-    rotationDamping: number;
-    rotationStiffness: number;
-    rotationMass: number;
-    pitchDamping: number;
-    pitchStiffness: number;
-    pitchMass: number;
-  };
-  zoom: {
-    zoomDamping: number;
-    zoomStiffness: number;
-    zoomMass: number;
-  };
-  timing: {
-    animationStartFrame: number;
-    highlightDelayFrames: number;
-    labelDelayFrames: number;
-    padding: number;
-    fadeDuration: number;
-  };
+  camera: CameraSettings;
+  zoom: ZoomSettings;
 }
 
 // Define the simplified AnimationFrameState type locally if needed, or rely on Omit from service
@@ -52,43 +29,58 @@ interface AnimationContextValue {
   animationState: SimplifiedAnimationFrameState;
   frameRenderHandleRef: React.MutableRefObject<number | null>;
   error: string | null;
+  timing: AnimationTimeline;
 }
 
 const AnimationContext = createContext<AnimationContextValue | undefined>(undefined);
 
+// Fixed: Changed from interface to type to properly use union type
+export type Coordinates = {
+  lng: number;
+  lat: number;
+} | [number, number];
+
 interface AnimationProviderProps {
   children: React.ReactNode;
-  settings: AnimationSettings;
-  countryData: CountryData;
+  coordinates: Coordinates;
+  zoomLevel: number;
   motionSettings: MotionSettings;
+  highlightSettings: HighlightSettings;
+  countryCode: string;
   additionalInfo?: string;
   frameRenderHandleRef: React.MutableRefObject<number | null>;
+  timing?: Partial<AnimationTimeline>;
 }
 
 export const AnimationProvider: React.FC<AnimationProviderProps> = ({
   children,
-  settings,
-  countryData,
+  coordinates,
+  zoomLevel,
   motionSettings,
+  highlightSettings,
+  countryCode,
   additionalInfo,
   frameRenderHandleRef,
+  timing: customTiming = {}
 }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const { countryCode } = useConfigContext();
   const [error, setError] = useState<string | null>(null);
+  
+  // Use createAnimationTimeline to manage timing
+  const timeline = useMemo(() => createAnimationTimeline(countryCode, customTiming), [countryCode, customTiming]);
   
   // Validate inputs before calculating animation state
   useEffect(() => {
-    if (!settings || !settings.general) {
-      console.error('Invalid animation settings:', settings);
-      setError('Invalid animation settings');
+    if (!coordinates) {
+      console.error('Invalid coordinates:', coordinates);
+      setError('Invalid coordinates');
       return;
     }
     
-    if (!countryData || !countryData.coordinates) {
-      console.error('Invalid country data:', countryData);
-      setError('Invalid country data');
+    if (typeof zoomLevel !== 'number') {
+      console.error('Invalid zoom level:', zoomLevel);
+      setError('Invalid zoom level');
       return;
     }
     
@@ -99,23 +91,24 @@ export const AnimationProvider: React.FC<AnimationProviderProps> = ({
     }
     
     setError(null);
-  }, [settings, countryData, motionSettings]);
+  }, [coordinates, zoomLevel, motionSettings]);
   
   // Calculate animation state for current frame - memoized to avoid recalculation
   const animationState = useMemo(() => {
     try {
       // Only calculate if we have valid settings
-      if (error || !settings?.general || !countryData?.coordinates || !motionSettings?.zoom) {
+      if (error || !coordinates || typeof zoomLevel !== 'number' || !motionSettings?.zoom) {
         return DEFAULT_ANIMATION_STATE;
       }
       
       return calculateAnimationFrame(
         frame,
         fps,
-        settings,
-        countryData.coordinates,
-        countryData.zoomLevel,
+        coordinates,
+        zoomLevel,
         motionSettings,
+        timeline,
+        highlightSettings,
         additionalInfo,
         countryCode
       );
@@ -123,7 +116,7 @@ export const AnimationProvider: React.FC<AnimationProviderProps> = ({
       console.error('Error calculating animation state:', err);
       return DEFAULT_ANIMATION_STATE;
     }
-  }, [frame, fps, settings, countryData, motionSettings, additionalInfo, error, countryCode]);
+  }, [frame, fps, coordinates, zoomLevel, motionSettings, timeline, highlightSettings, additionalInfo, error, countryCode]);
   
   const contextValue = useMemo<AnimationContextValue>(() => ({
     frame,
@@ -131,12 +124,14 @@ export const AnimationProvider: React.FC<AnimationProviderProps> = ({
     animationState,
     frameRenderHandleRef,
     error,
+    timing: timeline
   }), [
     frame, 
     fps, 
     animationState,
     frameRenderHandleRef,
-    error
+    error,
+    timeline
   ]);
   
   return (
@@ -153,4 +148,4 @@ export const useAnimationContext = (): AnimationContextValue => {
     throw new Error('useAnimationContext must be used within an AnimationProvider');
   }
   return context;
-}; 
+};

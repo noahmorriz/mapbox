@@ -105,7 +105,7 @@ const AnimationWrapper: React.FC<{
   showVignette = false,
   vignetteSettings = {}
 }) => {
-  const { countryData, motionSettings, iconType, countryCode, mapStyle, textDisplay, showText, themeType, iconCoverage, iconScaleFactor } = useConfigContext();
+  const { countryData, motionSettings, iconType, countryCode, mapStyle, textDisplay, showText, iconCoverage, iconScaleFactor } = useConfigContext();
   
   // Get coordinates in a compatible format
   const coordinates = countryData.coordinates;

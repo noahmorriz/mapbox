@@ -21,7 +21,7 @@ const VISUAL = {
   ICON_COVERAGE: 50,      // NEW: Desired coverage percentage (e.g., 1-95) of the country's rendered smaller dimension
   ICON_SCALE_FACTOR: 1.0, // Scaling factor to make icons larger (>1.0) or smaller (<1.0) than the calculated size
   SHOW_HIGHLIGHT: true,  // Whether to display country highlight
-  SHOW_ICON: false,       // Whether to display icon
+  SHOW_ICON: true,       // Whether to display icon
   // Text display settings
   SHOW_TEXT: true,       // Whether to display text
   TEXT_DISPLAY: "custom" as TextDisplayType, // Text display type (country name, custom, or none)
@@ -167,6 +167,16 @@ export const Composition: React.FC<AnimationProps> = (props) => {
     intensity: defaultedProps.vignetteSettings?.intensity || theme.vignette.intensity,
     feather: defaultedProps.vignetteSettings?.feather || theme.vignette.feather,
   };
+  
+  // --- DEBUGGING --- 
+  console.log("Composition Props Check:", {
+    showIcon: defaultedProps.showIcon,
+    iconType: defaultedProps.iconType,
+    iconCoverage: defaultedProps.iconCoverage,
+    iconScaleFactor: defaultedProps.iconScaleFactor,
+    countryCode: defaultedProps.countryCode
+  });
+  // --- END DEBUGGING ---
   
   return (
     <AbsoluteFill style={{ backgroundColor: theme.backgroundColor }}>

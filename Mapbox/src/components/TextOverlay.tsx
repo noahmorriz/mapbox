@@ -30,8 +30,7 @@ export const TextOverlay: React.FC<TextOverlayProps> = ({ customText, isVisible 
   const [displayText, setDisplayText] = useState<string>('');
   const [coordinates, setCoordinates] = useState<[number, number] | null>(null);
   const initialViewStateRef = useRef<any>(null);
-  const [isStabilized, setIsStabilized] = useState(false);
-  const [initialTextSize, setInitialTextSize] = useState<number | null>(null);
+  const [textSize, setTextSize] = useState<number>(parseFloat(textSettings?.fontSize || '24'));
   const countryBoundsRef = useRef(countryCode ? getCountryBounds(countryCode) : null);
   
   // Update countryBoundsRef when countryCode changes
@@ -39,10 +38,11 @@ export const TextOverlay: React.FC<TextOverlayProps> = ({ customText, isVisible 
     countryBoundsRef.current = countryCode ? getCountryBounds(countryCode) : null;
   }, [countryCode]);
 
-  // Reset initialTextSize when country changes
+  // Reset textSize when country/icon config changes
   useEffect(() => {
-    setInitialTextSize(null);
-  }, [countryData?.alpha3, iconCoverage, iconScaleFactor]);
+    // Reset to default font size before recalculating
+    setTextSize(parseFloat(textSettings?.fontSize || '24'));
+  }, [countryData?.alpha3, iconCoverage, iconScaleFactor, textSettings?.fontSize]);
 
   // Determine which text to display based on textDisplay setting
   useEffect(() => {
@@ -75,22 +75,41 @@ export const TextOverlay: React.FC<TextOverlayProps> = ({ customText, isVisible 
     }
   }, [countryCode, countryData]);
 
-  // Wait for map to stabilize
+  // Calculate and set the initial view state and text size once map is loaded
   useEffect(() => {
-    if (isMapLoaded && mapInstance && !isStabilized) {
-      const timer = setTimeout(() => {
-        initialViewStateRef.current = {
-          longitude: mapInstance.getCenter().lng,
-          latitude: mapInstance.getCenter().lat,
-          zoom: mapInstance.getZoom(),
-          pitch: mapInstance.getPitch(),
-          bearing: mapInstance.getBearing(),
-        };
-        setIsStabilized(true);
-      }, 500);
-      return () => clearTimeout(timer);
+    if (isMapLoaded && mapInstance && !initialViewStateRef.current) {
+      // Capture initial view state when map is ready
+      initialViewStateRef.current = {
+        longitude: mapInstance.getCenter().lng,
+        latitude: mapInstance.getCenter().lat,
+        zoom: mapInstance.getZoom(),
+        pitch: mapInstance.getPitch(),
+        bearing: mapInstance.getBearing(),
+      };
     }
-  }, [isMapLoaded, mapInstance, isStabilized]);
+
+    // Calculate text size once map is loaded and bounds are available
+    if (isMapLoaded && mapInstance && countryBoundsRef.current) {
+      try {
+        const effectiveCoverage = iconCoverage || 75;
+        const effectiveScaleFactor = typeof iconScaleFactor === 'number' ? Math.max(iconScaleFactor, 0.1) : 1.0;
+        const calculatedSize = calculateIconSize(
+          mapInstance,
+          countryBoundsRef.current,
+          effectiveCoverage * 0.3, // REDUCED: Scale down text size more (was 0.6)
+          countryCode,
+          effectiveScaleFactor
+        );
+        const textScaling = parseFloat(textSettings?.fontSize || '24') / 24;
+        const finalSize = Math.max(calculatedSize * textScaling, 16);
+        setTextSize(finalSize); // Set the calculated size
+      } catch (error) {
+        console.error('Error calculating text size:', error);
+        // Keep the default size if calculation fails
+        setTextSize(parseFloat(textSettings?.fontSize || '24'));
+      }
+    }
+  }, [isMapLoaded, mapInstance, countryCode, iconCoverage, iconScaleFactor, textSettings?.fontSize]);
 
   // Animation timing calculations
   const labelDelayFrames = animationTiming?.labelDelay || 60;
@@ -123,8 +142,8 @@ export const TextOverlay: React.FC<TextOverlayProps> = ({ customText, isVisible 
 
   // Create layers - like in DeckMarkerOverlay, using a single useMemo that returns [] if conditions not met
   const layers = useMemo(() => {
-    // Don't render any layers if conditions aren't met - match DeckMarkerOverlay pattern exactly
-    if (!isMapLoaded || !mapInstance || !coordinates || !displayText || !isVisible || !isStabilized || textData.length === 0) {
+    // Don't render any layers if conditions aren't met
+    if (!isMapLoaded || !mapInstance || !coordinates || !displayText || !isVisible || textData.length === 0) {
       return [];
     }
 
@@ -140,47 +159,6 @@ export const TextOverlay: React.FC<TextOverlayProps> = ({ customText, isVisible 
       return [r, g, b, animatedText.opacity * themeOpacity * 255];
     };
 
-    // Calculate text size using the same methodology as the icon
-    const computeTextSize = (): number => {
-      // If we already have a fixed initial size, use it for consistent animation
-      if (initialTextSize !== null) {
-        return initialTextSize;
-      }
-      
-      // If we have the map instance and country bounds, calculate the size
-      if (isMapLoaded && mapInstance && countryBoundsRef.current) {
-        try {
-          // Use the same coverage and scale factor logic as the icon
-          const effectiveCoverage = iconCoverage || 75;
-          const effectiveScaleFactor = typeof iconScaleFactor === 'number' ? 
-                                      Math.max(iconScaleFactor, 0.1) : 1.0;
-          
-          // Use the same icon size calculator but scale down for text
-          const calculatedSize = calculateIconSize(
-            mapInstance,
-            countryBoundsRef.current,
-            effectiveCoverage * 0.6, // Scale down for text (60% of icon coverage)
-            countryCode,
-            effectiveScaleFactor
-          );
-          
-          // Apply a scaling factor for text vs icons
-          const textScaling = parseFloat(textSettings?.fontSize || '24') / 24;
-          const finalSize = Math.max(calculatedSize * textScaling, 16);
-          
-          // Store the initial size so it remains fixed during animation
-          setInitialTextSize(finalSize);
-          
-          return finalSize;
-        } catch (error) {
-          console.error('Error calculating text size:', error);
-        }
-      }
-      
-      // Fallback to the standard approach if the calculator fails
-      return parseFloat(textSettings?.fontSize || '24');
-    };
-
     return [
       new TextLayer({
         id: 'text-layer',
@@ -189,7 +167,7 @@ export const TextOverlay: React.FC<TextOverlayProps> = ({ customText, isVisible 
         coordinateSystem: COORDINATE_SYSTEM.LNGLAT,
         getPosition: d => d.coordinates,
         getText: d => d.text,
-        getSize: initialTextSize || computeTextSize(),
+        getSize: textSize,
         getColor: getTextColor(),
         getTextAnchor: 'middle',
         getAlignmentBaseline: 'center',
@@ -218,34 +196,35 @@ export const TextOverlay: React.FC<TextOverlayProps> = ({ customText, isVisible 
     coordinates, 
     displayText, 
     isVisible, 
-    isStabilized,
     textData,
     animatedText.opacity,
     isInCriticalStartupPeriod,
     isAnimationComplete,
-    initialTextSize,
+    textSize,
     iconCoverage,
     iconScaleFactor,
     countryCode,
     textSettings
   ]);
 
-  // No need to render if there are no layers
-  if (layers.length === 0) {
-    return null;
-  }
-
   // Use the initial view state during critical startup period to prevent jitter
-  // Exactly the same as DeckMarkerOverlay
-  const viewState = isInCriticalStartupPeriod && initialViewStateRef.current 
-    ? initialViewStateRef.current 
-    : {
+  // Fallback to current map state if initial state isn't captured yet
+  const viewState = (isInCriticalStartupPeriod && initialViewStateRef.current)
+    ? initialViewStateRef.current
+    : mapInstance // Check if mapInstance exists before accessing properties
+    ? {
         longitude: mapInstance.getCenter().lng,
         latitude: mapInstance.getCenter().lat,
         zoom: mapInstance.getZoom(),
         pitch: mapInstance.getPitch(),
         bearing: mapInstance.getBearing(),
-      };
+      }
+    : null; // Return null if mapInstance is not available
+
+  // Only render DeckGL if viewState is available
+  if (!viewState) {
+    return null;
+  }
 
   return (
     <DeckGL

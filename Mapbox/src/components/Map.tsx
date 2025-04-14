@@ -19,7 +19,6 @@ export const Map: React.FC<MapProps> = ({ children, mapStyle, countryCode }) => 
     mapService,
     isMapLoaded,
     isMapError,
-    mapStatus
   } = useMapContext();
   
   const { countryData, projectionType, mapStyle: contextMapStyle, backgroundColor: contextBgColor, themeType } = useConfigContext();
@@ -62,28 +61,6 @@ export const Map: React.FC<MapProps> = ({ children, mapStyle, countryCode }) => 
 
   }, [effectiveMapStyle, effectiveCountryCode, projectionType, syncMapState]);
   
-  // Add effect to check for container element
-  useEffect(() => {
-    // Check if container is ready periodically if not already
-    if (!containerReadyRef.current) {
-      const checkContainer = setInterval(() => {
-        const containerElement = document.getElementById('map-container');
-        if (containerElement) {
-          clearInterval(checkContainer);
-          containerReadyRef.current = true;
-          
-          // Trigger map sync when container becomes available
-          if (effectiveMapStyle && effectiveCountryCode) {
-            console.log('Map container found, initializing map');
-            syncMapState(effectiveMapStyle, effectiveCountryCode, projectionType);
-          }
-        }
-      }, 100);
-      
-      return () => clearInterval(checkContainer);
-    }
-  }, [syncMapState, effectiveMapStyle, effectiveCountryCode, projectionType]);
-  
   useEffect(() => {
     if (mapService && isMapLoaded) {
       mapService.updateCamera(
@@ -104,23 +81,15 @@ export const Map: React.FC<MapProps> = ({ children, mapStyle, countryCode }) => 
     }
   }, [mapService, isMapLoaded, fillOpacity, lineOpacity]);
   
-  // Update the highlight colors when theme changes
+  // Apply theme highlight colors when theme changes or map loads
   useEffect(() => {
     if (mapService && isMapLoaded) {
-      // Get current theme highlight colors
       const themeHighlight = THEMES[themeType]?.highlight;
-      console.log('Theme changed to:', themeType);
-      console.log('Theme highlight settings:', themeHighlight);
-      
       if (themeHighlight && themeHighlight.fillColor && themeHighlight.lineColor) {
-        console.log(`Updating highlight colors: fill=${themeHighlight.fillColor}, line=${themeHighlight.lineColor}`);
+        console.log(`Map.tsx: Updating highlight colors for theme '${themeType}': fill=${themeHighlight.fillColor}, line=${themeHighlight.lineColor}`);
         mapService.updateHighlightColors(themeHighlight.fillColor, themeHighlight.lineColor);
-        
-        // Update opacities to match the theme
-        if (themeHighlight.fillOpacity !== undefined && themeHighlight.lineOpacity !== undefined) {
-          console.log(`Setting highlight opacities: fill=${themeHighlight.fillOpacity}, line=${themeHighlight.lineOpacity}`);
-          mapService.updateLayerOpacity(themeHighlight.fillOpacity, themeHighlight.lineOpacity);
-        }
+      } else {
+        console.warn(`Map.tsx: Highlight colors not found for theme '${themeType}'`);
       }
     }
   }, [mapService, isMapLoaded, themeType]);
@@ -259,10 +228,8 @@ export const Map: React.FC<MapProps> = ({ children, mapStyle, countryCode }) => 
         data-render-status={mapRenderingStatus}
       />
       
-      {/* Only render children when map is truly ready - both loaded and style is ready */}
-      {mapStatus === 'idle' && mapInstance && 
-       (mapInstance.isStyleLoaded() || mapRenderingStatus === 'complete') && 
-       children}
+      {/* Render children simply when the map instance is loaded */}
+      {isMapLoaded && mapInstance && children}
     </AbsoluteFill>
   );
 }; 

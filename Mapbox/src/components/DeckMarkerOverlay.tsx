@@ -32,6 +32,8 @@ export const DeckMarkerOverlay: React.FC = () => {
   
   // Store a global cache of icon sizes by country code and coverage
   const iconSizeCache = useRef<Record<string, number>>({});
+  // Ref to ensure stabilization logic only runs once per load
+  const stabilizationAttemptedRef = useRef(false);
   
   // Get container dimensions on mount and when window resizes
   useEffect(() => {
@@ -55,38 +57,23 @@ export const DeckMarkerOverlay: React.FC = () => {
     return () => window.removeEventListener('resize', updateContainerSize);
   }, [isMapLoaded, mapInstance]);
   
-  // Much more aggressive stabilization - wait longer and store the initial state
+  // Refined stabilization using map 'load' event
   useEffect(() => {
-    if (isMapLoaded && mapInstance && !isStabilized) {
-      // Wait for both a minimum delay AND the style to be fully loaded
-      const stabilizationDelay = 500; // Fixed stabilization delay
-      console.log(`Waiting for map style to load with ${stabilizationDelay}ms minimum delay`);
-      
-      // Flag to track if style is loaded and delay has passed
-      let styleLoaded = false;
-      let delayPassed = false;
-      
-      // Check if the style is already loaded
-      if (mapInstance.isStyleLoaded()) {
-        console.log('Map style already loaded');
-        styleLoaded = true;
-      } else {
-        // Listen for style.load event
-        const onStyleLoad = () => {
-          console.log('Map style loaded');
-          styleLoaded = true;
-          tryStabilize();
-          // Remove listener after it fires
-          mapInstance.off('style.load', onStyleLoad);
-        };
-        
-        mapInstance.on('style.load', onStyleLoad);
-      }
-      
-      // Function to stabilize map if both conditions are met
-      const tryStabilize = () => {
-        if (styleLoaded && delayPassed) {
-          // Store the initial view state when we consider the map stable
+    // Only attempt stabilization if map exists, is loaded, but not yet stabilized
+    if (mapInstance && isMapLoaded && !isStabilized && !stabilizationAttemptedRef.current) {
+      stabilizationAttemptedRef.current = true;
+      console.log('Attempting map stabilization using \'load\' event...');
+
+      // Function to perform stabilization actions
+      const finalizeStabilization = () => {
+        console.log('Map \'load\' event fired or style already loaded. Finalizing stabilization...');
+        // Check again if mapInstance still exists (it might be destroyed during HMR)
+        if (!mapInstance) {
+            console.warn('Map instance became null before stabilization could finalize.');
+            stabilizationAttemptedRef.current = false; // Allow retry if map reappears
+            return;
+        }
+        try {
           const currentZoom = mapInstance.getZoom();
           initialViewStateRef.current = {
             longitude: mapInstance.getCenter().lng,
@@ -96,30 +83,74 @@ export const DeckMarkerOverlay: React.FC = () => {
             bearing: mapInstance.getBearing(),
           };
           setIsStabilized(true);
-          console.log('Map stabilization complete');
+          console.log('Map stabilization complete.');
+        } catch (error) {
+           console.error('Error during final stabilization steps:', error);
+           stabilizationAttemptedRef.current = false; // Allow retry on error
         }
       };
-      
-      // Wait for the minimum delay
-      const timer = setTimeout(() => {
-        delayPassed = true;
-        tryStabilize();
-      }, stabilizationDelay);
-      
+
+      // Listener function
+      const mapLoadListener = () => {
+          finalizeStabilization();
+          // Remove listener once fired
+          if (mapInstance) {
+            mapInstance.off('load', mapLoadListener);
+          }
+      };
+
+      // Check if map is already loaded (style might load faster than this effect runs)
+      if (mapInstance.isStyleLoaded() && mapInstance.loaded()) {
+        console.log('Map already fully loaded on attempt.');
+        finalizeStabilization();
+      } else {
+        console.log('Map not fully loaded yet, attaching \'load\' listener.');
+        mapInstance.on('load', mapLoadListener);
+      }
+
+      // Cleanup: remove listener if component unmounts before 'load' fires
       return () => {
-        clearTimeout(timer);
-        // Clean up event listener if component unmounts
-        if (mapInstance && !styleLoaded) {
-          mapInstance.off('style.load', tryStabilize);
+        if (mapInstance) {
+          console.log('Cleaning up stabilization effect, removing \'load\' listener if attached.');
+          mapInstance.off('load', mapLoadListener);
+        }
+        // Reset attempt flag if we unmount before stabilizing
+        // This allows stabilization to re-run if the component remounts (e.g., HMR)
+        if (!isStabilized) {
+            stabilizationAttemptedRef.current = false;
         }
       };
     }
-  }, [isMapLoaded, mapInstance, isStabilized]);
+  }, [isMapLoaded, mapInstance, isStabilized]); // Keep dependencies
 
   // Update countryBoundsRef when countryCode changes
   useEffect(() => {
     countryBoundsRef.current = countryCode ? getCountryBounds(countryCode) : null;
   }, [countryCode]);
+
+  // Reset stabilization state when map instance or country code changes
+  useEffect(() => {
+    // If mapInstance becomes null or is null, ensure reset state
+    if (!mapInstance) {
+       console.log('Map instance is null, ensuring stabilization is reset.');
+       setIsStabilized(false);
+       setInitialIconSize(null);
+       setInitialCoordinates(null);
+       initialViewStateRef.current = null;
+       stabilizationAttemptedRef.current = false;
+       return; // Exit early if mapInstance is null
+    }
+
+    // If we reach here, mapInstance is guaranteed to be non-null for this run.
+    // This effect runs if mapInstance changes OR countryCode changes.
+    console.log('Map instance exists and/or country code changed, resetting stabilization state.');
+    setIsStabilized(false);
+    setInitialIconSize(null);
+    setInitialCoordinates(null);
+    initialViewStateRef.current = null;
+    stabilizationAttemptedRef.current = false; // Allow stabilization attempt again
+
+  }, [mapInstance, countryCode]);
 
   // Reset initialIconSize when country changes
   useEffect(() => {
@@ -259,23 +290,30 @@ export const DeckMarkerOverlay: React.FC = () => {
 
     // If we already have a fixed initial size, use it for consistent animation
     if (initialIconSize !== null) {
-      console.log(`Using cached icon size: ${initialIconSize}`);
-      
-      // Save to cache
+      console.log(`Using fixed initial icon size: ${initialIconSize}`);
+      // Save to cache if not already there (might happen on re-renders)
       if (countryCode) {
         const cacheKey = `${countryCode}_${iconCoverage}_${iconScaleFactor}`;
-        iconSizeCache.current[cacheKey] = initialIconSize;
+        if (!(cacheKey in iconSizeCache.current)) {
+           iconSizeCache.current[cacheKey] = initialIconSize;
+           console.log(`Saved initial size ${initialIconSize} to cache [${cacheKey}]`);
+        }
       }
-      
       return initialIconSize;
     }
     
-    // Only calculate icon size when map is stabilized to ensure consistency
-    if (!isStabilized) {
-      console.log('Map not stabilized yet, deferring icon size calculation');
-      return 50; // Default temporary size until stabilized
+    // Check if the map instance is valid before proceeding
+    if (!mapInstance) {
+      console.warn('mapInstance is null in computeIconSize, deferring calculation');
+      return 50; 
     }
-    
+
+    // Check if the map instance has the project method available
+    if (typeof mapInstance.project !== 'function') {
+      console.warn('mapInstance.project is not available yet, deferring icon size calculation');
+      return 40; // Simple fallback on error
+    }
+
     // If we have the map instance and country bounds, use the new calculation
     if (isMapLoaded && mapInstance && countryBoundsRef.current && mapInstance.isStyleLoaded()) {
       try {
@@ -355,8 +393,8 @@ export const DeckMarkerOverlay: React.FC = () => {
 
   // Create layers based on marker type
   const layers = useMemo(() => {
-    // Don't render any layers during critical startup period
-    if (!animatedMarkerData.length || !isStabilized) return [];
+    // Don't render any layers if not stabilized or no marker data
+    if (!isStabilized || !animatedMarkerData.length) return [];
     
     const layers = [];
     
@@ -408,8 +446,13 @@ export const DeckMarkerOverlay: React.FC = () => {
   }, [animatedMarkerData, frame, isStabilized, isInCriticalStartupPeriod, initialIconSize, computeIconSize]);
 
   // Now we can have conditional rendering AFTER all hooks are called
-  const shouldRender = isMapLoaded && mapInstance && layers.length > 0 && frame >= 30;
+  const shouldRender = isStabilized && layers.length > 0;
   
+  // Log render decision
+  if (frame % 30 === 0) { // Log less frequently
+    console.log('DeckMarkerOverlay Render Check:', { shouldRender, isStabilized, layersCount: layers.length, frame });
+  }
+
   if (!shouldRender) {
     return null;
   }

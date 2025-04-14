@@ -413,8 +413,8 @@ export const calculateIconSize = (
       countryCode,
       iconCoverage,
       iconScaleFactor,
-      boundsWidth: countryBounds.width,
-      boundsHeight: countryBounds.height
+      boundsWidth: countryBounds?.width,
+      boundsHeight: countryBounds?.height
     });
     
     // First, handle special cases for countries with non-contiguous territories

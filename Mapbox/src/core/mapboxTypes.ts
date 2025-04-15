@@ -41,6 +41,11 @@ export type IconType =
 export type TextDisplayType = "none" | "country" | "custom";
 
 /**
+ * Text position options
+ */
+export type TextPositionType = "lower-third" | "center" | "top" | "bottom-left" | "custom";
+
+/**
  * Text animation types
  * Re-exported from textAnimations.ts
  */

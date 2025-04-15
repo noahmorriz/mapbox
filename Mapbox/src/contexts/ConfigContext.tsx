@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useMemo } from 'react';
-import { ThemeType, MotionType, IconType, CountryData, ProjectionType, TextDisplayType } from '../core/mapboxTypes';
+import { ThemeType, MotionType, IconType, CountryData, ProjectionType, TextDisplayType, TextPositionType } from '../core/mapboxTypes';
 import { getCountry, defaultCountry, countries } from '../countryData';
 import { THEMES } from '../core/themes';
 import { TextAnimationType } from '../core/textAnimations';
@@ -182,6 +182,7 @@ interface ConfigContextValue {
   };
   showText?: boolean;
   textAnimationType?: TextAnimationType;
+  textPosition?: TextPositionType;
   
   // Map settings
   motionType: MotionType;
@@ -241,6 +242,7 @@ interface ConfigProviderProps {
   textDisplay?: TextDisplayType;
   showText?: boolean;
   textAnimationType?: TextAnimationType;
+  textPosition?: TextPositionType;
   infoSettings?: {
     maxWidth?: string;
     fontSize?: string;
@@ -272,6 +274,7 @@ export const ConfigProvider: React.FC<ConfigProviderProps> = ({
   textDisplay = 'none',
   showText = false,
   textAnimationType = 'none',
+  textPosition = 'lower-third',
   infoSettings,
   backgroundColor,
   highlightColor,
@@ -336,6 +339,7 @@ export const ConfigProvider: React.FC<ConfigProviderProps> = ({
     textDisplay,
     showText,
     textAnimationType,
+    textPosition,
   };
   
   return (

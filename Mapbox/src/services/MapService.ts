@@ -29,6 +29,7 @@ export class MapService {
   private isInitialized: boolean = false;
   private areLayersAdded: boolean = false; // Track if highlight layers are added
   private activeCountry: string | null = null; // Track the active country
+  private hasHighlightBeenApplied: boolean = false; // Track if highlight has been applied to prevent reapplication
 
   /**
    * Create a new MapService
@@ -36,6 +37,7 @@ export class MapService {
    */
   constructor(containerId: string = DEFAULT_MAP_CONTAINER) {
     this.mapContainerId = containerId;
+    this.hasHighlightBeenApplied = false;
   }
   
   /**
@@ -59,73 +61,170 @@ export class MapService {
         return;
       }
       
-      try {
-        // Get the current theme settings
-        // const { THEMES } = require('../core/themes');
+      // Wait for style to be fully loaded before proceeding
+      const waitForStyle = (attemptCount = 0) => {
+        // Set a max number of attempts
+        const MAX_ATTEMPTS = 5;
         
-        // Default settings for highlight layers
-        const defaultSettings: AnimationSettings = {
-          highlight: {
-            fillColor: '#3182CE',
-            lineColor: '#2B6CB0',
-            lineWidth: 2,
-            fillOpacityTarget: 0.6,
-            lineOpacityTarget: 1.0,
-            labelOpacityTarget: 1.0,
-            fillAnimationDamping: 30,
-            fillAnimationStiffness: 50,
-            fillAnimationMass: 1,
-            lineAnimationDamping: 30,
-            lineAnimationStiffness: 50,
-            lineAnimationMass: 1,
-            labelAnimationDamping: 30,
-            labelAnimationStiffness: 50,
-            labelAnimationMass: 1
-          },
-          // Add missing required properties to match AnimationSettings interface
-          camera: {
-            initialRotation: 0,
-            finalRotation: 0,
-            initialPitch: 0,
-            finalPitch: 0,
-            rotationDamping: 30,
-            rotationStiffness: 50,
-            rotationMass: 1,
-            pitchDamping: 30,
-            pitchStiffness: 50,
-            pitchMass: 1
-          },
-          general: {
-            backgroundColor: '#ffffff',
-            mapStyle: 'mapbox://styles/mapbox/light-v11'
-          },
-          ui: {
-            iconSize: 50,
-            iconColor: '#000000',
-            iconScale: 1,
-            iconDropShadow: true,
-            textFontSize: '16px',
-            textColor: '#000000',
-            textFontWeight: 'normal',
-            infoMaxWidth: '300px',
-            infoFontSize: '14px',
-            infoBackgroundColor: '#ffffff',
-            infoTextColor: '#000000',
-            infoBorderRadius: '4px',
-            infoPadding: '8px'
+        if (this.isStyleLoaded()) {
+          try {
+            // Default settings for highlight layers
+            const defaultSettings: AnimationSettings = {
+              highlight: {
+                fillColor: '#3182CE',
+                lineColor: '#2B6CB0',
+                lineWidth: 2,
+                fillOpacityTarget: 0.6,
+                lineOpacityTarget: 1.0,
+                labelOpacityTarget: 1.0,
+                fillAnimationDamping: 30,
+                fillAnimationStiffness: 50,
+                fillAnimationMass: 1,
+                lineAnimationDamping: 30,
+                lineAnimationStiffness: 50,
+                lineAnimationMass: 1,
+                labelAnimationDamping: 30,
+                labelAnimationStiffness: 50,
+                labelAnimationMass: 1
+              },
+              // Add missing required properties to match AnimationSettings interface
+              camera: {
+                initialRotation: 0,
+                finalRotation: 0,
+                initialPitch: 0,
+                finalPitch: 0,
+                rotationDamping: 30,
+                rotationStiffness: 50,
+                rotationMass: 1,
+                pitchDamping: 30,
+                pitchStiffness: 50,
+                pitchMass: 1
+              },
+              general: {
+                backgroundColor: '#ffffff',
+                mapStyle: 'mapbox://styles/mapbox/light-v11'
+              },
+              ui: {
+                iconSize: 50,
+                iconColor: '#000000',
+                iconScale: 1,
+                iconDropShadow: true,
+                textFontSize: '16px',
+                textColor: '#000000',
+                textFontWeight: 'normal',
+                infoMaxWidth: '300px',
+                infoFontSize: '14px',
+                infoBackgroundColor: '#ffffff',
+                infoTextColor: '#000000',
+                infoBorderRadius: '4px',
+                infoPadding: '8px'
+              }
+            };
+            
+            // Get active country or use a default
+            const activeCountry = this.activeCountry || 'USA';
+            
+            // Add the layers
+            this.addHighlightLayersOnce(defaultSettings, activeCountry);
+            resolve();
+          } catch (error) {
+            console.error('Error adding highlight layers:', error);
+            reject(error);
           }
-        };
-        
-        // Get active country or use a default
-        const activeCountry = this.activeCountry || 'USA';
-        
-        // Add the layers
-        this.addHighlightLayersOnce(defaultSettings, activeCountry);
-        resolve();
-      } catch (error) {
-        console.error('Error adding highlight layers:', error);
-        reject(error);
-      }
+        } else {
+          console.log(`Style not fully loaded yet, waiting... (attempt ${attemptCount + 1}/${MAX_ATTEMPTS})`);
+          
+          // If we've hit the maximum attempts, proceed anyway
+          if (attemptCount >= MAX_ATTEMPTS) {
+            console.warn(`Exceeded maximum attempts (${MAX_ATTEMPTS}) waiting for style, proceeding anyway`);
+            try {
+              const defaultSettings: AnimationSettings = {
+                highlight: {
+                  fillColor: '#3182CE',
+                  lineColor: '#2B6CB0',
+                  lineWidth: 2,
+                  fillOpacityTarget: 0.6,
+                  lineOpacityTarget: 1.0,
+                  labelOpacityTarget: 1.0,
+                  fillAnimationDamping: 30,
+                  fillAnimationStiffness: 50,
+                  fillAnimationMass: 1,
+                  lineAnimationDamping: 30,
+                  lineAnimationStiffness: 50,
+                  lineAnimationMass: 1,
+                  labelAnimationDamping: 30,
+                  labelAnimationStiffness: 50,
+                  labelAnimationMass: 1
+                },
+                camera: {
+                  initialRotation: 0,
+                  finalRotation: 0,
+                  initialPitch: 0,
+                  finalPitch: 0,
+                  rotationDamping: 30,
+                  rotationStiffness: 50,
+                  rotationMass: 1,
+                  pitchDamping: 30,
+                  pitchStiffness: 50,
+                  pitchMass: 1
+                },
+                general: {
+                  backgroundColor: '#ffffff',
+                  mapStyle: 'mapbox://styles/mapbox/light-v11'
+                },
+                ui: {
+                  iconSize: 50,
+                  iconColor: '#000000',
+                  iconScale: 1,
+                  iconDropShadow: true,
+                  textFontSize: '16px',
+                  textColor: '#000000',
+                  textFontWeight: 'normal',
+                  infoMaxWidth: '300px',
+                  infoFontSize: '14px',
+                  infoBackgroundColor: '#ffffff',
+                  infoTextColor: '#000000',
+                  infoBorderRadius: '4px',
+                  infoPadding: '8px'
+                }
+              };
+              
+              // Get active country or use a default
+              const activeCountry = this.activeCountry || 'USA';
+              
+              // Add the layers
+              this.addHighlightLayersOnce(defaultSettings, activeCountry);
+              resolve();
+            } catch (error) {
+              console.error('Error adding highlight layers after timeout:', error);
+              reject(error);
+            }
+            return;
+          }
+          
+          // Set up a listener for the styleloaded event
+          const styleLoadedHandler = () => {
+            console.log('Style loaded event fired, continuing with layer addition');
+            this.map?.off('styleloaded', styleLoadedHandler);
+            clearTimeout(timeoutId);
+            waitForStyle(attemptCount + 1); // Try again now that style should be loaded
+          };
+          
+          // Add listener for styleloaded event
+          this.map?.on('styleloaded', styleLoadedHandler);
+          
+          // Set a timeout as a fallback - increasing timeout with each attempt
+          const waitTime = Math.min(1000 * (attemptCount + 1), 3000); // Increase wait time with each attempt, max 3 seconds
+          const timeoutId = setTimeout(() => {
+            console.warn(`Style load timeout after ${waitTime}ms, attempting to continue`);
+            this.map?.off('styleloaded', styleLoadedHandler);
+            waitForStyle(attemptCount + 1); // Try again after timeout
+          }, waitTime);
+        }
+      };
+      
+      // Start the process
+      waitForStyle();
     });
   }
   
@@ -138,7 +237,8 @@ export class MapService {
   public async initializeMap(
     mapStyle: string, 
     initialCountryCode: string,
-    projection: string = 'mercator'
+    projection: string = 'mercator',
+    options: { fadeDuration?: number } = {}
   ): Promise<mapboxgl.Map> {
     if (this.isInitialized && this.map) {
       // Reset the map style if it's already initialized
@@ -185,6 +285,15 @@ export class MapService {
           }
         }
 
+        // Clean up any existing instances
+        if (this.map) {
+          console.log('Cleaning up existing map instance before creating a new one');
+          this.map.remove();
+          this.map = null;
+          this.isInitialized = false;
+          this.areLayersAdded = false;
+        }
+
         // Add debug option to help diagnose rendering issues
         this.map = new mapboxgl.Map({
           container,
@@ -197,7 +306,7 @@ export class MapService {
           preserveDrawingBuffer: true,
           // Always enable renderWorldCopies to handle edge countries properly
           renderWorldCopies: true,
-          fadeDuration: 0,
+          fadeDuration: options.fadeDuration !== undefined ? options.fadeDuration : 0, // Use provided fadeDuration or default to 0
           antialias: true,
           localIdeographFontFamily: "'Noto Sans', 'Noto Sans CJK SC', sans-serif"
         });
@@ -211,9 +320,15 @@ export class MapService {
             console.error('Style not found - check your style URL', mapStyle);
           } else if (error.error && error.error.toString().includes('Style is not done loading')) {
             console.error('Style loading error - operations attempted before style was fully loaded');
+            // Don't reject as this would stop the app
           }
-          // Don't reject as this would stop the app
         });
+        
+        // Create a tracking object for load state
+        const loadState = {
+          styleLoaded: false,
+          mapLoaded: false
+        };
         
         // Listen for styledata event (partial style data loaded)
         this.map.on('styledata', () => {
@@ -229,41 +344,79 @@ export class MapService {
         // Listen for the complete style loaded event
         this.map.on('styleloaded', () => {
           console.log('Map style fully loaded!');
+          loadState.styleLoaded = true;
+          checkAllLoaded();
         });
         
         // Wait for both style load and map idle state
         this.map.on('load', () => {
           console.log('Map loaded!');
           console.time('map-initialization');
+          loadState.mapLoaded = true;
+          checkAllLoaded();
+        });
+        
+        // Function to check if all loading is complete and continue initialization
+        const checkAllLoaded = () => {
+          if (loadState.mapLoaded && (loadState.styleLoaded || this.isStyleLoaded())) {
+            console.log('Both map and style fully loaded, continuing initialization');
+            completeInitialization();
+          } else {
+            console.log('Still waiting for complete loading - Map:', loadState.mapLoaded, 'Style:', loadState.styleLoaded);
+          }
+        };
+        
+        // Set a timeout to continue even if some events don't fire
+        const initTimeoutId = setTimeout(() => {
+          console.warn('Initialization timeout reached, continuing anyway');
+          completeInitialization();
+        }, 10000); // 10 second timeout
+        
+        // Function to complete the initialization process
+        const completeInitialization = () => {
+          // Only complete once
+          clearTimeout(initTimeoutId);
           
-          // Check if the style is fully loaded
-          if (!this.isStyleLoaded()) {
-            console.warn('Style not fully loaded yet when map load event fired');
-            // We still continue as the map.load event should be reliable
+          // If we've already initialized, don't do it again
+          if (this.isInitialized) {
+            console.log('Already initialized, skipping duplicate initialization');
+            return;
           }
           
-          // Mark as initialized once the initial style and map are loaded
+          // Mark as initialized
           this.isInitialized = true;
           
           // Set the active country
           this.activeCountry = initialCountryCode;
           
-          // Add layers and filters for the initial country
-          this.addHighlightLayers()
-            .then(() => {
-              // Once layers are ready, set the country filter
-              this.updateHighlightFilter(initialCountryCode);
-              
-              console.log(`Finished map initialization for country ${initialCountryCode}`);
-              console.timeEnd('map-initialization');
-              resolve(this.map!);
-            })
-            .catch(error => {
-              console.error('Error initializing map layers:', error);
-              // Still resolve - we can work without highlight layers
-              resolve(this.map!);
-            });
-        });
+          // Add layers and filters for the initial country, with retry mechanism
+          const attemptAddLayers = (retryCount = 0) => {
+            this.addHighlightLayers()
+              .then(() => {
+                // Once layers are ready, set the country filter
+                this.updateHighlightFilter(initialCountryCode);
+                
+                console.log(`Finished map initialization for country ${initialCountryCode}`);
+                console.timeEnd('map-initialization');
+                resolve(this.map!);
+              })
+              .catch(error => {
+                console.error(`Error initializing map layers (attempt ${retryCount + 1}):`, error);
+                
+                // Retry a few times if style loading is the issue
+                if (retryCount < 3 && !this.isStyleLoaded()) {
+                  console.log(`Retrying layer addition in 1 second (attempt ${retryCount + 1})...`);
+                  setTimeout(() => attemptAddLayers(retryCount + 1), 1000);
+                } else {
+                  console.warn('Max retries reached or error not related to style loading, continuing without layers');
+                  resolve(this.map!);
+                }
+              });
+          };
+          
+          // Start the layer addition process
+          attemptAddLayers();
+        };
       } catch (error) {
         console.error('Error initializing map:', error);
         reject(error);
@@ -326,6 +479,12 @@ export class MapService {
        return;
     }
     
+    // Ensure style is fully loaded before proceeding
+    if (!this.isStyleLoaded()) {
+      console.error('Cannot add layers: Map style not fully loaded');
+      throw new Error('Map style not fully loaded');
+    }
+    
     // Explicitly reference the highlight settings from the typed settings object
     const highlight = settings.highlight; 
     
@@ -334,75 +493,111 @@ export class MapService {
     try {
       // --- Determine the ID of the first symbol layer --- 
       let firstSymbolId: string | undefined;
+      let hasSafeLayers = false;
+      
       const style = this.map.getStyle();
-      if (style && style.layers) {
-          for (const layer of style.layers) {
-              if (layer.type === 'symbol') {
-                  firstSymbolId = layer.id;
-                  break;
-              }
-          }
+      if (!style || !style.layers) {
+        console.error('Cannot add layers: Map style not available');
+        throw new Error('Map style not available');
       }
-      console.log(`Found first symbol layer ID for insertion: ${firstSymbolId}`);
+      
+      // Check if the style has any layers at all
+      if (style.layers.length === 0) {
+        console.warn('Style has no layers, this is unusual. Will attempt to add layers anyway.');
+        hasSafeLayers = false;
+      } else {
+        hasSafeLayers = true;
+        // Find first symbol layer
+        for (const layer of style.layers) {
+            if (layer.type === 'symbol') {
+                firstSymbolId = layer.id;
+                break;
+            }
+        }
+      }
+      
+      console.log(`Found first symbol layer ID for insertion: ${firstSymbolId || 'None found'}`);
       // -----------------------------------------------------
 
       // Add country boundaries source if it doesn't exist
       if (!this.map.getSource(COUNTRY_BOUNDARIES_SOURCE_ID)) {
         console.log('Adding country boundaries source');
-        this.map.addSource(COUNTRY_BOUNDARIES_SOURCE_ID, {
-          type: 'vector',
-          url: 'mapbox://mapbox.country-boundaries-v1',
-        });
+        try {
+          this.map.addSource(COUNTRY_BOUNDARIES_SOURCE_ID, {
+            type: 'vector',
+            url: 'mapbox://mapbox.country-boundaries-v1',
+          });
+        } catch (err) {
+          console.error('Error adding country boundaries source:', err);
+          throw new Error('Failed to add country boundaries source');
+        }
       } else {
          console.log('Country boundaries source already exists.');
       }
       
-      // Add fill layer if it doesn't exist
-      if (!this.map.getLayer(COUNTRY_HIGHLIGHT_FILL_LAYER_ID)) {
-         console.log(`Adding highlight fill layer: ${COUNTRY_HIGHLIGHT_FILL_LAYER_ID}`);
-         this.map.addLayer({
-           id: COUNTRY_HIGHLIGHT_FILL_LAYER_ID,
-           type: 'fill',
-           source: COUNTRY_BOUNDARIES_SOURCE_ID,
-           'source-layer': 'country_boundaries',
-           paint: {
-             'fill-color': highlight.fillColor || '#3182CE',
-             'fill-opacity': highlight.fillOpacityTarget || 0.6, // Use target opacity instead of starting at 0
-           },
-           // Use the provided countryCode for the initial filter
-           filter: ['==', 'iso_3166_1_alpha_3', countryCode || ''], 
-         },
-         firstSymbolId // Pass ID of layer to insert before, if found
-         );
-      } else {
-         console.log(`Highlight fill layer ${COUNTRY_HIGHLIGHT_FILL_LAYER_ID} already exists.`);
-      }
+      // Safely add a layer with better error handling
+      const safelyAddLayer = (layerId: string, layerConfig: any) => {
+        if (this.map?.getLayer(layerId)) {
+          console.log(`Layer ${layerId} already exists.`);
+          return true;
+        }
+        
+        try {
+          console.log(`Adding layer: ${layerId}`);
+          // If we have a valid firstSymbolId, insert before it
+          if (firstSymbolId) {
+            this.map?.addLayer(layerConfig, firstSymbolId);
+          } else {
+            // Otherwise just add the layer without specifying insertion point
+            this.map?.addLayer(layerConfig);
+          }
+          return true;
+        } catch (error) {
+          console.error(`Error adding layer ${layerId}:`, error);
+          return false;
+        }
+      };
       
-      // Add outline layer if it doesn't exist
-      if (!this.map.getLayer(COUNTRY_HIGHLIGHT_LINE_LAYER_ID)) {
-         console.log(`Adding highlight line layer: ${COUNTRY_HIGHLIGHT_LINE_LAYER_ID}`);
-         this.map.addLayer({
-           id: COUNTRY_HIGHLIGHT_LINE_LAYER_ID,
-           type: 'line',
-           source: COUNTRY_BOUNDARIES_SOURCE_ID,
-           'source-layer': 'country_boundaries',
-           paint: {
-             'line-color': highlight.lineColor || '#2B6CB0',
-             // Access lineWidth safely, providing default if undefined
-             'line-width': highlight.lineWidth ?? 2, 
-             'line-opacity': highlight.lineOpacityTarget || 1.0, // Use target opacity instead of starting at 0
-           },
-           // Use the provided countryCode for the initial filter
-           filter: ['==', 'iso_3166_1_alpha_3', countryCode || ''],
-         },
-         firstSymbolId // Pass ID of layer to insert before, if found
-         );
-      } else {
-         console.log(`Highlight line layer ${COUNTRY_HIGHLIGHT_LINE_LAYER_ID} already exists.`);
-      }
+      // Add fill layer
+      let fillLayerAdded = safelyAddLayer(COUNTRY_HIGHLIGHT_FILL_LAYER_ID, {
+        id: COUNTRY_HIGHLIGHT_FILL_LAYER_ID,
+        type: 'fill',
+        source: COUNTRY_BOUNDARIES_SOURCE_ID,
+        'source-layer': 'country_boundaries',
+        paint: {
+          'fill-color': highlight.fillColor || '#3182CE',
+          'fill-opacity': 0, // Initialize with zero opacity, always
+          // No transitions - we'll control opacity manually frame by frame
+        },
+        // Use the provided countryCode for the initial filter
+        filter: ['==', 'iso_3166_1_alpha_3', countryCode || ''], 
+      });
+      
+      // Add outline layer
+      let lineLayerAdded = safelyAddLayer(COUNTRY_HIGHLIGHT_LINE_LAYER_ID, {
+        id: COUNTRY_HIGHLIGHT_LINE_LAYER_ID,
+        type: 'line',
+        source: COUNTRY_BOUNDARIES_SOURCE_ID,
+        'source-layer': 'country_boundaries',
+        paint: {
+          'line-color': highlight.lineColor || '#2B6CB0',
+          // Access lineWidth safely, providing default if undefined
+          'line-width': highlight.lineWidth ?? 2, 
+          'line-opacity': 0, // Initialize with zero opacity, always
+          // No transitions - we'll control opacity manually frame by frame
+        },
+        // Use the provided countryCode for the initial filter
+        filter: ['==', 'iso_3166_1_alpha_3', countryCode || ''],
+      });
 
-      this.areLayersAdded = true; // Mark layers as added
-      console.log('Highlight layers added successfully.');
+      // Only mark layers as added if both were successful
+      this.areLayersAdded = fillLayerAdded && lineLayerAdded;
+      
+      if (this.areLayersAdded) {
+        console.log('Highlight layers added successfully.');
+      } else {
+        console.warn('Some highlight layers could not be added.');
+      }
 
     } catch (error) {
       console.error('Error adding highlight layers:', error);
@@ -414,10 +609,32 @@ export class MapService {
   /**
    * Updates the filter on the highlight layers to show the specified country.
    * @param countryCode The 3-letter ISO country code (e.g., 'USA', 'NLD')
+   * @param forceUpdate Optional flag to force filter update even if already applied
    */
-  public updateHighlightFilter(countryCode: string): void {
+  public updateHighlightFilter(countryCode: string, forceUpdate: boolean = false): void {
     if (!this.map || !this.isInitialized || !this.areLayersAdded) {
       console.error('Cannot update filter: Map not ready or layers not added.');
+      return;
+    }
+
+    // Skip if we've already applied highlight for this country
+    if (this.hasHighlightBeenApplied && this.activeCountry === countryCode && !forceUpdate) {
+      console.log(`Highlight for ${countryCode} already applied, skipping to prevent reapplication`);
+      return;
+    }
+
+    // Ensure style is loaded before updating filters
+    if (!this.isStyleLoaded()) {
+      console.warn('Cannot update filter: Style not fully loaded. Will retry when style is ready.');
+      
+      // Wait for style to load before trying again
+      const styleLoadedHandler = () => {
+        console.log('Style loaded, now updating filter');
+        this.map?.off('styleloaded', styleLoadedHandler);
+        this.updateHighlightFilter(countryCode);
+      };
+      
+      this.map.on('styleloaded', styleLoadedHandler);
       return;
     }
 
@@ -437,10 +654,9 @@ export class MapService {
          console.warn(`Layer ${COUNTRY_HIGHLIGHT_LINE_LAYER_ID} not found for filtering.`);
       }
       
-      // Remove the redundant call to positionMapForCountry during initialization/filter update
-      // The initial position is set by the map constructor.
-      // Subsequent positioning happens via updateCamera or explicit calls when country changes.
-      // this.positionMapForCountry(countryCode);
+      // Mark highlight as applied and update active country
+      this.hasHighlightBeenApplied = true;
+      this.activeCountry = countryCode;
       
       console.log(`Filter updated successfully for ${countryCode}`);
     } catch (error) {
@@ -516,18 +732,18 @@ export class MapService {
   }
   
   /**
-   * Update the layer opacities (used for animation)
+   * Update the layer opacities directly with precise values for each frame.
+   * This method does not contain any animation logic - it simply applies the values.
    * @param fillOpacity Fill opacity value (0-1)
    * @param lineOpacity Line opacity value (0-1)
    */
   public updateLayerOpacity(fillOpacity: number, lineOpacity: number): void {
     if (!this.map || !this.isInitialized || !this.areLayersAdded) {
-       // console.warn('UpdateLayerOpacity called before map/layers are ready.'); // Too noisy
        return;
     }
     
     try {
-      // Use the constant layer IDs now
+      // Simply apply the opacity values from animation controller
       if (this.map.getLayer(COUNTRY_HIGHLIGHT_FILL_LAYER_ID)) {
         this.map.setPaintProperty(
           COUNTRY_HIGHLIGHT_FILL_LAYER_ID,
@@ -652,39 +868,71 @@ export class MapService {
         const currentBearing = this.map.getBearing();
         const currentPitch = this.map.getPitch();
         
-        // Set timeout for style loading
-        const styleLoadTimeout = setTimeout(() => {
-          console.warn('Style load timeout, resolving anyway');
-          this.setupAfterStyleUpdate(currentCenter, currentZoom, currentBearing, currentPitch, countryCode);
-          resolve();
-        }, 5000); // 5 second timeout
-        
         // Reset internal layer tracking
         this.areLayersAdded = false;
         
-        // Listen for style load
-        this.map.once('styleloaded', () => {
-          clearTimeout(styleLoadTimeout);
-          console.log('Map style fully loaded, applying view state');
-          this.setupAfterStyleUpdate(currentCenter, currentZoom, currentBearing, currentPitch, countryCode);
-          resolve();
-        });
+        // Clear any existing event handlers (prevent leaking listeners)
+        this.map.off('styleloaded');
+        this.map.off('styledata');
         
-        // Fallback on styledata if styleloaded doesn't fire
-        this.map.once('styledata', () => {
-          console.log('Style data received, scheduling final check');
-          // Give a little time for style to complete loading
-          setTimeout(() => {
-            if (this.isStyleLoaded()) {
-              console.log('Style confirmed to be loaded via isStyleLoaded');
-              clearTimeout(styleLoadTimeout);
+        // Add an explicit listener for style loading
+        const styleLoadedHandler = () => {
+          console.log('Style loaded event fired, continuing with setup');
+          clearTimeout(styleLoadTimeout);
+          this.map?.off('styleloaded', styleLoadedHandler);
+          this.map?.off('styledata', styleDataHandler);
+          
+          // Ensure style is actually fully loaded
+          if (this.isStyleLoaded()) {
+            this.setupAfterStyleUpdate(currentCenter, currentZoom, currentBearing, currentPitch, countryCode);
+            resolve();
+          } else {
+            console.warn('Style not fully loaded despite styleloaded event, waiting briefly...');
+            setTimeout(() => {
               this.setupAfterStyleUpdate(currentCenter, currentZoom, currentBearing, currentPitch, countryCode);
               resolve();
-            } else {
-              console.log('Style not fully loaded after styledata, waiting for styleloaded event or timeout');
-            }
-          }, 500);
-        });
+            }, 500);
+          }
+        };
+        
+        // Fallback on styledata if styleloaded doesn't fire
+        const styleDataHandler = () => {
+          console.log('Style data received, checking if style is loaded');
+          if (this.isStyleLoaded()) {
+            console.log('Style confirmed to be loaded via styledata and isStyleLoaded');
+            clearTimeout(styleLoadTimeout);
+            this.map?.off('styleloaded', styleLoadedHandler);
+            this.map?.off('styledata', styleDataHandler);
+            this.setupAfterStyleUpdate(currentCenter, currentZoom, currentBearing, currentPitch, countryCode);
+            resolve();
+          }
+          // If not loaded, keep waiting for styleloaded or timeout
+        };
+        
+        // Add event listeners
+        this.map.on('styleloaded', styleLoadedHandler);
+        this.map.on('styledata', styleDataHandler);
+        
+        // Set timeout for style loading (increased to 8 seconds for more reliability)
+        const styleLoadTimeout = setTimeout(() => {
+          console.warn('Style load timeout after 8 seconds, proceeding anyway');
+          this.map?.off('styleloaded', styleLoadedHandler);
+          this.map?.off('styledata', styleDataHandler);
+          
+          // Check if we should wait a bit more
+          if (this.map?.isStyleLoaded()) {
+            console.log('Style is actually loaded at timeout point');
+            this.setupAfterStyleUpdate(currentCenter, currentZoom, currentBearing, currentPitch, countryCode);
+            resolve();
+          } else {
+            console.warn('Proceeding with setup despite style not being fully loaded');
+            // Wait just a bit longer before final attempt
+            setTimeout(() => {
+              this.setupAfterStyleUpdate(currentCenter, currentZoom, currentBearing, currentPitch, countryCode);
+              resolve();
+            }, 1000);
+          }
+        }, 8000); // 8 second timeout
         
         // Set the new style
         this.map.setStyle(newStyleUrl);
@@ -725,19 +973,42 @@ export class MapService {
     // Use provided countryCode or fall back to activeCountry
     const effectiveCountryCode = countryCode || this.activeCountry || 'USA';
     
-    // Re-create the highlight layers for the new style
-    this.addHighlightLayers()
-      .then(() => {
-        // Update the country highlight for the current country
-        this.updateHighlightFilter(effectiveCountryCode);
-        console.log('Style update complete');
-        console.timeEnd('style-update');
-      })
-      .catch(error => {
-        console.error('Error creating highlight layers:', error);
-        // Still continue since we can work without highlight
-        console.timeEnd('style-update');
-      });
+    // Reset highlight flags since we need to reapply after style change
+    this.hasHighlightBeenApplied = false;
+    this.areLayersAdded = false;
+    
+    // Check if style is loaded before proceeding
+    const setupLayers = (retryCount = 0, maxRetries = 3) => {
+      if (!this.isStyleLoaded() && retryCount < maxRetries) {
+        console.log(`Style not fully loaded yet, waiting before creating layers (attempt ${retryCount + 1}/${maxRetries})...`);
+        setTimeout(() => setupLayers(retryCount + 1, maxRetries), 1000);
+        return;
+      }
+      
+      // Re-create the highlight layers for the new style
+      this.addHighlightLayers()
+        .then(() => {
+          // Update the country highlight for the current country
+          this.updateHighlightFilter(effectiveCountryCode);
+          console.log('Style update complete');
+          console.timeEnd('style-update');
+        })
+        .catch(error => {
+          console.error(`Error creating highlight layers (attempt ${retryCount + 1}):`, error);
+          
+          // Retry a few times if style loading is the issue
+          if (retryCount < maxRetries) {
+            console.log(`Retrying layer addition in 1 second...`);
+            setTimeout(() => setupLayers(retryCount + 1, maxRetries), 1000);
+          } else {
+            console.warn('Max retries reached, continuing without highlight layers');
+            console.timeEnd('style-update');
+          }
+        });
+    };
+    
+    // Start the setup process
+    setupLayers();
   }
 
   /**
@@ -750,7 +1021,23 @@ export class MapService {
     }
     
     try {
-      return this.map.isStyleLoaded();
+      // First use the built-in method
+      const isLoaded = this.map.isStyleLoaded();
+      
+      // Additional verification - check if style has layers
+      if (isLoaded) {
+        const style = this.map.getStyle();
+        // If style exists and has layers, it's definitely loaded
+        if (style && style.layers && style.layers.length > 0) {
+          return true;
+        }
+        
+        // If isLoaded is true but we have no layers, log a warning but trust the isStyleLoaded result
+        console.warn('Map reports style is loaded but no layers found. Proceeding cautiously.');
+        return true;
+      }
+      
+      return false;
     } catch (error) {
       console.error('Error checking if style is loaded:', error);
       return false;

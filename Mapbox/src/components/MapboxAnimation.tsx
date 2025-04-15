@@ -3,8 +3,8 @@ import { MapProvider } from '../contexts/MapContext';
 import { AnimationProvider } from '../contexts/AnimationContext';
 import { ConfigProvider, useConfigContext } from '../contexts/ConfigContext';
 import { Map } from './Map';
-import { ThemeType, MotionType, IconType, ProjectionType, TextDisplayType, TextAnimationType } from '../core/mapboxTypes';
-import DeckMarkerOverlay from './DeckMarkerOverlay';
+import { ThemeType, MotionType, IconType, ProjectionType, TextDisplayType, TextAnimationType, TextPositionType } from '../core/mapboxTypes';
+import MapboxMarker from './MapboxMarker';
 import { TextOverlay } from './TextOverlay';
 import { Vignette } from './Vignette';
 import { HighlightSettings } from '../core/animationModel';
@@ -40,6 +40,7 @@ interface MapboxAnimationProps {
   textDisplay?: TextDisplayType;
   showText?: boolean;
   textAnimationType?: TextAnimationType;
+  textPosition?: TextPositionType;
   infoSettings?: {
     maxWidth?: string;
     fontSize?: string;
@@ -93,6 +94,7 @@ const AnimationWrapper: React.FC<{
   animationTiming?: MapboxAnimationProps['animationTiming'];
   highlightSettings?: HighlightSettings;
   customText?: string;
+  textPosition?: TextPositionType;
   showVignette?: boolean;
   vignetteSettings?: MapboxAnimationProps['vignetteSettings'];
 }> = ({ 
@@ -102,10 +104,11 @@ const AnimationWrapper: React.FC<{
   animationTiming, 
   highlightSettings = DEFAULT_HIGHLIGHT_SETTINGS, 
   customText,
+  textPosition,
   showVignette = false,
   vignetteSettings = {}
 }) => {
-  const { countryData, motionSettings, iconType, countryCode, mapStyle, textDisplay, showText, iconCoverage, iconScaleFactor } = useConfigContext();
+  const { countryData, motionSettings, iconType, countryCode, mapStyle, textDisplay, showText, themeType, iconCoverage, iconScaleFactor } = useConfigContext();
   
   // Get coordinates in a compatible format
   const coordinates = countryData.coordinates;
@@ -123,14 +126,13 @@ const AnimationWrapper: React.FC<{
         timing={animationTiming}
       >
         <Map mapStyle={mapStyle} countryCode={countryCode}>
-          {/* Only render the icon if iconType is not 'none' */}
-          {iconType !== 'none' && <DeckMarkerOverlay 
-            key={`marker-${countryCode}-${iconCoverage}-${iconScaleFactor}`}
-          />}
+          {/* Only render the marker if iconType is not 'none' */}
+          {iconType !== 'none' && <MapboxMarker />}
           {/* Always render TextOverlay but pass showText and textDisplay as props */}
           <TextOverlay 
             customText={customText} 
             isVisible={showText && textDisplay !== 'none'} 
+            textPosition={textPosition}
           />
           {children}
         </Map>
@@ -154,7 +156,7 @@ const AnimationWrapper: React.FC<{
  * <MapboxAnimation countryCode="USA" theme="dark" />
  */
 export const MapboxAnimation: React.FC<MapboxAnimationProps> = ({
-  countryCode = "NLD",
+  countryCode = "US",
   iconType = "marker",
   theme = "light",
   motion = "northToRotate",
@@ -165,6 +167,7 @@ export const MapboxAnimation: React.FC<MapboxAnimationProps> = ({
   textDisplay = "none",
   showText = false,
   textAnimationType = "none",
+  textPosition = "lower-third",
   infoSettings,
   backgroundColor,
   highlightColor,
@@ -172,11 +175,11 @@ export const MapboxAnimation: React.FC<MapboxAnimationProps> = ({
   iconSettings,
   textSettings,
   iconSize,
-  iconCoverage,
-  iconScaleFactor,
+  iconCoverage = 10,
+  iconScaleFactor = 1.0,
   children,
-  animationTiming,
   highlightSettings,
+  animationTiming,
   showVignette = false,
   vignetteSettings,
 }) => {
@@ -196,6 +199,7 @@ export const MapboxAnimation: React.FC<MapboxAnimationProps> = ({
       textDisplay={textDisplay}
       showText={showText}
       textAnimationType={textAnimationType}
+      textPosition={textPosition}
       infoSettings={infoSettings}
       backgroundColor={backgroundColor}
       highlightColor={highlightColor}
@@ -212,6 +216,7 @@ export const MapboxAnimation: React.FC<MapboxAnimationProps> = ({
         animationTiming={animationTiming}
         highlightSettings={highlightSettings}
         customText={customText}
+        textPosition={textPosition}
         showVignette={showVignette}
         vignetteSettings={vignetteSettings}
       >

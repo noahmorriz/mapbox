@@ -54,4 +54,20 @@ export const ICON_URLS: Record<string, string> = Object.keys(ICON_SVGS).reduce(
     [key]: svgToDataUrl(ICON_SVGS[key])
   }), 
   {}
-); 
+);
+
+// If necessary, add support for sprite frame variations. 
+// For example:
+// 
+// Define a function to get sprite frames for a given icon
+// This function would return URLs for various opacity levels
+//
+// export const getIconSpriteFrames = (iconType: IconType): string[] => {
+//   const baseUrl = ICON_URLS[iconType] || ICON_URLS['marker'];
+//   const baseUrlWithoutExt = baseUrl.replace(/\.[^/.]+$/, '');
+//   
+//   // Create an array of URLs for each opacity frame (0-10)
+//   return Array.from({ length: 11 }, (_, i) => 
+//     i === 0 ? '' : `${baseUrlWithoutExt}_${i}.png`
+//   );
+// }; 

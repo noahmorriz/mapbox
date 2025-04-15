@@ -1,4 +1,5 @@
 import { useCurrentFrame, useVideoConfig, spring } from 'remotion';
+import React, { useMemo } from 'react';
 import { 
   AnimationFrameState, 
   HighlightSettings, 
@@ -147,34 +148,31 @@ export const calculateAnimationFrame = (
       },
     });
 
-    // Animate country highlight opacities with standardized timing
-    const fillOpacity = spring({
-      // Use phase-based progress from standardized system
-      frame: phases.isHighlightActive ? 
-        Math.max(0, (frame - animationFrames.highlightStart)) : 0,
-      fps,
-      from: 0,
-      to: highlightSettings.fillOpacityTarget,
-      config: { 
-        damping: highlightSettings.fillAnimationDamping,
-        stiffness: highlightSettings.fillAnimationStiffness,
-        mass: highlightSettings.fillAnimationMass
-      },
-    });
+    // Animate country highlight opacities with direct calculation
+    let fillOpacity = 0;
+    let lineOpacity = 0;
     
-    const lineOpacity = spring({
-      // Use phase-based progress from standardized system
-      frame: phases.isHighlightActive ? 
-        Math.max(0, (frame - animationFrames.highlightStart)) : 0,
-      fps,
-      from: 0,
-      to: highlightSettings.lineOpacityTarget,
-      config: { 
-        damping: highlightSettings.lineAnimationDamping,
-        stiffness: highlightSettings.lineAnimationStiffness,
-        mass: highlightSettings.lineAnimationMass
-      },
-    });
+    // Only calculate opacity values when in the appropriate animation phase
+    if (phases.isHighlightActive) {
+      // Calculate the precise opacity value based on elapsed frames since highlight start
+      const highlightElapsedFrames = frame - animationFrames.highlightStart;
+      const highlightDurationFrames = timing.highlightFadeDuration;
+      
+      // For maximum determinism, use a simple linear interpolation with clamping
+      // This ensures identical results across all Remotion rendering instances
+      const progress = Math.min(1, Math.max(0, highlightElapsedFrames / highlightDurationFrames));
+      
+      // Apply easing for smoother animation (still deterministic)
+      const eased = progress * progress * (3 - 2 * progress); // Smoothstep easing
+      
+      fillOpacity = eased * highlightSettings.fillOpacityTarget;
+      lineOpacity = eased * highlightSettings.lineOpacityTarget;
+      
+      // Periodic logging to help with debugging
+      if (frame % 30 === 0) {
+        console.log(`Frame ${frame}: Highlight animation progress=${progress.toFixed(2)}, opacity=${fillOpacity.toFixed(3)}`);
+      }
+    }
 
     return {
       bearing,
@@ -219,4 +217,75 @@ export const useAnimationFrame = (
     console.error('Error in useAnimationFrame:', error);
     return DEFAULT_ANIMATION_STATE;
   }
+};
+
+// Calculate marker animation values - completely deterministic with rounded values
+const computeIconOpacity = (
+  frame: number,
+  animationStartFrame: number,
+  labelDelayFrames: number,
+  labelFadeDuration: number
+): number => {
+  // Round all frame values to ensure consistent results
+  const safeFrame = Math.floor(frame);
+  const safeStartFrame = Math.floor(animationStartFrame + labelDelayFrames);
+  const safeDuration = Math.max(Math.floor(labelFadeDuration), 1);
+  
+  // Early phase - no opacity
+  if (safeFrame < safeStartFrame) {
+    return 0;
+  }
+  
+  // Completed phase - full opacity
+  if (safeFrame >= safeStartFrame + safeDuration) {
+    return 1;
+  }
+  
+  // Animation phase - calculate with deterministic math instead of interpolate
+  const progress = (safeFrame - safeStartFrame) / safeDuration;
+  
+  // Apply smoothstep easing for a nicer transition (still deterministic)
+  // smoothstep(x) = 3x² - 2x³ for x in [0,1]
+  const smoothProgress = progress * progress * (3 - 2 * progress);
+  
+  // Return with 2 decimal precision to ensure consistent rendering
+  return Math.round(smoothProgress * 100) / 100;
+};
+
+// Convert the loose useMemo into a proper hook function
+export const useAnimatedMarkerData = (
+  baseMarkerData: any[],
+  animationStartFrame: number,
+  labelDelayFrames: number,
+  labelFadeDuration: number
+) => {
+  const frame = useCurrentFrame();
+  
+  return useMemo(() => {
+    if (!baseMarkerData.length) return [];
+    
+    // Calculate opacity using the deterministic method
+    const opacity = computeIconOpacity(
+      frame, 
+      animationStartFrame, 
+      labelDelayFrames, 
+      labelFadeDuration
+    );
+    
+    // Apply opacity to each marker with deterministic RGB color values
+    return baseMarkerData.map(marker => {
+      // Extract RGB components
+      const [r, g, b] = [marker.color[0], marker.color[1], marker.color[2]];
+      
+      // Apply opacity to alpha channel with rounding
+      const alpha = Math.round(opacity * 255);
+      
+      return {
+        ...marker,
+        opacity,
+        scale: 1.0, // Fixed scale value
+        color: [r, g, b, alpha]
+      };
+    });
+  }, [baseMarkerData, frame, animationStartFrame, labelDelayFrames, labelFadeDuration]);
 }; 

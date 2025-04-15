@@ -162,6 +162,24 @@ export interface AnimationProps {
    * - typewriter: Text appears character by character
    */
   textAnimationType?: TextAnimationType;
+  /**
+   * Position of the text overlay on the screen
+   * - lower-third: Positioned at the bottom third of the screen (common for titles/captions)
+   * - center: Centered on the screen
+   * - top: Positioned at the top of the screen
+   * - custom: Custom positioning (not implemented)
+   */
+  textPosition?: TextPositionType;
+  /**
+   * Background color for the text overlay (CSS color format)
+   * Example: "rgba(0, 0, 0, 0.7)" for semi-transparent black
+   */
+  textBackgroundColor?: string;
+  /**
+   * Padding for the text background (CSS padding format)
+   * Example: "10px 20px" for 10px top/bottom, 20px left/right
+   */
+  textBackgroundPadding?: string;
   
   // Show/hide controls
   showHighlight?: boolean;

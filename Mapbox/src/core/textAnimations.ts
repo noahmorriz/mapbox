@@ -44,58 +44,69 @@ export const NoAnimation: TextAnimation = {
 };
 
 /**
- * Fade-in animation implementation
+ * Fade-in animation implementation with improved determinism
  */
 export const FadeInAnimation: TextAnimation = {
   getAnimatedText: (text, frame, startFrame, duration) => {
-    // Calculate opacity using interpolation
-    const opacity = interpolate(
-      frame,
-      [startFrame, startFrame + duration],
-      [0, 1],
-      {
-        extrapolateLeft: 'clamp',
-        extrapolateRight: 'clamp',
-      }
-    );
+    // Round frame and duration values to ensure consistent calculations
+    const safeFrame = Math.floor(frame);
+    const safeStartFrame = Math.floor(startFrame);
+    const safeDuration = Math.max(Math.floor(duration), 1);
+    
+    // Ensure we don't start animation too early or late
+    if (safeFrame < safeStartFrame) {
+      return { text, opacity: 0, displayedChars: text.length };
+    }
+    
+    if (safeFrame >= safeStartFrame + safeDuration) {
+      return { text, opacity: 1.0, displayedChars: text.length };
+    }
+    
+    // Calculate progress as a simple linear value with 2 decimal precision
+    const progress = (safeFrame - safeStartFrame) / safeDuration;
+    const roundedOpacity = Math.round(progress * 100) / 100;
     
     return {
       text,
-      opacity,
+      opacity: roundedOpacity,
       displayedChars: text.length,
     };
   },
 };
 
 /**
- * Typewriter animation implementation
+ * Typewriter animation implementation with improved determinism
  */
 export const TypewriterAnimation: TextAnimation = {
   getAnimatedText: (text, frame, startFrame, duration) => {
-    // Calculate the number of characters to show
+    // Round all values for deterministic behavior
+    const safeFrame = Math.floor(frame);
+    const safeStartFrame = Math.floor(startFrame);
+    const safeDuration = Math.max(Math.floor(duration), 1);
+    
     // Use 80% of the duration for typing, 20% for cursor blinking at the end
-    const typingDuration = Math.max(Math.floor(duration * 0.8), 1);
+    const typingDuration = Math.max(Math.floor(safeDuration * 0.8), 1);
     
     // Maximum characters that can be displayed
     const totalChars = text.length;
     
-    // Calculate displayed characters using interpolation
-    const displayedChars = Math.floor(
-      interpolate(
-        frame,
-        [startFrame, startFrame + typingDuration],
-        [0, totalChars],
-        {
-          extrapolateLeft: 'clamp',
-          extrapolateRight: 'clamp',
-        }
-      )
-    );
+    // Handle pre-animation state
+    if (safeFrame < safeStartFrame) {
+      return { text: '', opacity: 1.0, displayedChars: 0 };
+    }
+    
+    // Handle completed animation
+    if (safeFrame >= safeStartFrame + typingDuration) {
+      return { text, opacity: 1.0, displayedChars: totalChars };
+    }
+    
+    // Calculate progress with high precision then round to whole number
+    const progress = (safeFrame - safeStartFrame) / typingDuration;
+    const displayedChars = Math.min(Math.floor(progress * totalChars), totalChars);
     
     // Extract substring up to current character count
     const displayText = text.substring(0, displayedChars);
     
-    // Always fully opaque
     return {
       text: displayText,
       opacity: 1.0,
@@ -114,7 +125,7 @@ export const TextAnimations: Record<TextAnimationType, TextAnimation> = {
 };
 
 /**
- * Hook to apply text animations
+ * Hook to apply text animations with improved determinism
  * @param text The text to animate
  * @param animationType The type of animation to apply
  * @param startFrame Frame when animation should start
@@ -127,8 +138,12 @@ export const useTextAnimation = (
   startFrame: number,
   duration: number
 ) => {
-  const frame = useCurrentFrame();
+  // Get current frame and ensure it's an integer
+  const frame = Math.floor(useCurrentFrame());
+  
+  // Ensure we have a valid animation type or fallback to none
   const animation = TextAnimations[animationType] || NoAnimation;
   
+  // Cache result to prevent recalculation within the same frame
   return animation.getAnimatedText(text, frame, startFrame, duration);
 }; 

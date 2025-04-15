@@ -1,1 +1,33 @@
 @import "tailwindcss";
+
+/* 
+ * Mapbox marker styles - stripped of all transitions
+ * This helps prevent flickering by removing all implicit animations
+ */
+.mapbox-marker {
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  transform-origin: center;
+  pointer-events: none;
+  /* Force hardware acceleration and eliminate sub-pixel rendering issues */
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-font-smoothing: subpixel-antialiased;
+  /* Completely remove transition effects */
+  transition: none !important;
+  animation: none !important;
+  /* Prevent inheritance of transitions */
+  transition-property: none !important;
+}
+
+/* 
+ * Override any Mapbox opacity animations
+ * This is important to prevent their built-in fading effects
+ */
+.mapboxgl-marker {
+  transition: none !important;
+  animation: none !important;
+  /* Prevent inheritance of transitions */
+  transition-property: none !important;
+}

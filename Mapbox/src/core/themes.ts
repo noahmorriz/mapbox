@@ -42,6 +42,14 @@ export interface Theme {
     opacity?: number;
   };
   
+  // Text overlay styling
+  textOverlay?: {
+    backgroundColor: string;
+    padding: string;
+    borderRadius?: string;
+    textShadow?: string;
+  };
+  
   // Info box styling
   infoBox: {
     backgroundColor: string;
@@ -93,6 +101,12 @@ export const THEMES: Record<ThemeType, Theme> = {
       opacity: 0.95,
     },
     
+    textOverlay: {
+      backgroundColor: 'rgba(0, 0, 0, 0.75)',
+      padding: '10px 20px',
+      borderRadius: '4px',
+    },
+    
     infoBox: {
       backgroundColor: 'rgba(0, 0, 0, 0.75)',
       textColor: '#FFFFFF',
@@ -138,6 +152,12 @@ export const THEMES: Record<ThemeType, Theme> = {
       opacity: 1.0,
     },
     
+    textOverlay: {
+      backgroundColor: 'rgba(255, 255, 255, 0.85)',
+      padding: '10px 20px',
+      borderRadius: '4px',
+    },
+    
     infoBox: {
       backgroundColor: 'rgba(255, 255, 255, 0.85)',
       textColor: '#333333',
@@ -181,6 +201,12 @@ export const THEMES: Record<ThemeType, Theme> = {
       fontWeight: '500',
       fontFamily: '"Playfair Display", serif',
       opacity: 0.9,
+    },
+    
+    textOverlay: {
+      backgroundColor: 'transparent',
+      padding: '5px 10px',
+      textShadow: '1px 1px 2px rgba(139,69,19,0.4)',
     },
     
     infoBox: {

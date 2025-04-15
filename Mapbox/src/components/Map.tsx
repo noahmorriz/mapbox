@@ -19,6 +19,7 @@ export const Map: React.FC<MapProps> = ({ children, mapStyle, countryCode }) => 
     mapService,
     isMapLoaded,
     isMapError,
+    mapStatus
   } = useMapContext();
   
   const { countryData, projectionType, mapStyle: contextMapStyle, backgroundColor: contextBgColor, themeType } = useConfigContext();
@@ -61,6 +62,28 @@ export const Map: React.FC<MapProps> = ({ children, mapStyle, countryCode }) => 
 
   }, [effectiveMapStyle, effectiveCountryCode, projectionType, syncMapState]);
   
+  // Add effect to check for container element
+  useEffect(() => {
+    // Check if container is ready periodically if not already
+    if (!containerReadyRef.current) {
+      const checkContainer = setInterval(() => {
+        const containerElement = document.getElementById('map-container');
+        if (containerElement) {
+          clearInterval(checkContainer);
+          containerReadyRef.current = true;
+          
+          // Trigger map sync when container becomes available
+          if (effectiveMapStyle && effectiveCountryCode) {
+            console.log('Map container found, initializing map');
+            syncMapState(effectiveMapStyle, effectiveCountryCode, projectionType);
+          }
+        }
+      }, 100);
+      
+      return () => clearInterval(checkContainer);
+    }
+  }, [syncMapState, effectiveMapStyle, effectiveCountryCode, projectionType]);
+  
   useEffect(() => {
     if (mapService && isMapLoaded) {
       mapService.updateCamera(
@@ -73,23 +96,37 @@ export const Map: React.FC<MapProps> = ({ children, mapStyle, countryCode }) => 
     }
   }, [mapService, isMapLoaded, animatedCenter, animatedZoom, bearing, pitch, effectiveCountryCode]);
   
+  // Add Effect to ensure country filter is set once
+  useEffect(() => {
+    if (mapService && isMapLoaded) {
+      // Apply the country filter once
+      mapService.updateHighlightFilter(effectiveCountryCode);
+    }
+  }, [mapService, isMapLoaded, effectiveCountryCode]);
+  
   // Add Effect to update layer opacity based on animation state
   useEffect(() => {
     if (mapService && isMapLoaded) {
-      // Update highlight layer opacities
+      // Apply opacity value on every frame for deterministic rendering
+      // This ensures each browser instance renders the exact same opacity value
       mapService.updateLayerOpacity(fillOpacity, lineOpacity);
     }
   }, [mapService, isMapLoaded, fillOpacity, lineOpacity]);
   
-  // Apply theme highlight colors when theme changes or map loads
+  // Update the highlight colors when theme changes
   useEffect(() => {
     if (mapService && isMapLoaded) {
+      // Get current theme highlight colors
       const themeHighlight = THEMES[themeType]?.highlight;
+      console.log('Theme changed to:', themeType);
+      
       if (themeHighlight && themeHighlight.fillColor && themeHighlight.lineColor) {
-        console.log(`Map.tsx: Updating highlight colors for theme '${themeType}': fill=${themeHighlight.fillColor}, line=${themeHighlight.lineColor}`);
+        console.log(`Applying theme colors: fill=${themeHighlight.fillColor}, line=${themeHighlight.lineColor}`);
+        
+        // Update the highlight colors once per theme change
         mapService.updateHighlightColors(themeHighlight.fillColor, themeHighlight.lineColor);
-      } else {
-        console.warn(`Map.tsx: Highlight colors not found for theme '${themeType}'`);
+        
+        // Don't set opacity here - that's handled by the animation effect
       }
     }
   }, [mapService, isMapLoaded, themeType]);
@@ -228,8 +265,10 @@ export const Map: React.FC<MapProps> = ({ children, mapStyle, countryCode }) => 
         data-render-status={mapRenderingStatus}
       />
       
-      {/* Render children simply when the map instance is loaded */}
-      {isMapLoaded && mapInstance && children}
+      {/* Only render children when map is truly ready - both loaded and style is ready */}
+      {mapStatus === 'idle' && mapInstance && 
+       (mapInstance.isStyleLoaded() || mapRenderingStatus === 'complete') && 
+       children}
     </AbsoluteFill>
   );
 }; 

@@ -5,7 +5,7 @@ import { MapboxAnimation } from './components/MapboxAnimation';
 import { AnimationProps, HighlightSettings } from './core/animationModel';
 import { THEMES } from './core/themes';
 import { ANIMATION_PHYSICS, UI_DEFAULTS } from './core/animationConstants';
-import { ThemeType, MotionType, ProjectionType, IconType, TextDisplayType, TextAnimationType } from './core/mapboxTypes';
+import { ThemeType, MotionType, ProjectionType, IconType, TextDisplayType, TextAnimationType, TextPositionType } from './core/mapboxTypes';
 import { DEFAULT_TIMELINE } from './core/animationTiming';
 
 // =====================================================================
@@ -16,17 +16,20 @@ import { DEFAULT_TIMELINE } from './core/animationTiming';
  * VISUAL SETTINGS - Appearance controls
  */
 const VISUAL = {
-  THEME: "dark" as ThemeType,         // Changed from "dark" to "light"
-  ICON_TYPE: "skull" as IconType,    // Icon visual style
-  ICON_COVERAGE: 50,      // NEW: Desired coverage percentage (e.g., 1-95) of the country's rendered smaller dimension
+  THEME: "vintage" as ThemeType,         // Changed from "dark" to "light"
+  ICON_TYPE: "flag" as IconType,    // Icon visual style
+  ICON_COVERAGE: 20,      // NEW: Desired coverage percentage (e.g., 1-95) of the country's rendered smaller dimension
   ICON_SCALE_FACTOR: 1.0, // Scaling factor to make icons larger (>1.0) or smaller (<1.0) than the calculated size
   SHOW_HIGHLIGHT: true,  // Whether to display country highlight
   SHOW_ICON: true,       // Whether to display icon
   // Text display settings
   SHOW_TEXT: true,       // Whether to display text
   TEXT_DISPLAY: "custom" as TextDisplayType, // Text display type (country name, custom, or none)
-  CUSTOM_TEXT: "Hello world",       // Custom text to display (used when TEXT_DISPLAY is "custom")
-  TEXT_ANIMATION: "typewriter" as TextAnimationType, // Text animation type (none, fadeIn, typewriter)
+  CUSTOM_TEXT: "Netherlands",       // Custom text to display (used when TEXT_DISPLAY is "custom")
+  TEXT_POSITION: "bottom-left" as TextPositionType, // Text position (bottom-left, lower-third, center, top, custom)
+  TEXT_ANIMATION_TYPE: "typewriter" as TextAnimationType, // Text animation type (none, fadeIn, typewriter)
+  TEXT_FONT_SIZE: "60px", // Very large font size
+  TEXT_FONT_WEIGHT: 700, // Bold font weight
   // Vignette settings
   SHOW_VIGNETTE: true,    // Whether to show vignette effect
   VIGNETTE_INTENSITY: 0.7, // Vignette intensity (0-1)
@@ -39,7 +42,7 @@ const VISUAL = {
 const MAP = {
   MOTION: "slowRotate" as MotionType,  // Map motion type
   PROJECTION: "mercator" as ProjectionType, // Map projection
-  COUNTRY: "NLD",        // Default country code (Ensure this exists as iso_code in boundingbox.json)
+  COUNTRY: "AUS",        // Default country code (Ensure this exists as iso_code in boundingbox.json)
 };
 
 /**
@@ -60,7 +63,8 @@ export const Composition: React.FC<AnimationProps> = (props) => {
     textDisplay: VISUAL.SHOW_TEXT ? VISUAL.TEXT_DISPLAY : "none", // Use "none" when showText is false
     customText: VISUAL.CUSTOM_TEXT, // Custom text content
     showText: VISUAL.SHOW_TEXT, // Whether to show text
-    textAnimationType: VISUAL.TEXT_ANIMATION, // Text animation type
+    textPosition: VISUAL.TEXT_POSITION, // Text position
+    textAnimationType: VISUAL.TEXT_ANIMATION_TYPE, // Text animation type
     
     // Vignette settings
     showVignette: VISUAL.SHOW_VIGNETTE,
@@ -92,7 +96,6 @@ export const Composition: React.FC<AnimationProps> = (props) => {
   // Ensure textDisplay is set to "none" if showText is false
   if (!defaultedProps.showText) {
     defaultedProps.textDisplay = "none";
-    defaultedProps.textAnimationType = "none";
   }
   
   // Get theme settings
@@ -138,8 +141,8 @@ export const Composition: React.FC<AnimationProps> = (props) => {
     iconScaleFactor: defaultedProps.iconScaleFactor, // Additional scale adjustment
     iconDropShadow: theme.icon.useDropShadow,
     textColor: theme.text.color,
-    textFontSize: theme.text.fontSize,
-    textFontWeight: theme.text.fontWeight,
+    textFontSize: VISUAL.TEXT_FONT_SIZE || theme.text.fontSize, // Use custom font size if available
+    textFontWeight: VISUAL.TEXT_FONT_WEIGHT ? String(VISUAL.TEXT_FONT_WEIGHT) : theme.text.fontWeight, // Convert to string
     textFontFamily: theme.text.fontFamily,
     textOpacity: theme.text.opacity,
     infoBackgroundColor: theme.infoBox.backgroundColor,
@@ -167,16 +170,6 @@ export const Composition: React.FC<AnimationProps> = (props) => {
     intensity: defaultedProps.vignetteSettings?.intensity || theme.vignette.intensity,
     feather: defaultedProps.vignetteSettings?.feather || theme.vignette.feather,
   };
-  
-  // --- DEBUGGING --- 
-  console.log("Composition Props Check:", {
-    showIcon: defaultedProps.showIcon,
-    iconType: defaultedProps.iconType,
-    iconCoverage: defaultedProps.iconCoverage,
-    iconScaleFactor: defaultedProps.iconScaleFactor,
-    countryCode: defaultedProps.countryCode
-  });
-  // --- END DEBUGGING ---
   
   return (
     <AbsoluteFill style={{ backgroundColor: theme.backgroundColor }}>
@@ -208,6 +201,7 @@ export const Composition: React.FC<AnimationProps> = (props) => {
         textDisplay={defaultedProps.textDisplay}
         showText={defaultedProps.showText}
         customText={defaultedProps.customText}
+        textPosition={defaultedProps.textPosition}
         textAnimationType={defaultedProps.textAnimationType}
         // Pass info settings if needed
         infoSettings={{

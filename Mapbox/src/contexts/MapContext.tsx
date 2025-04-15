@@ -264,7 +264,7 @@ export const MapProvider: React.FC<MapProviderProps> = ({ children }) => {
           }
 
           // Initialize map with our new parameters
-          const map = await service.initializeMap(mapStyle, countryCode, projection);
+          const map = await service.initializeMap(mapStyle, countryCode, projection, { fadeDuration: 0 });
           
           // Update state on successful initialization
           setMapInstance(map);
